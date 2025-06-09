@@ -1,70 +1,165 @@
-# Getting Started with Create React App
+# Personal Portfolio Website
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Modern, animasyonlu, duyarlı (responsive) ve veritabanı bağlantılı kişisel portföy web sitesi. Bu site Netlify üzerinde sorunsuz çalışacak şekilde tasarlanmıştır.
 
-## Available Scripts
+## 🚀 Özellikler
 
-In the project directory, you can run:
+- **Modern Tasarım**: Tailwind CSS ile responsive ve modern UI
+- **Animasyonlar**: Framer Motion ile smooth animasyonlar
+- **Veritabanı**: Supabase entegrasyonu
+- **Admin Panel**: Güvenli admin paneli ile içerik yönetimi
+- **SEO Dostu**: Optimize edilmiş meta etiketleri
+- **Netlify Uyumlu**: Netlify'da sorunsuz çalışır
 
-### `npm start`
+## 📁 Proje Yapısı
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+src/
+├── components/
+│   ├── Navbar.jsx
+│   ├── Footer.jsx
+│   ├── HeroSection.jsx
+│   ├── ProjectCard.jsx
+│   ├── CertificateCard.jsx
+│   └── ContactForm.jsx
+├── pages/
+│   ├── index.jsx (Ana Sayfa)
+│   ├── about.jsx
+│   ├── projects.jsx
+│   ├── certificates.jsx
+│   ├── contact.jsx
+│   └── admin.jsx
+└── lib/
+    └── supabase.js
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Kurulum
 
-### `npm test`
+1. **Bağımlılıkları yükleyin:**
+```bash
+npm install
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2. **Supabase yapılandırması:**
+`.env` dosyası oluşturun:
+```
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-### `npm run build`
+3. **Geliştirme sunucusunu başlatın:**
+```bash
+npm start
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📱 Sayfalar
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 🏠 Ana Sayfa
+- Etkileyici hero section
+- Dinamik yetenek animasyonu
+- Sosyal medya linkleri
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 👤 Hakkımda
+- Kişisel hikaye
+- Yetenekler (progress bar'lar)
+- Deneyim ve eğitim bilgileri
+- Hedefler
 
-### `npm run eject`
+### 💼 Projeler
+- Proje kartları
+- Teknoloji filtreleme
+- GitHub ve canlı demo linkleri
+- Responsive grid layout
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 🏆 Sertifikalar
+- Sertifika kartları
+- Genişletilebilir detaylar
+- İstatistikler
+- Sürekli öğrenme vurgusu
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 📞 İletişim
+- İletişim formu (Supabase entegrasyonu)
+- İletişim bilgileri
+- Sosyal medya linkleri
+- Müsaitlik durumu
+- SSS bölümü
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 🔐 Admin Panel
+- Güvenli giriş (Supabase Auth)
+- Proje yönetimi
+- Sertifika yönetimi
+- CRUD işlemleri
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🎨 Tasarım Özellikleri
 
-## Learn More
+- **Renk Paleti**: Modern mavi ve mor tonları
+- **Tipografi**: Inter font ailesi
+- **Animasyonlar**: Framer Motion ile smooth geçişler
+- **Responsive**: Tüm cihazlarda mükemmel görünüm
+- **Accessibility**: Erişilebilirlik standartlarına uygun
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🔧 Teknolojiler
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Frontend**: React, Tailwind CSS, Framer Motion
+- **Backend**: Supabase (Auth, Database, Storage)
+- **Routing**: React Router DOM
+- **Deployment**: Netlify
 
-### Code Splitting
+## 📦 Netlify Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+1. **netlify.toml** dosyası oluşturun:
+```toml
+[build]
+  publish = "build"
+  command = "npm run build"
 
-### Analyzing the Bundle Size
+[[redirects]]
+  from = "/admin"
+  to = "/admin"
+  status = 200
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
 
-### Making a Progressive Web App
+2. **Environment Variables** ayarlayın:
+- `REACT_APP_SUPABASE_URL`
+- `REACT_APP_SUPABASE_ANON_KEY`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 🔒 Güvenlik
 
-### Advanced Configuration
+- Admin paneli Supabase Auth ile korunur
+- Environment variables ile hassas bilgiler gizlenir
+- CORS ve güvenlik başlıkları yapılandırılmış
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## ⚡ Performans
 
-### Deployment
+- Lazy loading
+- Optimize edilmiş görseller
+- Code splitting
+- Minimal bundle size
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🤝 Katkıda Bulunma
 
-### `npm run build` fails to minify
+1. Fork yapın
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Commit yapın (`git commit -m 'Add amazing feature'`)
+4. Push yapın (`git push origin feature/amazing-feature`)
+5. Pull Request oluşturun
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 📄 Lisans
+
+Bu proje MIT lisansı altında lisanslanmıştır.
+
+## 📞 İletişim
+
+Herhangi bir sorunuz varsa, lütfen iletişime geçin:
+- Email: your.email@example.com
+- GitHub: [GitHub Profiliniz]
+- LinkedIn: [LinkedIn Profiliniz]
+
+---
+
+**Not**: Bu proje geliştirme aşamasındadır. Supabase yapılandırması ve environment variables ayarlanması gerekmektedir.

@@ -3,12 +3,15 @@ import { motion } from 'framer-motion';
 
 const About = () => {
   const skills = [
-    { name: 'React', level: 90 },
-    { name: 'JavaScript', level: 85 },
-    { name: 'Node.js', level: 80 },
-    { name: 'Python', level: 75 },
-    { name: 'SQL', level: 85 },
+    { name: 'React', level: 67 },
+    { name: 'JavaScript', level: 80 },
+    { name: 'Python', level: 85 },
+    { name: 'SQL', level: 65 },
     { name: 'Git', level: 80 },
+    { name: 'Java', level: 80 },
+    { name: 'C#', level: 80 },
+    { name: 'PHP', level: 70 },
+    { name: 'Unity', level: 80 },
   ];
 
   const experiences = [
@@ -60,7 +63,7 @@ const About = () => {
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Yazılım geliştirme tutkum ve sürekli öğrenme isteğimle, 
-            modern web teknolojilerinde uzmanlaşmış bir geliştiriciyim.
+            modern web teknolojileri başta olmak üzere Full Stack  ve AI alanlarında kendimi geliştirmeye çalışıyorum.
           </p>
         </motion.div>
 
@@ -75,21 +78,13 @@ const About = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Hikayem</h2>
             <div className="prose prose-lg max-w-none text-gray-600">
               <p className="mb-4">
-                Yazılımla ilk tanışmam üniversite yıllarımda oldu. İlk "Hello World" 
-                programımı yazdığımda, bilgisayarın benim komutlarımı anlayıp 
-                çalıştırması beni büyüledi. O günden beri sürekli öğrenmeye ve 
-                gelişmeye odaklandım.
+                Yazılım geliştirme serüvenim üniversite yıllarımda başladı ve o günden beri Python, Java ve web teknolojileri başta olmak üzere birçok alanda kendimi geliştirdim. Özellikle <b>Python</b> , <b>Java</b>, <b>web</b> (HTML, CSS, JavaScript, React), <b>AI</b> ve <b>Unity/C#</b> ile projeler üretmekten büyük keyif alıyorum. Ayrıca PHP ile de çeşitli web projeleri geliştirdim.
               </p>
               <p className="mb-4">
-                Frontend geliştirme konusunda uzmanlaştım ve React ekosisteminde 
-                derinlemesine bilgi sahibi oldum. Kullanıcı deneyimini ön planda 
-                tutarak, performanslı ve erişilebilir web uygulamaları geliştiriyorum.
+                Python ve Java tarafında ileri düzeyde bilgi sahibiyim ve bu dillerle birden çok  proje geliştirdim. Web ve yapay zeka (AI) alanında da birçok uygulama ve çözüm ürettim. Django ve Flask ile backend, React ile modern frontend projeleri hayata geçirdim. Unity ve C# ile oyun geliştirme deneyimim de bulunuyor.
               </p>
               <p>
-                Her projede en iyi pratikleri uygulayarak, sürdürülebilir ve 
-                ölçeklenebilir kod yazmaya özen gösteriyorum. Sürekli öğrenme 
-                tutkum sayesinde yeni teknolojileri hızlıca öğrenip projelerime 
-                entegre edebiliyorum.
+                Yazılımı gerçekten severek yapıyorum ve her yeni projede hem kendimi hem de kullandığım teknolojileri daha ileriye taşımaya çalışıyorum. Farklı alanlarda (özellikle Python, Java, web ve AI) çok sayıda proje geliştirdim  bu süreçte hem teknik hem de problem çözme becerilerimi sürekli geliştirdim. Yazılım geliştirme benim için bir işten çok bir tutku ve yaşam biçimi.
               </p>
             </div>
           </div>

@@ -99,3 +99,16 @@ export const submitContactForm = async(formData) => {
         .select()
     return { data, error }
 }
+
+export const uploadProjectImage = async(file) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const { data, error } = await supabase.storage.from('projects').upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+    });
+    if (error) return { data: null, error };
+    // Public URL oluştur
+    const { publicUrl } = supabase.storage.from('projects').getPublicUrl(fileName).data;
+    return { data: { publicUrl }, error: null };
+};

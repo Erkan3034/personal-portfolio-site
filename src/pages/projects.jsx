@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ProjectCard from '../components/ProjectCard';
 import { getProjects } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -160,6 +162,8 @@ const Projects = () => {
                 visible: { opacity: 1, y: 0 }
               }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
+              onClick={() => navigate(`/projects/${project.id}`)}
+              className="cursor-pointer"
             >
               <ProjectCard project={project} />
             </motion.div>

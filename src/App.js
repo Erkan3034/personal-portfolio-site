@@ -8,6 +8,7 @@ import Projects from './pages/projects';
 import Certificates from './pages/certificates';
 import Contact from './pages/contact';
 import Admin from './pages/admin';
+import ProjectDetail from './pages/ProjectDetail';
 import './App.css';
 
 function App() {
@@ -30,6 +31,9 @@ function App() {
         /> <
         Route path = "/projects"
         element = { < Projects / > }
+        /> <
+        Route path = "/projects/:id"
+        element = { < ProjectDetail / > }
         /> <
         Route path = "/certificates"
         element = { < Certificates / > }

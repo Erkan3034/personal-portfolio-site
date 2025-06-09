@@ -181,7 +181,7 @@ const Certificates = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              Henüz sertifika bulunmuyor
+              Geliştirme aşamasında.
             </h3>
             <p className="text-gray-600">
               Yakında yeni sertifikalar eklenecek.
@@ -196,21 +196,7 @@ const Certificates = () => {
           transition={{ duration: 0.8, delay: 0.8 }}
           className="mt-16 text-center"
         >
-          <div className="bg-gradient-to-r from-primary to-purple-600 rounded-2xl shadow-lg p-8 text-white">
-            <h2 className="text-3xl font-bold mb-4">Sürekli Öğrenme</h2>
-            <p className="text-xl mb-6 max-w-2xl mx-auto">
-              Teknoloji dünyası sürekli değişiyor ve ben de bu değişime ayak uydurmak için 
-              sürekli öğrenmeye devam ediyorum. Yeni sertifikalar ve beceriler kazanmaya 
-              odaklanıyorum.
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
-            >
-              Daha Fazla Öğren
-            </motion.button>
-          </div>
+
         </motion.div>
       </div>
     </div>

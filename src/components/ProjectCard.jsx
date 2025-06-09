@@ -15,6 +15,9 @@ const ProjectCard = ({ project }) => {
     featured = false
   } = project;
 
+  // technologies artık doğrudan dizi olarak kullanılacak
+  const techList = Array.isArray(technologies) ? technologies : [];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -116,7 +119,7 @@ const ProjectCard = ({ project }) => {
         {/* Technologies */}
         <div className="mb-4">
           <div className="flex flex-wrap gap-2">
-            {technologies?.map((tech, index) => (
+            {techList.map((tech, index) => (
               <motion.span
                 key={index}
                 initial={{ opacity: 0, scale: 0.8 }}

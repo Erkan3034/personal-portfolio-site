@@ -131,7 +131,7 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* Experience Section */}
+        {/* Experience Section 
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -160,40 +160,7 @@ const About = () => {
             </div>
           </div>
         </motion.div>
-
-        {/* Education Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="mb-16"
-        >
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">Eğitim</h2>
-            <div className="space-y-6">
-              {education.map((edu, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 * index }}
-                  className="flex flex-col md:flex-row md:items-center md:justify-between p-6 bg-gray-50 rounded-lg"
-                >
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      {edu.degree}
-                    </h3>
-                    <p className="text-gray-600">{edu.school}</p>
-                  </div>
-                  <span className="text-primary font-medium mt-2 md:mt-0">
-                    {edu.period}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
+*/}
         {/* Goals Section */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}

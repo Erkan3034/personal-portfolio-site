@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { submitContactForm } from '../lib/supabase';
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -27,30 +26,29 @@ const ContactForm = () => {
     setError('');
 
     try {
-      const { data, error } = await submitContactForm({
-        ...formData,
-        created_at: new Date().toISOString()
+      // Formspree entegrasyonu
+      const response = await fetch('https://formspree.io/f/mpwrpyez', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
-
-      if (error) {
-        throw error;
+      const result = await response.json();
+      if (result.ok) {
+        setSuccess(true);
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: ''
+        });
+        setTimeout(() => setSuccess(false), 5000);
+      } else {
+        setError('Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
       }
-
-      setSuccess(true);
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-      });
-
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setSuccess(false);
-      }, 5000);
-
     } catch (err) {
-      console.error('Error submitting form:', err);
       setError('Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
     } finally {
       setLoading(false);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { signIn, signOut, getCurrentUser, getProjects, getCertificates, addProject, addCertificate, deleteProject, deleteCertificate, uploadProjectImage } from '../lib/supabase';
+import { signIn, signOut, getCurrentUser, getProjects, getCertificates, addProject, addCertificate, deleteProject, deleteCertificate, uploadProjectImage, updateProject } from '../lib/supabase';
 
 const Admin = () => {
   const [user, setUser] = useState(null);
@@ -10,14 +10,26 @@ const Admin = () => {
   const [projects, setProjects] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [showLogin, setShowLogin] = useState(true);
-  const [loginData, setLoginData] = useState({ email: 'turguterkan1306@gmail.com', password: '123456' });
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
-  const [newProject, setNewProject] = useState({ title: '', description: '', image: null });
+  const [newProject, setNewProject] = useState({
+    title: '',
+    description: '',
+    technologies: '',
+    github_url: '',
+    live_url: '',
+    project_date: '',
+    featured: false,
+    image: null
+  });
   const [imagePreview, setImagePreview] = useState(null);
   const [addLoading, setAddLoading] = useState(false);
   const [addError, setAddError] = useState('');
+  const [editProject, setEditProject] = useState(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState('');
   
   const navigate = useNavigate();
 
@@ -88,6 +100,16 @@ const Admin = () => {
       navigate('/');
     } catch (error) {
       console.error('Logout error:', error);
+    }
+  };
+
+  const handleDeleteProject = async (id) => {
+    if (!window.confirm('Bu projeyi silmek istediğine emin misin?')) return;
+    try {
+      await deleteProject(id);
+      fetchData();
+    } catch (err) {
+      alert('Proje silinemedi: ' + (err.message || err));
     }
   };
 
@@ -267,8 +289,8 @@ const Admin = () => {
                         <p className="text-gray-600 text-sm">{project.description}</p>
                       </div>
                       <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-blue-800 text-sm">Düzenle</button>
-                        <button className="text-red-600 hover:text-red-800 text-sm">Sil</button>
+                        <button className="text-blue-600 hover:text-blue-800 text-sm" onClick={() => setEditProject(project)}>Düzenle</button>
+                        <button className="text-red-600 hover:text-red-800 text-sm" onClick={() => handleDeleteProject(project.id)}>Sil</button>
                       </div>
                     </div>
                   </div>
@@ -348,6 +370,11 @@ const Admin = () => {
                   const { data, error } = await addProject({
                     title: newProject.title,
                     description: newProject.description,
+                    technologies: JSON.parse(newProject.technologies),
+                    github_url: newProject.github_url,
+                    live_url: newProject.live_url,
+                    project_date: newProject.project_date,
+                    featured: newProject.featured,
                     image: imageUrl,
                   });
                   if (error) throw error;
@@ -384,6 +411,55 @@ const Admin = () => {
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Teknolojiler (JSON formatında giriniz)</label>
+                <input
+                  type="text"
+                  value={newProject.technologies}
+                  onChange={e => setNewProject({ ...newProject, technologies: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder='["React", "Node.js"]'
+                />
+                <span className="text-xs text-gray-500">Örnek: ["React", "Node.js"]</span>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">GitHub URL</label>
+                <input
+                  type="text"
+                  value={newProject.github_url}
+                  onChange={e => setNewProject({ ...newProject, github_url: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="https://github.com/kullanici/proje"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Canlı Demo URL</label>
+                <input
+                  type="text"
+                  value={newProject.live_url}
+                  onChange={e => setNewProject({ ...newProject, live_url: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="https://proje.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Proje Tarihi</label>
+                <input
+                  type="date"
+                  value={newProject.project_date}
+                  onChange={e => setNewProject({ ...newProject, project_date: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={newProject.featured}
+                  onChange={e => setNewProject({ ...newProject, featured: e.target.checked })}
+                  id="featured"
+                />
+                <label htmlFor="featured" className="text-sm font-medium text-gray-700">Öne Çıkan Proje</label>
+              </div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Görsel</label>
                 <input
                   type="file"
@@ -405,6 +481,152 @@ const Admin = () => {
                 className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${addLoading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl'}`}
               >
                 {addLoading ? 'Ekleniyor...' : 'Ekle'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Edit Project Modal */}
+      {editProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md relative">
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
+              onClick={() => { setEditProject(null); setEditError(''); }}
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold mb-6 text-center">Projeyi Düzenle</h2>
+            {editError && <div className="mb-4 text-red-600 text-sm">{editError}</div>}
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setEditLoading(true);
+                setEditError('');
+                if (!editProject.title) {
+                  setEditError('Başlık zorunlu!');
+                  setEditLoading(false);
+                  return;
+                }
+                try {
+                  const { error } = await updateProject(editProject.id, {
+                    title: editProject.title,
+                    description: editProject.description,
+                    technologies: JSON.parse(editProject.technologies),
+                    github_url: editProject.github_url,
+                    live_url: editProject.live_url,
+                    project_date: editProject.project_date,
+                    featured: editProject.featured,
+                    image: editProject.image,
+                  });
+                  if (error) throw error;
+                  setEditProject(null);
+                  fetchData();
+                } catch (err) {
+                  setEditError('Proje güncellenemedi: ' + (err.message || err));
+                } finally {
+                  setEditLoading(false);
+                }
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Başlık *</label>
+                <input
+                  type="text"
+                  value={editProject.title}
+                  onChange={e => setEditProject({ ...editProject, title: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Proje başlığı"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Açıklama</label>
+                <textarea
+                  value={editProject.description}
+                  onChange={e => setEditProject({ ...editProject, description: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Proje açıklaması"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Teknolojiler (JSON formatında giriniz)</label>
+                <input
+                  type="text"
+                  value={typeof editProject.technologies === 'string' ? editProject.technologies : JSON.stringify(editProject.technologies || [])}
+                  onChange={e => setEditProject({ ...editProject, technologies: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder='["React", "Node.js"]'
+                />
+                <span className="text-xs text-gray-500">Örnek: ["React", "Node.js"]</span>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">GitHub URL</label>
+                <input
+                  type="text"
+                  value={editProject.github_url || ''}
+                  onChange={e => setEditProject({ ...editProject, github_url: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="https://github.com/kullanici/proje"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Canlı Demo URL</label>
+                <input
+                  type="text"
+                  value={editProject.live_url || ''}
+                  onChange={e => setEditProject({ ...editProject, live_url: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="https://proje.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Proje Tarihi</label>
+                <input
+                  type="date"
+                  value={editProject.project_date || ''}
+                  onChange={e => setEditProject({ ...editProject, project_date: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={!!editProject.featured}
+                  onChange={e => setEditProject({ ...editProject, featured: e.target.checked })}
+                  id="edit_featured"
+                />
+                <label htmlFor="edit_featured" className="text-sm font-medium text-gray-700">Öne Çıkan Proje</label>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Görsel</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const { data: uploadData, error: uploadError } = await uploadProjectImage(file);
+                      if (uploadError) {
+                        setEditError('Görsel yüklenemedi: ' + uploadError.message);
+                        return;
+                      }
+                      setEditProject({ ...editProject, image: uploadData.publicUrl });
+                    }
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+                {editProject.image && (
+                  <img src={editProject.image} alt="Proje görseli" className="mt-2 rounded-lg max-h-40 mx-auto" />
+                )}
+              </div>
+              <button
+                type="submit"
+                disabled={editLoading}
+                className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${editLoading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl'}`}
+              >
+                {editLoading ? 'Kaydediliyor...' : 'Kaydet'}
               </button>
             </form>
           </div>

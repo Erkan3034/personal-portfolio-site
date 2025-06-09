@@ -156,9 +156,9 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 ## 📞 İletişim
 
 Herhangi bir sorunuz varsa, lütfen iletişime geçin:
-- Email: your.email@example.com
-- GitHub: [GitHub Profiliniz]
-- LinkedIn: [LinkedIn Profiliniz]
+- Email: turguterkan1306@gmail.com
+- GitHub: [https://github.com/Erkan3034]
+- LinkedIn: [https://www.linkedin.com/in/erkanturgut1205]
 
 ---
 

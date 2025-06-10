@@ -9,7 +9,6 @@ Modern, animasyonlu, duyarlı (responsive) ve veritabanı bağlantılı kişisel
 - **Veritabanı**: Supabase entegrasyonu
 - **Admin Panel**: Güvenli admin paneli ile içerik yönetimi
 - **SEO Dostu**: Optimize edilmiş meta etiketleri
-- **Netlify Uyumlu**: Netlify'da sorunsuz çalışır
 
 ## 📁 Proje Yapısı
 
@@ -92,7 +91,7 @@ npm start
 
 ## 🎨 Tasarım Özellikleri
 
-- **Renk Paleti**: Modern mavi ve mor tonları
+- **Renk Paleti**: Modern mavi ve mor tonlari
 - **Tipografi**: Inter font ailesi
 - **Animasyonlar**: Framer Motion ile smooth geçişler
 - **Responsive**: Tüm cihazlarda mükemmel görünüm

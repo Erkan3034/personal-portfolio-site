@@ -163,4 +163,3 @@ Herhangi bir sorunuz varsa, lütfen iletişime geçin:
 
 ---
 
-**Not**: Bu proje geliştirme aşamasındadır. Supabase yapılandırması ve environment variables ayarlanması gerekmektedir.

@@ -112,3 +112,16 @@ export const uploadProjectImage = async(file) => {
     const { publicUrl } = supabase.storage.from('projects').getPublicUrl(fileName).data;
     return { data: { publicUrl }, error: null };
 };
+
+// Sertifika görseli yükleme
+export const uploadCertificateImage = async(file) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const { data, error } = await supabase.storage.from('certificates').upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+    });
+    if (error) return { data: null, error };
+    const { publicUrl } = supabase.storage.from('certificates').getPublicUrl(fileName).data;
+    return { data: { publicUrl }, error: null };
+};

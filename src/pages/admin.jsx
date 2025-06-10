@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { signIn, signOut, getCurrentUser, getProjects, getCertificates, addProject, addCertificate, deleteProject, deleteCertificate, uploadProjectImage, updateProject } from '../lib/supabase';
+import { signIn, signOut, getCurrentUser, getProjects, getCertificates, addProject, addCertificate, deleteProject, deleteCertificate, uploadProjectImage, updateProject, uploadCertificateImage, updateCertificate } from '../lib/supabase';
 
 const Admin = () => {
   const [user, setUser] = useState(null);
@@ -30,6 +30,21 @@ const Admin = () => {
   const [editProject, setEditProject] = useState(null);
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState('');
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [newCertificate, setNewCertificate] = useState({
+    title: '',
+    issuer: '',
+    description: '',
+    certificate_date: '',
+    certificate_url: '',
+    image: null
+  });
+  const [certificateImagePreview, setCertificateImagePreview] = useState(null);
+  const [addCertificateLoading, setAddCertificateLoading] = useState(false);
+  const [addCertificateError, setAddCertificateError] = useState('');
+  const [editCertificate, setEditCertificate] = useState(null);
+  const [editCertificateLoading, setEditCertificateLoading] = useState(false);
+  const [editCertificateError, setEditCertificateError] = useState('');
   
   const navigate = useNavigate();
 
@@ -309,6 +324,12 @@ const Admin = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors duration-200"
+                  onClick={() => {
+                    setShowCertificateModal(true);
+                    setNewCertificate({ title: '', issuer: '', description: '', certificate_date: '', certificate_url: '', image: null });
+                    setCertificateImagePreview(null);
+                    setAddCertificateError('');
+                  }}
                 >
                   Yeni Sertifika Ekle
                 </motion.button>
@@ -323,8 +344,16 @@ const Admin = () => {
                         <p className="text-gray-600 text-sm">{certificate.issuer}</p>
                       </div>
                       <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-blue-800 text-sm">Düzenle</button>
-                        <button className="text-red-600 hover:text-red-800 text-sm">Sil</button>
+                        <button className="text-blue-600 hover:text-blue-800 text-sm" onClick={() => setEditCertificate(certificate)}>Düzenle</button>
+                        <button className="text-red-600 hover:text-red-800 text-sm" onClick={async () => {
+                          if (!window.confirm('Bu sertifikayı silmek istediğine emin misin?')) return;
+                          try {
+                            await deleteCertificate(certificate.id);
+                            fetchData();
+                          } catch (err) {
+                            alert('Sertifika silinemedi: ' + (err.message || err));
+                          }
+                        }}>Sil</button>
                       </div>
                     </div>
                   </div>
@@ -627,6 +656,253 @@ const Admin = () => {
                 className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${editLoading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl'}`}
               >
                 {editLoading ? 'Kaydediliyor...' : 'Kaydet'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      {showCertificateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md relative">
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
+              onClick={() => { setShowCertificateModal(false); setNewCertificate({ title: '', issuer: '', description: '', certificate_date: '', certificate_url: '', image: null }); setCertificateImagePreview(null); setAddCertificateError(''); }}
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold mb-6 text-center">Yeni Sertifika Ekle</h2>
+            {addCertificateError && <div className="mb-4 text-red-600 text-sm">{addCertificateError}</div>}
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setAddCertificateLoading(true);
+                setAddCertificateError('');
+                if (!newCertificate.title) {
+                  setAddCertificateError('Başlık zorunlu!');
+                  setAddCertificateLoading(false);
+                  return;
+                }
+                let imageUrl = null;
+                try {
+                  if (newCertificate.image) {
+                    const { data: uploadData, error: uploadError } = await uploadCertificateImage(newCertificate.image);
+                    if (uploadError) throw uploadError;
+                    imageUrl = uploadData.publicUrl;
+                  }
+                  const { data, error } = await addCertificate({
+                    title: newCertificate.title,
+                    issuer: newCertificate.issuer,
+                    description: newCertificate.description,
+                    certificate_date: newCertificate.certificate_date,
+                    certificate_url: newCertificate.certificate_url,
+                    image: imageUrl,
+                  });
+                  if (error) throw error;
+                  setShowCertificateModal(false);
+                  setNewCertificate({ title: '', issuer: '', description: '', certificate_date: '', certificate_url: '', image: null });
+                  setCertificateImagePreview(null);
+                  fetchData();
+                } catch (err) {
+                  setAddCertificateError('Sertifika eklenemedi: ' + (err.message || err));
+                } finally {
+                  setAddCertificateLoading(false);
+                }
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Başlık *</label>
+                <input
+                  type="text"
+                  value={newCertificate.title}
+                  onChange={e => setNewCertificate({ ...newCertificate, title: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Sertifika başlığı"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Kurum</label>
+                <input
+                  type="text"
+                  value={newCertificate.issuer}
+                  onChange={e => setNewCertificate({ ...newCertificate, issuer: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="Sertifikayı veren kurum"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Açıklama</label>
+                <textarea
+                  value={newCertificate.description}
+                  onChange={e => setNewCertificate({ ...newCertificate, description: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="Sertifika açıklaması"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tarih</label>
+                <input
+                  type="date"
+                  value={newCertificate.certificate_date}
+                  onChange={e => setNewCertificate({ ...newCertificate, certificate_date: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Sertifika URL</label>
+                <input
+                  type="text"
+                  value={newCertificate.certificate_url}
+                  onChange={e => setNewCertificate({ ...newCertificate, certificate_url: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="https://sertifika.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Görsel</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => {
+                    const file = e.target.files[0];
+                    setNewCertificate({ ...newCertificate, image: file });
+                    setCertificateImagePreview(file ? URL.createObjectURL(file) : null);
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+                {certificateImagePreview && (
+                  <img src={certificateImagePreview} alt="Önizleme" className="mt-2 rounded-lg max-h-40 mx-auto" />
+                )}
+              </div>
+              <button
+                type="submit"
+                disabled={addCertificateLoading}
+                className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${addCertificateLoading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl'}`}
+              >
+                {addCertificateLoading ? 'Ekleniyor...' : 'Ekle'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      {editCertificate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md relative">
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
+              onClick={() => { setEditCertificate(null); setEditCertificateError(''); }}
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold mb-6 text-center">Sertifikayı Düzenle</h2>
+            {editCertificateError && <div className="mb-4 text-red-600 text-sm">{editCertificateError}</div>}
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setEditCertificateLoading(true);
+                setEditCertificateError('');
+                if (!editCertificate.title) {
+                  setEditCertificateError('Başlık zorunlu!');
+                  setEditCertificateLoading(false);
+                  return;
+                }
+                try {
+                  let imageUrl = editCertificate.image;
+                  if (editCertificate.newImage) {
+                    const { data: uploadData, error: uploadError } = await uploadCertificateImage(editCertificate.newImage);
+                    if (uploadError) throw uploadError;
+                    imageUrl = uploadData.publicUrl;
+                  }
+                  const { error } = await updateCertificate(editCertificate.id, {
+                    title: editCertificate.title,
+                    issuer: editCertificate.issuer,
+                    description: editCertificate.description,
+                    certificate_date: editCertificate.certificate_date,
+                    certificate_url: editCertificate.certificate_url,
+                    image: imageUrl,
+                  });
+                  if (error) throw error;
+                  setEditCertificate(null);
+                  fetchData();
+                } catch (err) {
+                  setEditCertificateError('Sertifika güncellenemedi: ' + (err.message || err));
+                } finally {
+                  setEditCertificateLoading(false);
+                }
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Başlık *</label>
+                <input
+                  type="text"
+                  value={editCertificate.title}
+                  onChange={e => setEditCertificate({ ...editCertificate, title: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Sertifika başlığı"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Kurum</label>
+                <input
+                  type="text"
+                  value={editCertificate.issuer || ''}
+                  onChange={e => setEditCertificate({ ...editCertificate, issuer: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="Sertifikayı veren kurum"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Açıklama</label>
+                <textarea
+                  value={editCertificate.description || ''}
+                  onChange={e => setEditCertificate({ ...editCertificate, description: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="Sertifika açıklaması"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tarih</label>
+                <input
+                  type="date"
+                  value={editCertificate.certificate_date || ''}
+                  onChange={e => setEditCertificate({ ...editCertificate, certificate_date: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Sertifika URL</label>
+                <input
+                  type="text"
+                  value={editCertificate.certificate_url || ''}
+                  onChange={e => setEditCertificate({ ...editCertificate, certificate_url: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="https://sertifika.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Görsel</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => {
+                    const file = e.target.files[0];
+                    setEditCertificate({ ...editCertificate, newImage: file });
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+                {editCertificate.image && (
+                  <img src={editCertificate.image} alt="Sertifika görseli" className="mt-2 rounded-lg max-h-40 mx-auto" />
+                )}
+              </div>
+              <button
+                type="submit"
+                disabled={editCertificateLoading}
+                className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${editCertificateLoading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl'}`}
+              >
+                {editCertificateLoading ? 'Kaydediliyor...' : 'Kaydet'}
               </button>
             </form>
           </div>

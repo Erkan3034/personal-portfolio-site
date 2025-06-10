@@ -42,12 +42,12 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <motion.div
+            <motion.img
               whileHover={{ scale: 1.05 }}
-              className="text-2xl font-bold text-white"
-            >
-              coder erkan
-            </motion.div>
+              src="/logo.png"
+              alt="Logo"
+              className="h-8 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}

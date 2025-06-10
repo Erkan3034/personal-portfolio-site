@@ -148,7 +148,7 @@ const Footer = () => {
           className="border-t border-gray-800 mt-8 pt-8 flex justify-center items-center"
         >
           <p className="text-gray-400 text-sm text-center w-full">
-            © 2025 Portfolio. Tüm hakları saklıdır.
+            © 2025 Erkan Turgut. Tüm hakları saklıdır.
           </p>
         </motion.div>
       </div>

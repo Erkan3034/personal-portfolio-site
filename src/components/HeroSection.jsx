@@ -24,7 +24,7 @@ const HeroSection = () => {
   }, [skills.length]);
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
+    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden mt-16 sm:mt-0">
       {/* Background Animation */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
@@ -116,6 +116,8 @@ const HeroSection = () => {
                 İletişime Geç
               </motion.button>
             </Link>
+
+
           </motion.div>
 
           {/* Social Links */}

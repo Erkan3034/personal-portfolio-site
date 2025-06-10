@@ -111,7 +111,7 @@ const HeroSection = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="border-2 border-primary text-primary px-8 py-3 rounded-lg font-semibold hover:bg-primary hover:text-white transition-all duration-200"
+                className="border-2 border-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary hover:text-white transition-all duration-200"
               >
                 İletişime Geç
               </motion.button>

@@ -142,7 +142,7 @@ const ProjectCard = ({ project }) => {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg text-center font-medium hover:bg-gray-200 transition-colors duration-200"
+              className="flex-1 bg-transparent text-primary py-2 px-4 rounded-lg text-center font-medium border border-primary hover:bg-primary/10 hover:text-primary transition-colors duration-200"
             >
               GitHub
             </motion.a>

@@ -36,3 +36,109 @@
         transform: rotate(360deg);
     }
 }
+
+body {
+    background: linear-gradient(120deg, #181824 0%, #23243a 100%);
+    color: #e5e7eb;
+}
+
+main,
+.min-h-screen,
+.bg-gray-50,
+.bg-white {
+    background: transparent !important;
+    color: #e5e7eb !important;
+}
+
+.text-gray-900,
+.text-gray-600,
+.text-gray-700 {
+    color: #e5e7eb !important;
+}
+
+.bg-primary,
+.hover\:bg-primary\/90,
+.hover\:bg-primary,
+.bg-primary\/90 {
+    background: linear-gradient(90deg, #a259ff 0%, #5b9fff 100%) !important;
+    color: #fff !important;
+}
+
+.text-primary,
+.hover\:text-primary {
+    color: #a259ff !important;
+}
+
+.border-primary {
+    border-color: #a259ff !important;
+}
+
+input,
+textarea {
+    background: #23243a !important;
+    color: #e5e7eb !important;
+    border-color: #44445a !important;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #a259ff !important;
+    box-shadow: 0 0 0 2px #a259ff33;
+}
+
+button,
+.rounded-lg,
+.shadow-lg {
+    background: #23243a;
+    color: #e5e7eb;
+}
+
+a {
+    color: #5b9fff;
+}
+
+.button {
+    background: transparent !important;
+    color: #fff !important;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    border: 1.5px solid #fff;
+    box-shadow: none;
+    transition: all 0.2s;
+}
+
+.button:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: #a259ff;
+}
+
+.button.gradient,
+.button.active,
+.button-primary {
+    background: linear-gradient(90deg, #a259ff 0%, #5b9fff 100%) !important;
+    color: #fff !important;
+    border: none;
+}
+
+.navbar,
+nav,
+.navbar *,
+nav * {
+    color: #fff !important;
+}
+
+.button,
+.button * {
+    color: #fff !important;
+}
+
+.navbar a,
+nav a {
+    color: #fff !important;
+    transition: color 0.2s;
+}
+
+.navbar a.active,
+nav a.active {
+    color: #a259ff !important;
+}

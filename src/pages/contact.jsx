@@ -73,6 +73,15 @@ const Contact = () => {
           <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
         </svg>
       )
+    },
+    {
+      name: 'Medium',
+      url: 'https://medium.com/@turguterkan55',
+      icon: (
+        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 1043.63 592.71">
+          <g><path d="M588.67 296.14c0 163.57-131.98 296.14-294.33 296.14S0 459.71 0 296.14 131.98 0 294.33 0s294.34 132.57 294.34 296.14zM803.58 296.14c0 151.31-65.98 273.99-147.36 273.99-81.38 0-147.36-122.68-147.36-273.99S574.84 22.15 656.22 22.15c81.38 0 147.36 122.68 147.36 273.99zm240.05 0c0 140.13-29.47 253.81-65.82 253.81-36.35 0-65.82-113.68-65.82-253.81s29.47-253.81 65.82-253.81c36.35 0 65.82 113.68 65.82 253.81z"/></g>
+        </svg>
+      )
     }
   ];
 
@@ -113,9 +122,9 @@ const Contact = () => {
             className="space-y-8"
           >
             {/* Contact Information */}
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">İletişim Bilgileri</h2>
-              <div className="space-y-6">
+            <div className="bg-[#23243a]/80 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <h2 className="text-2xl font-bold text-gray-100 mb-6 text-center">İletişim Bilgileri</h2>
+              <div className="space-y-6 w-full">
                 {contactInfo.map((info, index) => (
                   <motion.a
                     key={info.title}
@@ -126,14 +135,13 @@ const Contact = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.1 * index }}
                     whileHover={{ scale: 1.02 }}
-                    className="flex items-center space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                    className="flex flex-col items-center justify-center space-y-2 p-4 rounded-lg hover:bg-primary/10 transition-colors duration-200 text-center"
                   >
-                    <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                    <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mx-auto">
                       {info.icon}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{info.title}</h3>
-                      <p className="text-gray-600">{info.value}</p>
+                      <h3 className="font-semibold text-gray-100 text-center">{info.title}</h3>
                     </div>
                   </motion.a>
                 ))}
@@ -143,7 +151,7 @@ const Contact = () => {
             {/* Social Links */}
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Sosyal Medya</h2>
-              <div className="flex space-x-4">
+              <div className="flex justify-center space-x-4">
                 {socialLinks.map((social, index) => (
                   <motion.a
                     key={social.name}

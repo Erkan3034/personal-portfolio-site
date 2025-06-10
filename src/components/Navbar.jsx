@@ -44,7 +44,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center space-x-2">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="text-2xl font-bold text-primary"
+              className="text-2xl font-bold text-white"
             >
               coder erkan
             </motion.div>
@@ -59,7 +59,7 @@ const Navbar = () => {
                 className={`relative px-3 py-2 text-sm font-medium transition-colors duration-200 ${
                   isActive(item.path)
                     ? 'text-primary'
-                    : 'text-gray-700 hover:text-primary'
+                    : 'text-white hover:text-white'
                 }`}
               >
                 {item.name}
@@ -125,7 +125,7 @@ const Navbar = () => {
                   className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
                     isActive(item.path)
                       ? 'text-primary bg-primary/10'
-                      : 'text-gray-700 hover:text-primary hover:bg-gray-50'
+                      : 'text-white hover:text-primary hover:bg-gray-50'
                   }`}
                 >
                   {item.name}

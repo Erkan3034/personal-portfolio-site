@@ -72,7 +72,7 @@ const HeroSection = () => {
             className="mb-8"
           >
             <div className="text-xl md:text-2xl text-gray-600">
-              Ben bir{' '}
+              {' '}
               <span className="text-primary font-semibold min-h-[2rem] inline-block">
                 {skills[currentSkill]}
               </span>

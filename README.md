@@ -10,7 +10,9 @@ Modern, animasyonlu, duyarlı (responsive) ve veritabanı bağlantılı kişisel
 - **Admin Panel**: Güvenli admin paneli ile içerik yönetimi
 - **SEO Dostu**: Optimize edilmiş meta etiketleri
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/ced69b10-9eb3-4aea-9d32-5894d3e9a613/deploy-status)](https://app.netlify.com/projects/erkanturgut/deploys)
 ## 📁 Proje Yapısı
+
 
 ```
 src/

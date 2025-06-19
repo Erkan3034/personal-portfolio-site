@@ -6,3 +6,6 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+/sitemap.xml  /sitemap.xml  200
+

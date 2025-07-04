@@ -1,6 +1,7 @@
 # Personal Portfolio Website
 
 Modern, animasyonlu, duyarlı (responsive) ve veritabanı bağlantılı kişisel portföy web sitesi. Bu site Netlify üzerinde sorunsuz çalışacak şekilde tasarlanmıştır.
+https://erkanturgut.netlify.app 
 
 ## 🚀 Özellikler
 

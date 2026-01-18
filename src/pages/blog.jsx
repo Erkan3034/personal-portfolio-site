@@ -31,8 +31,8 @@ const FloatingParticle = ({ delay, duration, size, left, top }) => (
   />
 );
 
-// Enhanced Blog Card Component
-const BlogCard = ({ post, index, isFeatured = false }) => {
+// Compact Blog Card Component
+const BlogCard = ({ post, index }) => {
   const isExternal = post.is_external && post.external_url;
   const readingTime = calculateReadingTime(post.content || post.excerpt);
 
@@ -45,49 +45,32 @@ const BlogCard = ({ post, index, isFeatured = false }) => {
   const CardContent = () => (
     <>
       {/* Card Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
       
       {/* Image Section */}
       {post.image && (
-        <div className={`relative overflow-hidden ${isFeatured ? 'h-64' : 'h-48'}`}>
+        <div className="relative overflow-hidden h-36">
           <img
             src={post.image}
             alt={post.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent" />
           
           {/* Category Badge */}
-          <div className="absolute top-4 left-4">
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase backdrop-blur-md ${
+          <div className="absolute top-3 left-3">
+            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase backdrop-blur-md ${
               isExternal 
-                ? 'bg-gradient-to-r from-purple-500/80 to-pink-500/80 text-white' 
-                : 'bg-gradient-to-r from-primary/80 to-cyan-500/80 text-white'
+                ? 'bg-purple-500/70 text-white' 
+                : 'bg-primary/70 text-white'
             }`}>
-              {isExternal ? (
-                <>
-                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12z"/>
-                  </svg>
-                  Medium
-                </>
-              ) : (
-                <>
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2" />
-                  </svg>
-                  Blog
-                </>
-              )}
+              {isExternal ? 'Medium' : 'Blog'}
             </span>
           </div>
 
           {/* Reading Time */}
-          <div className="absolute top-4 right-4">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-black/50 backdrop-blur-md text-white/90">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          <div className="absolute top-3 right-3">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-black/50 backdrop-blur-md text-white/90">
               {readingTime} dk
             </span>
           </div>
@@ -95,59 +78,49 @@ const BlogCard = ({ post, index, isFeatured = false }) => {
       )}
 
       {/* Content Section */}
-      <div className={`p-6 flex flex-col flex-1 ${!post.image ? 'pt-8' : ''}`}>
+      <div className={`p-4 flex flex-col flex-1 ${!post.image ? 'pt-5' : ''}`}>
         {/* No image - show badge inline */}
         {!post.image && (
-          <div className="flex items-center justify-between mb-4">
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase ${
+          <div className="flex items-center justify-between mb-3">
+            <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase ${
               isExternal 
-                ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30' 
-                : 'bg-gradient-to-r from-primary/20 to-cyan-500/20 text-primary border border-primary/30'
+                ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' 
+                : 'bg-primary/20 text-primary border border-primary/30'
             }`}>
               {isExternal ? 'Medium' : 'Blog'}
             </span>
-            <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {readingTime} dk okuma
-            </span>
+            <span className="text-[10px] text-gray-400">{readingTime} dk</span>
           </div>
         )}
 
         {/* Date */}
         {post.published_at && (
-          <div className="flex items-center gap-2 text-gray-400 text-sm mb-3">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+          <div className="text-gray-500 text-xs mb-2">
             {new Date(post.published_at).toLocaleDateString('tr-TR', { 
               year: 'numeric', 
-              month: 'long', 
+              month: 'short', 
               day: 'numeric' 
             })}
           </div>
         )}
 
         {/* Title */}
-        <h3 className={`font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-cyan-400 transition-all duration-300 line-clamp-2 ${
-          isFeatured ? 'text-2xl' : 'text-xl'
-        }`}>
+        <h3 className="font-semibold text-white text-base mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-2">
           {post.title}
         </h3>
 
         {/* Summary */}
-        <p className={`text-gray-400 leading-relaxed mb-4 flex-1 ${isFeatured ? 'line-clamp-4' : 'line-clamp-3'}`}>
+        <p className="text-gray-400 text-sm leading-relaxed mb-3 flex-1 line-clamp-2">
           {post.summary || post.excerpt || 'Blog yazısı açıklaması...'}
         </p>
 
         {/* Tags */}
         {post.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {post.tags.slice(0, isFeatured ? 5 : 3).map((tag) => (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {post.tags.slice(0, 2).map((tag) => (
               <span
                 key={tag}
-                className="text-xs font-medium text-gray-300 bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg hover:border-primary/50 hover:text-primary transition-colors duration-200"
+                className="text-[10px] font-medium text-gray-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded"
               >
                 #{tag}
               </span>
@@ -156,18 +129,18 @@ const BlogCard = ({ post, index, isFeatured = false }) => {
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-auto">
+        <div className="flex items-center justify-between pt-3 border-t border-white/10 mt-auto">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-[10px] font-bold">
               ET
             </div>
-            <span className="text-sm text-gray-400">Erkan Turgut</span>
+            <span className="text-xs text-gray-400">Erkan</span>
           </div>
           
-          <span className="flex items-center gap-2 text-primary font-semibold text-sm group-hover:gap-3 transition-all duration-300">
-            {isExternal ? "Oku" : "Devamını Oku"}
-            <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          <span className="flex items-center gap-1 text-primary font-medium text-xs group-hover:gap-2 transition-all duration-300">
+            Oku
+            <svg className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </span>
         </div>
@@ -175,16 +148,14 @@ const BlogCard = ({ post, index, isFeatured = false }) => {
     </>
   );
 
-  const cardClasses = `group relative flex flex-col h-full rounded-2xl bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl border border-white/10 overflow-hidden transition-all duration-500 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-    isFeatured ? 'md:col-span-2 lg:col-span-2' : ''
-  }`;
+  const cardClasses = "group relative flex flex-col h-full rounded-xl bg-gradient-to-b from-white/[0.07] to-white/[0.02] backdrop-blur-xl border border-white/10 overflow-hidden transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary";
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -8 }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
+      whileHover={{ y: -4 }}
       className="h-full"
     >
       {isExternal ? (
@@ -332,17 +303,6 @@ const Blog = () => {
     external: blogs.filter(b => b.is_external && b.external_url).length,
   }), [blogs]);
 
-  // Get featured post (latest with image)
-  const featuredPost = useMemo(() => {
-    if (activeFilter !== 'all' || searchQuery) return null;
-    return filteredBlogs.find(b => b.image) || null;
-  }, [filteredBlogs, activeFilter, searchQuery]);
-
-  // Regular posts (excluding featured)
-  const regularPosts = useMemo(() => {
-    if (!featuredPost) return filteredBlogs;
-    return filteredBlogs.filter(b => b.id !== featuredPost.id);
-  }, [filteredBlogs, featuredPost]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-black pt-20 relative overflow-hidden">
@@ -495,40 +455,11 @@ const Blog = () => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {/* Featured Post */}
-                  {featuredPost && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6 }}
-                      className="mb-8"
-                    >
-                      <div className="flex items-center gap-2 mb-4">
-                        <span className="w-1.5 h-6 bg-gradient-to-b from-primary to-cyan-500 rounded-full" />
-                        <h2 className="text-lg font-semibold text-white">Öne Çıkan</h2>
-                      </div>
-                      <div className="grid grid-cols-1">
-                        <BlogCard post={featuredPost} index={0} isFeatured={true} />
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Regular Posts */}
-                  {regularPosts.length > 0 && (
-                    <div>
-                      {featuredPost && (
-                        <div className="flex items-center gap-2 mb-4">
-                          <span className="w-1.5 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full" />
-                          <h2 className="text-lg font-semibold text-white">Tüm Yazılar</h2>
-                        </div>
-                      )}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {regularPosts.map((post, index) => (
-                          <BlogCard key={post.id} post={post} index={index} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {filteredBlogs.map((post, index) => (
+                      <BlogCard key={post.id} post={post} index={index} />
+                    ))}
+                  </div>
                 </motion.div>
               </AnimatePresence>
             )}

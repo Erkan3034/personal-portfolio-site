@@ -1,5 +1,5 @@
 {
-    "name": "personal-portfolio-site",
+    "name": "Erkan Turgut Kişisel Portfolyo",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
@@ -19,7 +19,8 @@
         "start": "react-scripts start",
         "build": "CI=false react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "generate:webp": "node scripts/convert-webp.js"
     },
     "eslintConfig": {
         "extends": [
@@ -42,6 +43,7 @@
     "devDependencies": {
         "autoprefixer": "^10.4.14",
         "postcss": "^8.4.21",
-        "tailwindcss": "^3.3.3"
+        "tailwindcss": "^3.3.3",
+        "sharp": "^0.33.3"
     }
 }

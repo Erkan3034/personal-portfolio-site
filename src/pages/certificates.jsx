@@ -27,7 +27,7 @@ const Certificates = () => {
     };
 
     fetchCertificates();
-  }, []);
+  }, []); // sampleCertificates sabit; bağımlılık gerekmiyor
 
   // Sample certificates for fallback
   const sampleCertificates = [

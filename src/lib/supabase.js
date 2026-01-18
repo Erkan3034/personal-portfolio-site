@@ -41,6 +41,23 @@ export const getCertificates = async() => {
     return { data, error }
 }
 
+export const getBlogById = async(id) => {
+    const { data, error } = await supabase
+        .from('blogs')
+        .select('*')
+        .eq('id', id)
+        .single()
+    return { data, error }
+}
+
+export const getBlogs = async() => {
+    const { data, error } = await supabase
+        .from('blogs')
+        .select('*')
+        .order('published_at', { ascending: false })
+    return { data, error }
+}
+
 export const addProject = async(projectData) => {
     const { data, error } = await supabase
         .from('projects')
@@ -57,6 +74,14 @@ export const addCertificate = async(certificateData) => {
     return { data, error }
 }
 
+export const addBlog = async(blogData) => {
+    const { data, error } = await supabase
+        .from('blogs')
+        .insert([blogData])
+        .select()
+    return { data, error }
+}
+
 export const deleteProject = async(id) => {
     const { error } = await supabase
         .from('projects')
@@ -68,6 +93,14 @@ export const deleteProject = async(id) => {
 export const deleteCertificate = async(id) => {
     const { error } = await supabase
         .from('certificates')
+        .delete()
+        .eq('id', id)
+    return { error }
+}
+
+export const deleteBlog = async(id) => {
+    const { error } = await supabase
+        .from('blogs')
         .delete()
         .eq('id', id)
     return { error }
@@ -91,6 +124,15 @@ export const updateCertificate = async(id, updates) => {
     return { data, error }
 }
 
+export const updateBlog = async(id, updates) => {
+    const { data, error } = await supabase
+        .from('blogs')
+        .update(updates)
+        .eq('id', id)
+        .select()
+    return { data, error }
+}
+
 // Contact form submission
 export const submitContactForm = async(formData) => {
     const { data, error } = await supabase
@@ -103,12 +145,11 @@ export const submitContactForm = async(formData) => {
 export const uploadProjectImage = async(file) => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}.${fileExt}`;
-    const { data, error } = await supabase.storage.from('projects').upload(fileName, file, {
+    const { error } = await supabase.storage.from('projects').upload(fileName, file, {
         cacheControl: '3600',
         upsert: false,
     });
     if (error) return { data: null, error };
-    // Public URL oluştur
     const { publicUrl } = supabase.storage.from('projects').getPublicUrl(fileName).data;
     return { data: { publicUrl }, error: null };
 };
@@ -117,11 +158,24 @@ export const uploadProjectImage = async(file) => {
 export const uploadCertificateImage = async(file) => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}.${fileExt}`;
-    const { data, error } = await supabase.storage.from('certificates').upload(fileName, file, {
+    const { error } = await supabase.storage.from('certificates').upload(fileName, file, {
         cacheControl: '3600',
         upsert: false,
     });
     if (error) return { data: null, error };
     const { publicUrl } = supabase.storage.from('certificates').getPublicUrl(fileName).data;
+    return { data: { publicUrl }, error: null };
+};
+
+export const uploadBlogImage = async(file) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    // 'blogs' adında bir bucket bekleniyor (public olmalı).
+    const { error } = await supabase.storage.from('blogs').upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+    });
+    if (error) return { data: null, error };
+    const { publicUrl } = supabase.storage.from('blogs').getPublicUrl(fileName).data;
     return { data: { publicUrl }, error: null };
 };

@@ -1,7 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { signIn, signOut, getCurrentUser, getProjects, getCertificates, addProject, addCertificate, deleteProject, deleteCertificate, uploadProjectImage, updateProject, uploadCertificateImage, updateCertificate } from '../lib/supabase';
+import {
+  signIn,
+  signOut,
+  getCurrentUser,
+  getProjects,
+  getCertificates,
+  getBlogs,
+  addProject,
+  addCertificate,
+  addBlog,
+  deleteProject,
+  deleteCertificate,
+  deleteBlog,
+  uploadProjectImage,
+  uploadCertificateImage,
+  uploadBlogImage,
+  updateProject,
+  updateCertificate,
+  updateBlog,
+} from '../lib/supabase';
 
 const Admin = () => {
   const [user, setUser] = useState(null);
@@ -9,6 +28,7 @@ const Admin = () => {
   const [activeTab, setActiveTab] = useState('projects');
   const [projects, setProjects] = useState([]);
   const [certificates, setCertificates] = useState([]);
+  const [blogs, setBlogs] = useState([]);
   const [showLogin, setShowLogin] = useState(true);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
@@ -45,14 +65,27 @@ const Admin = () => {
   const [editCertificate, setEditCertificate] = useState(null);
   const [editCertificateLoading, setEditCertificateLoading] = useState(false);
   const [editCertificateError, setEditCertificateError] = useState('');
+  const [showBlogModal, setShowBlogModal] = useState(false);
+  const [newBlog, setNewBlog] = useState({
+    title: '',
+    summary: '',
+    content: '',
+    tags: '[]',
+    is_external: false,
+    external_url: '',
+    image: null,
+    published_at: '',
+  });
+  const [blogImagePreview, setBlogImagePreview] = useState(null);
+  const [addBlogLoading, setAddBlogLoading] = useState(false);
+  const [addBlogError, setAddBlogError] = useState('');
+  const [editBlog, setEditBlog] = useState(null);
+  const [editBlogLoading, setEditBlogLoading] = useState(false);
+  const [editBlogError, setEditBlogError] = useState('');
   
   const navigate = useNavigate();
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       const currentUser = await getCurrentUser();
       if (currentUser) {
@@ -68,21 +101,27 @@ const Admin = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const fetchData = async () => {
     try {
-      const [projectsData, certificatesData] = await Promise.all([
+      const [projectsData, certificatesData, blogsData] = await Promise.all([
         getProjects(),
-        getCertificates()
+        getCertificates(),
+        getBlogs()
       ]);
       
       setProjects(projectsData.data || []);
       setCertificates(certificatesData.data || []);
+      setBlogs(blogsData.data || []);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -127,6 +166,50 @@ const Admin = () => {
       alert('Proje silinemedi: ' + (err.message || err));
     }
   };
+
+  const handleDeleteBlog = async (id) => {
+    if (!window.confirm('Bu blogu silmek istediğine emin misin?')) return;
+    try {
+      await deleteBlog(id);
+      fetchData();
+    } catch (err) {
+      alert('Blog silinemedi: ' + (err.message || err));
+    }
+  };
+
+  const parseTagsSafe = (value) => {
+    try {
+      const parsed = JSON.parse(value || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const convertToWebP = (file) =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('WebP dönüşümü başarısız.'));
+              return;
+            }
+            resolve(new File([blob], `${file.name.split('.')[0]}.webp`, { type: 'image/webp' }));
+          },
+          'image/webp',
+          0.9
+        );
+      };
+      img.onerror = () => reject(new Error('Görsel yüklenemedi.'));
+      img.src = URL.createObjectURL(file);
+    });
 
   if (loading) {
     return (
@@ -272,6 +355,16 @@ const Admin = () => {
             >
               Sertifikalar ({certificates.length})
             </button>
+            <button
+              onClick={() => setActiveTab('blogs')}
+              className={`py-2 px-4 font-medium transition-colors duration-200 ${
+                activeTab === 'blogs'
+                  ? 'text-primary border-b-2 border-primary'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Blog ({blogs.length})
+            </button>
           </div>
         </motion.div>
 
@@ -281,7 +374,7 @@ const Admin = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          {activeTab === 'projects' ? (
+          {activeTab === 'projects' && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Projeler</h2>
@@ -316,7 +409,9 @@ const Admin = () => {
                 )}
               </div>
             </div>
-          ) : (
+          )}
+
+          {activeTab === 'certificates' && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Sertifikalar</h2>
@@ -365,6 +460,54 @@ const Admin = () => {
               </div>
             </div>
           )}
+
+          {activeTab === 'blogs' && (
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Blog</h2>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors duration-200"
+                  onClick={() => {
+                    setShowBlogModal(true);
+                    setNewBlog({ title: '', summary: '', content: '', tags: '[]', is_external: false, external_url: '', image: null, published_at: '' });
+                    setBlogImagePreview(null);
+                    setAddBlogError('');
+                  }}
+                >
+                  Yeni Blog Ekle
+                </motion.button>
+              </div>
+
+              <div className="space-y-4">
+                {blogs.map((blog) => (
+                  <div key={blog.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-gray-900">{blog.title}</h3>
+                        <p className="text-gray-600 text-sm line-clamp-2">{blog.summary}</p>
+                        <div className="text-xs text-gray-500">
+                          {blog.is_external ? 'External' : 'Site içi'} •{' '}
+                          {blog.published_at
+                            ? new Date(blog.published_at).toLocaleDateString('tr-TR')
+                            : 'Tarih yok'}
+                        </div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button className="text-blue-600 hover:text-blue-800 text-sm" onClick={() => setEditBlog(blog)}>Düzenle</button>
+                        <button className="text-red-600 hover:text-red-800 text-sm" onClick={() => handleDeleteBlog(blog.id)}>Sil</button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {blogs.length === 0 && (
+                  <p className="text-gray-500 text-center py-8">Henüz blog bulunmuyor.</p>
+                )}
+              </div>
+            </div>
+          )}
         </motion.div>
       </div>
       {/* Modal for adding new project */}
@@ -396,7 +539,7 @@ const Admin = () => {
                     if (uploadError) throw uploadError;
                     imageUrl = uploadData.publicUrl;
                   }
-                  const { data, error } = await addProject({
+                  const { error } = await addProject({
                     title: newProject.title,
                     description: newProject.description,
                     technologies: JSON.parse(newProject.technologies),
@@ -689,7 +832,7 @@ const Admin = () => {
                     if (uploadError) throw uploadError;
                     imageUrl = uploadData.publicUrl;
                   }
-                  const { data, error } = await addCertificate({
+                  const { error } = await addCertificate({
                     title: newCertificate.title,
                     issuer: newCertificate.issuer,
                     description: newCertificate.description,
@@ -781,6 +924,302 @@ const Admin = () => {
                 className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${addCertificateLoading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl'}`}
               >
                 {addCertificateLoading ? 'Ekleniyor...' : 'Ekle'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      {showBlogModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md relative">
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
+              onClick={() => { setShowBlogModal(false); setAddBlogError(''); setBlogImagePreview(null); }}
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold mb-6 text-center">Yeni Blog Ekle</h2>
+            {addBlogError && <div className="mb-4 text-red-600 text-sm">{addBlogError}</div>}
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setAddBlogLoading(true);
+                setAddBlogError('');
+                if (!newBlog.title) {
+                  setAddBlogError('Başlık zorunlu!');
+                  setAddBlogLoading(false);
+                  return;
+                }
+                let imageUrl = null;
+                try {
+                  if (newBlog.image) {
+                    const webpFile = await convertToWebP(newBlog.image);
+                    const { data: uploadData, error: uploadError } = await uploadBlogImage(webpFile);
+                    if (uploadError) throw uploadError;
+                    imageUrl = uploadData.publicUrl;
+                  }
+                  const { error } = await addBlog({
+                    title: newBlog.title,
+                    summary: newBlog.summary,
+                    content: newBlog.content,
+                    tags: parseTagsSafe(newBlog.tags),
+                    is_external: newBlog.is_external,
+                    external_url: newBlog.external_url,
+                    image: imageUrl,
+                    published_at: newBlog.published_at || null,
+                  });
+                  if (error) throw error;
+                  setShowBlogModal(false);
+                  setNewBlog({ title: '', summary: '', content: '', tags: '[]', is_external: false, external_url: '', image: null, published_at: '' });
+                  setBlogImagePreview(null);
+                  fetchData();
+                } catch (err) {
+                  setAddBlogError('Blog eklenemedi: ' + (err.message || err));
+                } finally {
+                  setAddBlogLoading(false);
+                }
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Başlık *</label>
+                <input
+                  type="text"
+                  value={newBlog.title}
+                  onChange={e => setNewBlog({ ...newBlog, title: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Blog başlığı"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Özet</label>
+                <textarea
+                  value={newBlog.summary}
+                  onChange={e => setNewBlog({ ...newBlog, summary: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Kısa özet"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">İçerik (HTML)</label>
+                <textarea
+                  value={newBlog.content}
+                  onChange={e => setNewBlog({ ...newBlog, content: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="<p>İçerik...</p>"
+                  rows={4}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Etiketler (JSON dizi)</label>
+                <input
+                  type="text"
+                  value={newBlog.tags}
+                  onChange={e => setNewBlog({ ...newBlog, tags: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder='["React","Supabase"]'
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={newBlog.is_external}
+                  onChange={e => setNewBlog({ ...newBlog, is_external: e.target.checked })}
+                  id="blog_is_external"
+                />
+                <label htmlFor="blog_is_external" className="text-sm font-medium text-gray-700">Dış bağlantı (Medium vb.)</label>
+              </div>
+              {newBlog.is_external && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">External URL</label>
+                  <input
+                    type="text"
+                    value={newBlog.external_url}
+                    onChange={e => setNewBlog({ ...newBlog, external_url: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    placeholder="https://medium.com/..."
+                  />
+                </div>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Yayın Tarihi</label>
+                <input
+                  type="date"
+                  value={newBlog.published_at}
+                  onChange={e => setNewBlog({ ...newBlog, published_at: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Görsel</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => {
+                    const file = e.target.files[0];
+                    setNewBlog({ ...newBlog, image: file });
+                    setBlogImagePreview(file ? URL.createObjectURL(file) : null);
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+                {blogImagePreview && (
+                  <img src={blogImagePreview} alt="Önizleme" className="mt-2 rounded-lg max-h-40 mx-auto" />
+                )}
+              </div>
+              <button
+                type="submit"
+                disabled={addBlogLoading}
+                className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${addBlogLoading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl'}`}
+              >
+                {addBlogLoading ? 'Ekleniyor...' : 'Ekle'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      {editBlog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md relative">
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
+              onClick={() => { setEditBlog(null); setEditBlogError(''); }}
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold mb-6 text-center">Blogu Düzenle</h2>
+            {editBlogError && <div className="mb-4 text-red-600 text-sm">{editBlogError}</div>}
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setEditBlogLoading(true);
+                setEditBlogError('');
+                if (!editBlog.title) {
+                  setEditBlogError('Başlık zorunlu!');
+                  setEditBlogLoading(false);
+                  return;
+                }
+                try {
+                  let imageUrl = editBlog.image;
+                  if (editBlog.newImage) {
+                    const webpFile = await convertToWebP(editBlog.newImage);
+                    const { data: uploadData, error: uploadError } = await uploadBlogImage(webpFile);
+                    if (uploadError) throw uploadError;
+                    imageUrl = uploadData.publicUrl;
+                  }
+                  const { error } = await updateBlog(editBlog.id, {
+                    title: editBlog.title,
+                    summary: editBlog.summary,
+                    content: editBlog.content,
+                    tags: parseTagsSafe(typeof editBlog.tags === 'string' ? editBlog.tags : JSON.stringify(editBlog.tags || [])),
+                    is_external: editBlog.is_external,
+                    external_url: editBlog.external_url,
+                    image: imageUrl,
+                    published_at: editBlog.published_at || null,
+                  });
+                  if (error) throw error;
+                  setEditBlog(null);
+                  fetchData();
+                } catch (err) {
+                  setEditBlogError('Blog güncellenemedi: ' + (err.message || err));
+                } finally {
+                  setEditBlogLoading(false);
+                }
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Başlık *</label>
+                <input
+                  type="text"
+                  value={editBlog.title}
+                  onChange={e => setEditBlog({ ...editBlog, title: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Blog başlığı"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Özet</label>
+                <textarea
+                  value={editBlog.summary || ''}
+                  onChange={e => setEditBlog({ ...editBlog, summary: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">İçerik (HTML)</label>
+                <textarea
+                  value={editBlog.content || ''}
+                  onChange={e => setEditBlog({ ...editBlog, content: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  rows={4}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Etiketler (JSON dizi)</label>
+                <input
+                  type="text"
+                  value={typeof editBlog.tags === 'string' ? editBlog.tags : JSON.stringify(editBlog.tags || [])}
+                  onChange={e => setEditBlog({ ...editBlog, tags: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={!!editBlog.is_external}
+                  onChange={e => setEditBlog({ ...editBlog, is_external: e.target.checked })}
+                  id="edit_blog_is_external"
+                />
+                <label htmlFor="edit_blog_is_external" className="text-sm font-medium text-gray-700">Dış bağlantı (Medium vb.)</label>
+              </div>
+              {editBlog.is_external && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">External URL</label>
+                  <input
+                    type="text"
+                    value={editBlog.external_url || ''}
+                    onChange={e => setEditBlog({ ...editBlog, external_url: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    placeholder="https://medium.com/..."
+                  />
+                </div>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Yayın Tarihi</label>
+                <input
+                  type="date"
+                  value={editBlog.published_at ? editBlog.published_at.substring(0, 10) : ''}
+                  onChange={e => setEditBlog({ ...editBlog, published_at: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Görsel</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setEditBlog({ ...editBlog, newImage: file });
+                    }
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+                {editBlog.image && (
+                  <img src={editBlog.image} alt="Blog görseli" className="mt-2 rounded-lg max-h-40 mx-auto" />
+                )}
+              </div>
+              <button
+                type="submit"
+                disabled={editBlogLoading}
+                className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${editBlogLoading ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl'}`}
+              >
+                {editBlogLoading ? 'Kaydediliyor...' : 'Kaydet'}
               </button>
             </form>
           </div>

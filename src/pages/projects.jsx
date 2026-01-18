@@ -30,7 +30,7 @@ const Projects = () => {
     };
 
     fetchProjects();
-  }, []);
+  }, []); // sampleProjects sabit; bağımlılık gerekmiyor
 
   // Sample projects for fallback
   const sampleProjects = [

@@ -42,11 +42,14 @@ const HeroSection = () => {
           >
             <div className="w-40 h-40 mx-auto rounded-full bg-gradient-to-r from-primary to-purple-500 p-1">
               <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                <img
-                  src="/img/profile.png"
-                  alt="Profil Fotoğrafı"
-                  className="w-full h-full rounded-full object-cover"
-                />
+                <picture className="w-full h-full">
+                  <source srcSet="/img/profile.png" type="image/png" />
+                  <img
+                    src="/img/profile.png"
+                    alt="Profil Fotoğrafı"
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                </picture>
               </div>
             </div>
           </motion.div>

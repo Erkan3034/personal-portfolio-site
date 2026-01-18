@@ -21,6 +21,7 @@ const Navbar = () => {
     { name: 'Ana Sayfa', path: '/' },
     { name: 'Hakkımda', path: '/about' },
     { name: 'Projeler', path: '/projects' },
+    { name: 'Blog', path: '/blog' },
     { name: 'Sertifikalar', path: '/certificates' },
     { name: 'İletişim', path: '/contact' },
   ];
@@ -42,12 +43,15 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <motion.img
-              whileHover={{ scale: 1.05 }}
-              src="/logo.png"
-              alt="Logo"
-              className="h-8 w-auto object-contain"
-            />
+            <picture className="block h-8">
+              <source srcSet="/logo.png" type="image/png" />
+              <motion.img
+                whileHover={{ scale: 1.05 }}
+                src="/logo.png"
+                alt="Logo"
+                className="h-8 w-auto object-contain"
+              />
+            </picture>
           </Link>
 
           {/* Desktop Navigation bar */}
@@ -125,7 +129,7 @@ const Navbar = () => {
                   className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
                     isActive(item.path)
                       ? 'text-primary bg-primary/10'
-                      : 'text-white hover:text-primary hover:bg-gray-50'
+                      : 'text-gray-800 hover:text-primary hover:bg-gray-50'
                   }`}
                 >
                   {item.name}

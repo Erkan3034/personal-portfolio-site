@@ -9,6 +9,7 @@ const Footer = () => {
     { name: 'Ana Sayfa', path: '/' },
     { name: 'Hakkımda', path: '/about' },
     { name: 'Projeler', path: '/projects' },
+    { name: 'Blog', path: '/blog' },
     { name: 'Sertifikalar', path: '/certificates' },
     { name: 'İletişim', path: '/contact' },
   ];
@@ -148,7 +149,7 @@ const Footer = () => {
           className="border-t border-gray-800 mt-8 pt-8 flex justify-center items-center"
         >
           <p className="text-gray-400 text-sm text-center w-full">
-            © 2025 Erkan Turgut. Tüm hakları saklıdır.
+            © {currentYear} Erkan Turgut. Tüm hakları saklıdır.
           </p>
         </motion.div>
       </div>

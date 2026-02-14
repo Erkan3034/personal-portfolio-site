@@ -1,12 +1,4 @@
 
-# netlify.app → custom domain 
-[[redirects]]
-  from = "/*"
-  to = "https://erkanturgut.com/:splat"
-  status = 301
-  force = true
-  conditions = { Host = ["erkanturgut.netlify.app"] }
-
 # sitemap
 [[redirects]]
   from = "/sitemap.xml"

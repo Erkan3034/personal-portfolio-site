@@ -2,20 +2,21 @@
   publish = "build"
   command = "npm run build"
 
-# netlify.app → custom domain
+# netlify.app → custom domain 
 [[redirects]]
-  from = "https://erkanturgut.netlify.app/*"
+  from = "/*"
   to = "https://erkanturgut.com/:splat"
   status = 301
   force = true
+  conditions = { Host = ["erkanturgut.netlify.app"] }
 
-# sitemap özel durumu 
+# sitemap
 [[redirects]]
   from = "/sitemap.xml"
   to = "/sitemap.xml"
   status = 200
 
-# SPA fallback 
+# SPA fallback (EN ALTA)
 [[redirects]]
   from = "/*"
   to = "/index.html"

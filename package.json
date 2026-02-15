@@ -21,7 +21,7 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "generate:webp": "node scripts/convert-webp.js",
-        "postbuild": "node -e \"process.env.NETLIFY ? console.log('Skipping react-snap on Netlify') : require('child_process').execSync('react-snap', {stdio: 'inherit'})\""
+        "postbuild": "react-snap"
     },
     "eslintConfig": {
         "extends": [
@@ -38,7 +38,16 @@
             "/certificates",
             "/contact"
         ],
-        "skipIndexing": false
+        "skipIndexing": false,
+        "minifyHtml": {
+            "collapseWhitespace": true,
+            "removeComments": true
+        },
+        "puppeteerArgs": [
+            "--no-sandbox",
+            "--disable-setuid-sandbox"
+        ],
+        "inlineCss": false
     },
     "browserslist": {
         "production": [

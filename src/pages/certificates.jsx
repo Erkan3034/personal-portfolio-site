@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import CertificateCard from '../components/CertificateCard';
 import { getCertificates } from '../lib/supabase';
+import SEOHead from '../components/SEOHead';
 
 const Certificates = () => {
   const [certificates, setCertificates] = useState([]);
@@ -64,6 +65,10 @@ const Certificates = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-black pt-24">
+      <SEOHead
+        title="Sertifikalarım"
+        description="Erkan Turgut'un kazandığı yazılım ve teknoloji sertifikaları, eğitimleri ve başarıları."
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <motion.div

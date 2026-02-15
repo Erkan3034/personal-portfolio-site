@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { getBlogs } from '../lib/supabase';
+import SEOHead from '../components/SEOHead';
 
 // Reading time calculator
 const calculateReadingTime = (content) => {
@@ -46,7 +47,7 @@ const BlogCard = ({ post, index }) => {
     <>
       {/* Card Glow Effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
-      
+
       {/* Image Section */}
       {post.image && (
         <div className="relative overflow-hidden h-36">
@@ -56,14 +57,13 @@ const BlogCard = ({ post, index }) => {
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent" />
-          
+
           {/* Category Badge */}
           <div className="absolute top-3 left-3">
-            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase backdrop-blur-md ${
-              isExternal 
-                ? 'bg-purple-500/70 text-white' 
-                : 'bg-primary/70 text-white'
-            }`}>
+            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase backdrop-blur-md ${isExternal
+              ? 'bg-purple-500/70 text-white'
+              : 'bg-primary/70 text-white'
+              }`}>
               {isExternal ? 'Medium' : 'Blog'}
             </span>
           </div>
@@ -82,11 +82,10 @@ const BlogCard = ({ post, index }) => {
         {/* No image - show badge inline */}
         {!post.image && (
           <div className="flex items-center justify-between mb-3">
-            <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase ${
-              isExternal 
-                ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' 
-                : 'bg-primary/20 text-primary border border-primary/30'
-            }`}>
+            <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase ${isExternal
+              ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+              : 'bg-primary/20 text-primary border border-primary/30'
+              }`}>
               {isExternal ? 'Medium' : 'Blog'}
             </span>
             <span className="text-[10px] text-gray-400">{readingTime} dk</span>
@@ -96,10 +95,10 @@ const BlogCard = ({ post, index }) => {
         {/* Date */}
         {post.published_at && (
           <div className="text-gray-500 text-xs mb-2">
-            {new Date(post.published_at).toLocaleDateString('tr-TR', { 
-              year: 'numeric', 
-              month: 'short', 
-              day: 'numeric' 
+            {new Date(post.published_at).toLocaleDateString('tr-TR', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
             })}
           </div>
         )}
@@ -136,7 +135,7 @@ const BlogCard = ({ post, index }) => {
             </div>
             <span className="text-xs text-gray-400">Erkan</span>
           </div>
-          
+
           <span className="flex items-center gap-1 text-primary font-medium text-xs group-hover:gap-2 transition-all duration-300">
             Oku
             <svg className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -213,11 +212,10 @@ const FilterTabs = ({ activeFilter, onFilterChange, counts }) => {
         <button
           key={filter.id}
           onClick={() => onFilterChange(filter.id)}
-          className={`relative px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
-            activeFilter === filter.id
-              ? 'text-white'
-              : 'text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10'
-          }`}
+          className={`relative px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeFilter === filter.id
+            ? 'text-white'
+            : 'text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10'
+            }`}
         >
           {activeFilter === filter.id && (
             <motion.div
@@ -228,11 +226,10 @@ const FilterTabs = ({ activeFilter, onFilterChange, counts }) => {
           )}
           <span className="relative flex items-center gap-2">
             {filter.label}
-            <span className={`px-2 py-0.5 rounded-full text-xs ${
-              activeFilter === filter.id 
-                ? 'bg-white/20' 
-                : 'bg-white/5'
-            }`}>
+            <span className={`px-2 py-0.5 rounded-full text-xs ${activeFilter === filter.id
+              ? 'bg-white/20'
+              : 'bg-white/5'
+              }`}>
               {filter.count}
             </span>
           </span>
@@ -285,7 +282,7 @@ const Blog = () => {
     // Apply search
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(b => 
+      result = result.filter(b =>
         b.title?.toLowerCase().includes(query) ||
         b.summary?.toLowerCase().includes(query) ||
         b.excerpt?.toLowerCase().includes(query) ||
@@ -306,13 +303,17 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-black pt-20 relative overflow-hidden">
+      <SEOHead
+        title="Blog"
+        description="Yazılım geliştirme, teknoloji trendleri ve kişisel deneyimlerim hakkında paylaşımlar."
+      />
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <FloatingParticle delay={0} duration={8} size={300} left={10} top={20} />
         <FloatingParticle delay={2} duration={10} size={200} left={70} top={60} />
         <FloatingParticle delay={4} duration={12} size={250} left={80} top={10} />
         <FloatingParticle delay={1} duration={9} size={180} left={30} top={70} />
-        
+
         {/* Gradient Overlays */}
         <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-primary/10 via-transparent to-transparent" />
         <div className="absolute bottom-0 left-0 w-full h-96 bg-gradient-to-t from-purple-900/20 via-transparent to-transparent" />
@@ -347,7 +348,7 @@ const Blog = () => {
 
           {/* Description */}
           <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Yazılım geliştirme, teknoloji trendleri ve kişisel deneyimlerim hakkında 
+            Yazılım geliştirme, teknoloji trendleri ve kişisel deneyimlerim hakkında
             düşüncelerimi paylaştığım köşem.
           </p>
 
@@ -361,7 +362,7 @@ const Blog = () => {
             className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-r from-gray-800 to-gray-700 text-white font-semibold border border-white/10 hover:border-white/30 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/>
+              <path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z" />
             </svg>
             Medium Profilimi Ziyaret Et
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -378,8 +379,8 @@ const Blog = () => {
           className="mb-12"
         >
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between p-6 rounded-2xl bg-white/[0.03] backdrop-blur-sm border border-white/10">
-            <FilterTabs 
-              activeFilter={activeFilter} 
+            <FilterTabs
+              activeFilter={activeFilter}
               onFilterChange={setActiveFilter}
               counts={counts}
             />
@@ -430,7 +431,7 @@ const Blog = () => {
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">Sonuç Bulunamadı</h3>
                 <p className="text-gray-400 mb-6">
-                  {searchQuery 
+                  {searchQuery
                     ? `"${searchQuery}" için sonuç bulunamadı.`
                     : 'Henüz blog yazısı eklenmemiş.'}
                 </p>

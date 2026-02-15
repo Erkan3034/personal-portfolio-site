@@ -2,4 +2,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://erkanturgut.netlify.app/sitemap.xml
+Sitemap: https://erkanturgut.com/sitemap.xml

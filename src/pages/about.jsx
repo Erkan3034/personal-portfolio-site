@@ -1,15 +1,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import SEOHead from '../components/SEOHead';
 
 const About = () => {
   const skills = [
-    'React', 'JavaScript', 'Python', 'SQL', 'Git', 'Java', 
+    'React', 'JavaScript', 'Python', 'SQL', 'Git', 'Java',
     'C#', 'PHP', 'Unity', 'Node.js', 'HTML/CSS', 'TypeScript',
     'Django', 'Flask', 'MongoDB', 'PostgreSQL', 'Tailwind CSS', 'Framer Motion'
   ];
 
   return (
     <div className="min-h-screen pt-20">
+      <SEOHead
+        title="Hakkımda"
+        description="Erkan Turgut kimdir? Yazılım geliştirme tutkusu, yetenekleri ve kariyer hedefleri hakkında bilgiler."
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <motion.div
@@ -22,7 +27,7 @@ const About = () => {
             Hakkımda
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Yazılım geliştirme tutkum ve sürekli öğrenme isteğimle, 
+            Yazılım geliştirme tutkum ve sürekli öğrenme isteğimle,
             modern web teknolojileri başta olmak üzere Full Stack  ve AI alanlarında kendimi geliştirmeye çalışıyorum.
           </p>
         </motion.div>

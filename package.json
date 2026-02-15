@@ -17,16 +17,28 @@
     },
     "scripts": {
         "start": "react-scripts start",
-        "build": "CI=false react-scripts build",
+        "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "generate:webp": "node scripts/convert-webp.js"
+        "generate:webp": "node scripts/convert-webp.js",
+        "postbuild": "react-snap"
     },
     "eslintConfig": {
         "extends": [
             "react-app",
             "react-app/jest"
         ]
+    },
+    "reactSnap": {
+        "include": [
+            "/",
+            "/about",
+            "/projects",
+            "/blog",
+            "/certificates",
+            "/contact"
+        ],
+        "skipIndexing": false
     },
     "browserslist": {
         "production": [
@@ -43,7 +55,8 @@
     "devDependencies": {
         "autoprefixer": "^10.4.14",
         "postcss": "^8.4.21",
-        "tailwindcss": "^3.3.3",
-        "sharp": "^0.33.3"
+        "react-snap": "^1.23.0",
+        "sharp": "^0.33.3",
+        "tailwindcss": "^3.3.3"
     }
 }

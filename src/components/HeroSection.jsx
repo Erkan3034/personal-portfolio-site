@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const HeroSection = () => {
   const [currentSkill, setCurrentSkill] = useState(0);
-  
+
   const skills = [
     'Full Stack Developer',
     'Python Developer',
@@ -47,7 +47,7 @@ const HeroSection = () => {
                   <source srcSet="/img/profile.png" type="image/png" />
                   <img
                     src="/img/profile.png"
-                    alt="Profil Fotoğrafı"
+                    alt="Erkan Turgut - Yazılım Geliştirici & Full Stack Developer"
                     className="w-full h-full rounded-full object-cover"
                   />
                 </picture>
@@ -64,7 +64,7 @@ const HeroSection = () => {
           >
             Merhaba, Ben{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-400 to-purple-500">
-              ERKAN
+              ERKAN TURGUT
             </span>
           </motion.h1>
 
@@ -89,7 +89,7 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-12 leading-relaxed"
           >
-            Modern web teknolojileri ile kullanıcı dostu ve performanslı uygulamalar geliştiriyorum. 
+            Modern web teknolojileri ile kullanıcı dostu ve performanslı uygulamalar geliştiriyorum.
             Her projede en iyi kullanıcı deneyimini sunmak için çalışıyorum.
           </motion.p>
 
@@ -109,7 +109,7 @@ const HeroSection = () => {
                 Projelerimi Gör
               </motion.button>
             </Link>
-            
+
             <Link to="/contact">
               <motion.button
                 whileHover={{ scale: 1.05 }}

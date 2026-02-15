@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import ProjectCard from '../components/ProjectCard';
 import { getProjects } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
+import SEOHead from '../components/SEOHead';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -60,11 +61,11 @@ const Projects = () => {
     projects.flatMap(project => project.technologies || [])
   )];
 
-  const filteredProjects = filter === 'all' 
-    ? projects 
-    : projects.filter(project => 
-        project.technologies?.includes(filter)
-      );
+  const filteredProjects = filter === 'all'
+    ? projects
+    : projects.filter(project =>
+      project.technologies?.includes(filter)
+    );
 
   if (loading) {
     return (
@@ -81,6 +82,10 @@ const Projects = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-black pt-24">
+      <SEOHead
+        title="Projelerim"
+        description="Erkan Turgut tarafından geliştirilen web uygulamaları, AI projeleri ve yazılım çözümleri."
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <motion.div
@@ -104,7 +109,7 @@ const Projects = () => {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-400 to-purple-500">lerim</span>
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            Geliştirdiğim projeler ve kullandığım teknolojiler. 
+            Geliştirdiğim projeler ve kullandığım teknolojiler.
             Her proje, öğrenme sürecimin bir parçası.
           </p>
         </motion.div>
@@ -121,26 +126,24 @@ const Projects = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setFilter('all')}
-              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                filter === 'all'
-                  ? 'bg-gradient-to-r from-primary to-cyan-500 text-white'
-                  : 'bg-white/5 text-gray-400 hover:text-white border border-white/10 hover:border-white/20'
-              }`}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${filter === 'all'
+                ? 'bg-gradient-to-r from-primary to-cyan-500 text-white'
+                : 'bg-white/5 text-gray-400 hover:text-white border border-white/10 hover:border-white/20'
+                }`}
             >
               Tümü
             </motion.button>
-            
+
             {allTechnologies.slice(0, 8).map((tech) => (
               <motion.button
                 key={tech}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setFilter(tech)}
-                className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                  filter === tech
-                    ? 'bg-gradient-to-r from-primary to-cyan-500 text-white'
-                    : 'bg-white/5 text-gray-400 hover:text-white border border-white/10 hover:border-white/20'
-                }`}
+                className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${filter === tech
+                  ? 'bg-gradient-to-r from-primary to-cyan-500 text-white'
+                  : 'bg-white/5 text-gray-400 hover:text-white border border-white/10 hover:border-white/20'
+                  }`}
               >
                 {tech}
               </motion.button>

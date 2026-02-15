@@ -1,23 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://erkanturgut.netlify.app/</loc>
+    <loc>https://erkanturgut.com/</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://erkanturgut.netlify.app/about</loc>
+    <loc>https://erkanturgut.com/about</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://erkanturgut.netlify.app/projects</loc>
-    <priority>0.8</priority>
-  </url>
-    <url>
-    <loc>https://erkanturgut.netlify.app/certificates</loc>
+    <loc>https://erkanturgut.com/projects</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://erkanturgut.netlify.app/contact</loc>
+    <loc>https://erkanturgut.com/certificates</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://erkanturgut.com/contact</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://erkanturgut.com/blog</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 </urlset>

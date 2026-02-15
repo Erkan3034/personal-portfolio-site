@@ -21,7 +21,7 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "generate:webp": "node scripts/convert-webp.js",
-        "postbuild": "react-snap"
+        "postbuild": "node -e \"process.env.NETLIFY ? console.log('Skipping react-snap on Netlify') : require('child_process').execSync('react-snap', {stdio: 'inherit'})\""
     },
     "eslintConfig": {
         "extends": [

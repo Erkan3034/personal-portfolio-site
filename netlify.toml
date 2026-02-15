@@ -1,12 +1,17 @@
-[build]
-  publish = "build"
-  command = "npm run build"
 
+# sitemap
 [[redirects]]
   from = "/sitemap.xml"
   to = "/sitemap.xml"
   status = 200
 
+[[redirects]]
+from = "https://erkanturgut.netlify.app/*"
+to = "https://erkanturgut.com/:splat"
+status = 301
+force = true
+
+# SPA fallback (EN ALTA)
 [[redirects]]
   from = "/*"
   to = "/index.html"

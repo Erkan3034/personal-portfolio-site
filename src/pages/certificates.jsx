@@ -4,6 +4,27 @@ import CertificateCard from '../components/CertificateCard';
 import { getCertificates } from '../lib/supabase';
 import SEOHead from '../components/SEOHead';
 
+const sampleCertificates = [
+  {
+    id: 1,
+    title: 'React Developer Certification',
+    issuer: 'Meta',
+    description: 'React ve modern web geliştirme konularında kapsamlı eğitim.',
+    certificate_date: '2024-01-15',
+    certificate_url: 'https://example.com',
+    image: null
+  },
+  {
+    id: 2,
+    title: 'JavaScript Algorithms',
+    issuer: 'freeCodeCamp',
+    description: 'JavaScript algoritma ve veri yapıları konusunda 300+ saatlik eğitim.',
+    certificate_date: '2023-12-10',
+    certificate_url: 'https://example.com',
+    image: null
+  }
+];
+
 const Certificates = () => {
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,27 +49,6 @@ const Certificates = () => {
 
     fetchCertificates();
   }, []);
-
-  const sampleCertificates = [
-    {
-      id: 1,
-      title: 'React Developer Certification',
-      issuer: 'Meta',
-      description: 'React ve modern web geliştirme konularında kapsamlı eğitim.',
-      certificate_date: '2024-01-15',
-      certificate_url: 'https://example.com',
-      image: null
-    },
-    {
-      id: 2,
-      title: 'JavaScript Algorithms',
-      issuer: 'freeCodeCamp',
-      description: 'JavaScript algoritma ve veri yapıları konusunda 300+ saatlik eğitim.',
-      certificate_date: '2023-12-10',
-      certificate_url: 'https://example.com',
-      image: null
-    }
-  ];
 
   if (loading) {
     return (

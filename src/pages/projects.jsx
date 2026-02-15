@@ -5,6 +5,31 @@ import { getProjects } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 
+const sampleProjects = [
+  {
+    id: 1,
+    title: 'E-Ticaret Platformu',
+    description: 'Modern React ve Node.js ile geliştirilmiş tam özellikli e-ticaret platformu.',
+    technologies: ['React', 'Node.js', 'MongoDB', 'Stripe'],
+    github_url: 'https://github.com',
+    live_url: 'https://example.com',
+    project_date: '2024-01-15',
+    featured: true,
+    image: null
+  },
+  {
+    id: 2,
+    title: 'Task Management App',
+    description: 'Takım çalışması için geliştirilmiş görev yönetim uygulaması.',
+    technologies: ['React', 'Firebase', 'Tailwind CSS'],
+    github_url: 'https://github.com',
+    live_url: 'https://example.com',
+    project_date: '2023-12-20',
+    featured: false,
+    image: null
+  }
+];
+
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,31 +56,6 @@ const Projects = () => {
 
     fetchProjects();
   }, []);
-
-  const sampleProjects = [
-    {
-      id: 1,
-      title: 'E-Ticaret Platformu',
-      description: 'Modern React ve Node.js ile geliştirilmiş tam özellikli e-ticaret platformu.',
-      technologies: ['React', 'Node.js', 'MongoDB', 'Stripe'],
-      github_url: 'https://github.com',
-      live_url: 'https://example.com',
-      project_date: '2024-01-15',
-      featured: true,
-      image: null
-    },
-    {
-      id: 2,
-      title: 'Task Management App',
-      description: 'Takım çalışması için geliştirilmiş görev yönetim uygulaması.',
-      technologies: ['React', 'Firebase', 'Tailwind CSS'],
-      github_url: 'https://github.com',
-      live_url: 'https://example.com',
-      project_date: '2023-12-20',
-      featured: false,
-      image: null
-    }
-  ];
 
   const allTechnologies = [...new Set(
     projects.flatMap(project => project.technologies || [])

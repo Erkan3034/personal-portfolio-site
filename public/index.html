@@ -38,29 +38,32 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Erkan Turgut",
-      "url": "https://erkanturgut.com",
-      "jobTitle": "Software Developer / Yazılım Geliştirici",
-      "alumniOf": "Üniversite",
-      "sameAs": [
-        "https://github.com/Erkan3034",
-        "https://www.linkedin.com/in/erkanturgut1205",
-        "https://x.com/Erkan_0630",
-        "https://medium.com/@turguterkan55"
-      ],
-      "knowsAbout": ["React", "JavaScript", "Python", "Java", "AI", "Software Engineering"],
-      "image": "https://erkanturgut.com/img/profile.png"
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "url": "https://erkanturgut.com",
-      "name": "Erkan Turgut Portfolyo",
-      "alternateName": "ERKANTURGUT",
-      "description": "Erkan Turgut'un projelerini ve yazılım deneyimlerini paylaştığı kişisel portfolyo sitesi."
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://erkanturgut.com/#person",
+          "name": "Erkan Turgut",
+          "url": "https://erkanturgut.com/",
+          "jobTitle": "Software Developer",
+          "image": "https://erkanturgut.com/img/profile.png",
+          "sameAs": [
+            "https://github.com/Erkan3034",
+            "https://www.linkedin.com/in/erkanturgut1205",
+            "https://x.com/Erkan_0630",
+            "https://medium.com/@turguterkan55"
+          ],
+          "knowsAbout": ["React", "JavaScript", "Python", "Java", "AI", "Software Engineering"]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://erkanturgut.com/#website",
+          "url": "https://erkanturgut.com/",
+          "name": "Erkan Turgut Portfolyo",
+          "alternateName": "ERKANTURGUT",
+          "description": "Erkan Turgut'un projelerini ve yazılım deneyimlerini paylaştığı kişisel portfolyo sitesi.",
+          "publisher": { "@id": "https://erkanturgut.com/#person" }
+        }
+      ]
     }
     </script>
 

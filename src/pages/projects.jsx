@@ -4,6 +4,7 @@ import ProjectCard from '../components/ProjectCard';
 import { getProjects } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
+import { useLanguage } from '../context/LanguageContext';
 
 const sampleProjects = [
   {
@@ -15,7 +16,7 @@ const sampleProjects = [
     live_url: 'https://example.com',
     project_date: '2024-01-15',
     featured: true,
-    image: null
+    image: null,
   },
   {
     id: 2,
@@ -26,195 +27,155 @@ const sampleProjects = [
     live_url: 'https://example.com',
     project_date: '2023-12-20',
     featured: false,
-    image: null
-  }
+    image: null,
+  },
 ];
 
+const STAT_ICONS = {
+  projects: (
+    <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+    </svg>
+  ),
+  tech: (
+    <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+    </svg>
+  ),
+  featured: (
+    <svg className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+    </svg>
+  ),
+};
+
 const Projects = () => {
+  const { t } = useLanguage();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetch = async () => {
       try {
         const { data, error } = await getProjects();
-        if (error) {
-          console.error('Error fetching projects:', error);
-          setProjects(sampleProjects);
-        } else {
-          setProjects(data || sampleProjects);
-        }
-      } catch (error) {
-        console.error('Error:', error);
+        setProjects(error || !data ? sampleProjects : data);
+      } catch {
         setProjects(sampleProjects);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchProjects();
+    fetch();
   }, []);
 
-  const allTechnologies = [...new Set(
-    projects.flatMap(project => project.technologies || [])
-  )];
-
-  const filteredProjects = filter === 'all'
-    ? projects
-    : projects.filter(project =>
-      project.technologies?.includes(filter)
-    );
+  const allTechs = [...new Set(projects.flatMap((p) => p.technologies || []))];
+  const filtered = filter === 'all' ? projects : projects.filter((p) => p.technologies?.includes(filter));
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-black pt-24 flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative mb-4">
-            <div className="w-12 h-12 border-4 border-primary/20 rounded-full animate-spin border-t-primary mx-auto" />
-          </div>
-          <p className="text-gray-400">Projeler yükleniyor...</p>
+      <div className="min-h-screen bg-canvas pt-24 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+          <p className="text-zinc-500 font-body text-sm">{t('projects.loading')}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-black pt-24">
-      <SEOHead
-        title="Projelerim"
-        description="Erkan Turgut tarafından geliştirilen web uygulamaları, AI projeleri ve yazılım çözümleri."
-      />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-purple-500/20 border border-primary/30 mb-6"
-          >
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-sm font-medium text-primary">Portfolyo</span>
-          </motion.div>
+    <div className="min-h-screen bg-canvas pt-24">
+      <SEOHead title={t('projects.seoTitle')} description={t('projects.seoDesc')} />
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-6">
-            <span className="text-white">Proje</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-400 to-purple-500">lerim</span>
+      <div className="max-w-screen-xl mx-auto px-8 sm:px-12 lg:px-16 py-14">
+
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-12">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/[0.08] text-emerald-400 text-sm font-medium font-body mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            {t('projects.badge')}
+          </span>
+          <h1 className="font-display font-extrabold text-white text-4xl sm:text-5xl tracking-tight mb-3">
+            {t('projects.heading')}
           </h1>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            Geliştirdiğim projeler ve kullandığım teknolojiler.
-            Her proje, öğrenme sürecimin bir parçası.
+          <p className="text-zinc-400 font-body text-lg max-w-xl">
+            {t('projects.subheading')}
           </p>
         </motion.div>
 
-        {/* Filter Buttons */}
+        {/* Stats */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-12"
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="grid grid-cols-3 gap-4 mb-10"
         >
-          <div className="flex flex-wrap justify-center gap-2">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setFilter('all')}
-              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${filter === 'all'
-                ? 'bg-gradient-to-r from-primary to-cyan-500 text-white'
-                : 'bg-white/5 text-gray-400 hover:text-white border border-white/10 hover:border-white/20'
-                }`}
-            >
-              Tümü
-            </motion.button>
-
-            {allTechnologies.slice(0, 8).map((tech) => (
-              <motion.button
-                key={tech}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setFilter(tech)}
-                className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${filter === tech
-                  ? 'bg-gradient-to-r from-primary to-cyan-500 text-white'
-                  : 'bg-white/5 text-gray-400 hover:text-white border border-white/10 hover:border-white/20'
-                  }`}
-              >
-                {tech}
-              </motion.button>
-            ))}
-          </div>
+          {[
+            { label: t('projects.totalProjects'), value: projects.length, icon: STAT_ICONS.projects },
+            { label: t('projects.technologies'), value: allTechs.length, icon: STAT_ICONS.tech },
+            { label: t('projects.featured'), value: projects.filter((p) => p.featured).length, icon: STAT_ICONS.featured },
+          ].map((s) => (
+            <div key={s.label} className="bg-surface border border-white/[0.07] rounded-xl p-4 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                {s.icon}
+              </div>
+              <div>
+                <div className="text-xl font-display font-bold text-white">{s.value}</div>
+                <div className="text-xs text-zinc-500 font-body">{s.label}</div>
+              </div>
+            </div>
+          ))}
         </motion.div>
 
-        {/* Projects Grid */}
+        {/* Filters */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="flex flex-wrap gap-2 mb-10"
         >
-          {filteredProjects.map((project, index) => (
+          {['all', ...allTechs.slice(0, 8)].map((tech) => (
+            <button
+              key={tech}
+              onClick={() => setFilter(tech)}
+              className={`px-4 py-2 rounded-xl text-sm font-medium font-body transition-all duration-200 cursor-pointer ${
+                filter === tech
+                  ? 'bg-emerald-500 text-black'
+                  : 'bg-surface border border-white/[0.07] text-zinc-400 hover:text-white hover:border-white/[0.15]'
+              }`}
+            >
+              {tech === 'all' ? t('projects.all') : tech}
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filtered.map((project, i) => (
             <motion.div
               key={project.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
+              transition={{ duration: 0.4, delay: i * 0.06 }}
               onClick={() => navigate(`/projects/${project.id}`)}
               className="cursor-pointer"
             >
               <ProjectCard project={project} />
             </motion.div>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Empty State */}
-        {filteredProjects.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-20"
-          >
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-white/5 flex items-center justify-center">
-              <svg className="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        {/* Empty state */}
+        {filtered.length === 0 && (
+          <div className="text-center py-20">
+            <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-surface border border-white/[0.07] flex items-center justify-center">
+              <svg className="w-7 h-7 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">
-              Bu teknoloji ile proje bulunamadı
-            </h3>
-            <p className="text-gray-400">
-              Farklı bir teknoloji seçin veya tüm projeleri görüntüleyin.
-            </p>
-          </motion.div>
+            <h3 className="text-white font-semibold font-body mb-2">{t('projects.noResults')}</h3>
+            <p className="text-zinc-500 font-body text-sm">{t('projects.noResultsHint')}</p>
+          </div>
         )}
-
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-16 grid grid-cols-2 md:grid-cols-3 gap-4"
-        >
-          {[
-            { label: 'Toplam Proje', value: projects.length, icon: '📁' },
-            { label: 'Teknoloji', value: allTechnologies.length, icon: '🛠️' },
-            { label: 'Öne Çıkan', value: projects.filter(p => p.featured).length, icon: '⭐' },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="p-4 rounded-xl bg-white/[0.03] border border-white/10 text-center"
-            >
-              <div className="text-2xl mb-2">{stat.icon}</div>
-              <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-              <div className="text-sm text-gray-400">{stat.label}</div>
-            </div>
-          ))}
-        </motion.div>
       </div>
     </div>
   );

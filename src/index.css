@@ -3,51 +3,48 @@
 @tailwind utilities;
 
 /* Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 body {
     margin: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #0a0a0f;
+    background-color: #0C0C0E;
 }
 
 code {
     font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-/* Custom Scrollbar - Dark Theme */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 6px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.02);
-    border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #3B82F6 0%, #8B5CF6 100%);
-    border-radius: 5px;
-    border: 2px solid rgba(0, 0, 0, 0.2);
+    background: #22C55E40;
+    border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #60A5FA 0%, #A78BFA 100%);
+    background: #22C55E80;
 }
 
 /* Firefox scrollbar */
 * {
     scrollbar-width: thin;
-    scrollbar-color: #3B82F6 rgba(255, 255, 255, 0.02);
+    scrollbar-color: #22C55E40 rgba(255, 255, 255, 0.02);
 }
 
 /* Selection */
 ::selection {
-    background-color: rgba(59, 130, 246, 0.4);
+    background-color: rgba(34, 197, 94, 0.25);
     color: white;
 }
 
@@ -117,7 +114,7 @@ code {
 
 /* Gradient text utility */
 .gradient-text {
-    background: linear-gradient(135deg, #3B82F6 0%, #06B6D4 50%, #8B5CF6 100%);
+    background: linear-gradient(135deg, #22C55E 0%, #86EFAC 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -138,7 +135,7 @@ html {
 
 /* Focus visible styles */
 :focus-visible {
-    outline: 2px solid #3B82F6;
+    outline: 2px solid #22C55E;
     outline-offset: 2px;
 }
 
@@ -165,7 +162,7 @@ html {
 /* Better focus for interactive elements */
 button:focus-visible,
 a:focus-visible {
-    outline: 2px solid #3B82F6;
+    outline: 2px solid #22C55E;
     outline-offset: 2px;
     border-radius: 4px;
 }

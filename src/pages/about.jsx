@@ -1,138 +1,154 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import SEOHead from '../components/SEOHead';
+import { useLanguage } from '../context/LanguageContext';
+
+const SKILLS = [
+  'React', 'JavaScript', 'TypeScript', 'Python', 'Java', 'C#',
+  'Node.js', 'Django', 'Flask', 'PHP', 'SQL', 'MongoDB',
+  'PostgreSQL', 'HTML/CSS', 'Tailwind CSS', 'Unity',
+  'Git', 'Framer Motion',
+];
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } },
+};
 
 const About = () => {
-  const skills = [
-    'React', 'JavaScript', 'Python', 'SQL', 'Git', 'Java',
-    'C#', 'PHP', 'Unity', 'Node.js', 'HTML/CSS', 'TypeScript',
-    'Django', 'Flask', 'MongoDB', 'PostgreSQL', 'Tailwind CSS', 'Framer Motion'
-  ];
+  const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen pt-20">
-      <SEOHead
-        title="Hakkımda"
-        description="Erkan Turgut kimdir? Yazılım geliştirme tutkusu, yetenekleri ve kariyer hedefleri hakkında bilgiler."
-      />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-canvas pt-24">
+      <SEOHead title={t('about.seoTitle')} description={t('about.seoDesc')} />
+
+      <div className="max-w-screen-xl mx-auto px-8 sm:px-12 lg:px-16 py-14">
+
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Hakkımda
-          </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Yazılım geliştirme tutkum ve sürekli öğrenme isteğimle,
-            modern web teknolojileri başta olmak üzere Full Stack  ve AI alanlarında kendimi geliştirmeye çalışıyorum.
-          </p>
+        <motion.div variants={stagger} initial="hidden" animate="show" className="mb-14">
+          <motion.div variants={item}>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/[0.08] text-emerald-400 text-sm font-medium font-body mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              {t('about.badge')}
+            </span>
+          </motion.div>
+          <motion.h1 variants={item} className="font-display font-extrabold text-white text-4xl sm:text-5xl tracking-tight mb-4">
+            {t('about.heading')}
+          </motion.h1>
+          <motion.p variants={item} className="text-zinc-400 font-body text-lg leading-relaxed max-w-2xl">
+            {t('about.subheading')}
+          </motion.p>
         </motion.div>
 
-        {/* Download CV Button */}
+        {/* CV button */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="flex justify-center mb-12"
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mb-12"
         >
           <a
             href="/cv.pdf"
             download
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-8 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-primary to-purple-400 hover:from-purple-500 hover:to-primary transition-all duration-200 shadow-lg hover:shadow-xl"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold font-body text-sm transition-colors duration-200 cursor-pointer"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
-            CV'yi İncele
+            {t('about.downloadCV')}
           </a>
         </motion.div>
 
-        {/* Story Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mb-16"
-        >
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 sm:p-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">Hikayem</h2>
-            <div className="prose prose-lg max-w-none text-gray-300">
-              <p className="mb-4">
-                Yazılım geliştirme serüvenim üniversite yıllarımda başladı ve o günden beri Python, Java ve web teknolojileri başta olmak üzere birçok alanda kendimi geliştirdim. Özellikle <b className="text-white">Python</b>, <b className="text-white">Java</b>, <b className="text-white">web</b> (HTML, CSS, JavaScript, React), <b className="text-white">AI</b> ve <b className="text-white">Unity/C#</b> ile projeler üretmekten büyük keyif alıyorum. Ayrıca PHP ile de çeşitli web projeleri geliştirdim.
-              </p>
-              <p className="mb-4">
-                Python ve Java tarafında ileri düzeyde bilgi sahibiyim ve bu dillerle birden çok proje geliştirdim. Web ve yapay zeka (AI) alanında da birçok uygulama ve çözüm ürettim. Django ve Flask ile backend, React ile modern frontend projeleri hayata geçirdim. Unity ve C# ile oyun geliştirme deneyimim de bulunuyor.
-              </p>
-              <p>
-                Yazılımı gerçekten severek yapıyorum ve her yeni projede hem kendimi hem de kullandığım teknolojileri daha ileriye taşımaya çalışıyorum. Farklı alanlarda (özellikle Python, Java, web ve AI) çok sayıda proje geliştirdim bu süreçte hem teknik hem de problem çözme becerilerimi sürekli geliştirdim. Yazılım geliştirme benim için bir işten çok bir tutku ve yaşam biçimi.
-              </p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* Skills Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mb-16"
-        >
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 sm:p-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">Yeteneklerim</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
-              {skills.map((skill, index) => (
-                <motion.div
+          {/* Story */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.15 }}
+            className="lg:col-span-2 bg-surface border border-white/[0.07] rounded-2xl p-7"
+          >
+            <h2 className="font-display font-bold text-white text-2xl mb-5">{t('about.storyTitle')}</h2>
+            <div className="space-y-4 text-zinc-400 font-body text-base leading-[1.8]">
+              <p>{t('about.story1')}</p>
+              <p>{t('about.story2')}</p>
+              <p>{t('about.story3')}</p>
+            </div>
+          </motion.div>
+
+          {/* Goals */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.25 }}
+            className="flex flex-col gap-4"
+          >
+            <div className="bg-surface border border-white/[0.07] rounded-2xl p-6 flex-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+                <h3 className="font-body font-semibold text-white text-sm">{t('about.shortTerm')}</h3>
+              </div>
+              <ul className="space-y-2">
+                {(t('about.shortTermGoals') || []).map((g) => (
+                  <li key={g} className="flex items-start gap-2 text-zinc-500 text-sm font-body">
+                    <span className="text-emerald-500 mt-0.5">·</span>
+                    {g}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-surface border border-white/[0.07] rounded-2xl p-6 flex-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                  </svg>
+                </div>
+                <h3 className="font-body font-semibold text-white text-sm">{t('about.longTerm')}</h3>
+              </div>
+              <ul className="space-y-2">
+                {(t('about.longTermGoals') || []).map((g) => (
+                  <li key={g} className="flex items-start gap-2 text-zinc-500 text-sm font-body">
+                    <span className="text-emerald-500 mt-0.5">·</span>
+                    {g}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
+
+          {/* Skills */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.35 }}
+            className="lg:col-span-3 bg-surface border border-white/[0.07] rounded-2xl p-7"
+          >
+            <h2 className="font-display font-bold text-white text-2xl mb-6">{t('about.techStack')}</h2>
+            <div className="flex flex-wrap gap-2.5">
+              {SKILLS.map((skill, i) => (
+                <motion.span
                   key={skill}
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.88 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.05 * index }}
-                  whileHover={{ scale: 1.05, y: -3 }}
-                  className="bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-xl p-3 sm:p-4 text-center border border-primary/30 hover:border-primary/60 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-default"
+                  transition={{ duration: 0.28, delay: 0.04 * i }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  className="px-3.5 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-zinc-300 text-sm font-medium font-body hover:border-emerald-500/30 hover:text-white hover:bg-emerald-500/[0.06] transition-all duration-150 cursor-default"
                 >
-                  <span className="font-semibold text-white text-sm sm:text-base">
-                    {skill}
-                  </span>
-                </motion.div>
+                  {skill}
+                </motion.span>
               ))}
             </div>
-          </div>
-        </motion.div>
-
-        {/* Goals Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1 }}
-          className="mb-16"
-        >
-          <div className="bg-gradient-to-r from-primary to-purple-600 rounded-2xl shadow-lg p-6 sm:p-8 text-white">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6">Hedeflerim</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-xl font-semibold mb-3">Kısa Vadeli</h3>
-                <ul className="space-y-2 text-white/90">
-                  <li>• Yeni teknolojiler öğrenmek</li>
-                  <li>• Açık kaynak projelere katkıda bulunmak</li>
-                  <li>• Daha fazla proje geliştirmek</li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-3">Uzun Vadeli</h3>
-                <ul className="space-y-2 text-white/90">
-                  <li>• Kendi yazılım şirketimi kurmak</li>
-                  <li>• Mentorluk yapmak</li>
-                  <li>• Teknoloji topluluğuna katkı sağlamak</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </div>
   );

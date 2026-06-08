@@ -1,203 +1,128 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
+
+const inputCls = "w-full px-4 py-3 bg-surface-2 border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 font-body text-sm focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all duration-200 outline-none";
 
 const ContactForm = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
+  const { t } = useLanguage();
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const onChange = (e) => setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
     try {
-      const response = await fetch('https://formspree.io/f/mpwrpyez', {
+      const res = await fetch('https://formspree.io/f/mpwrpyez', {
         method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
       });
-      const result = await response.json();
-      if (result.ok) {
+      const data = await res.json();
+      if (data.ok) {
         setSuccess(true);
-        setFormData({
-          name: '',
-          email: '',
-          subject: '',
-          message: ''
-        });
+        setForm({ name: '', email: '', subject: '', message: '' });
         setTimeout(() => setSuccess(false), 5000);
       } else {
-        setError('Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
+        setError(t('form.errorMsg'));
       }
-    } catch (err) {
-      setError('Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
+    } catch {
+      setError(t('form.errorMsg'));
     } finally {
       setLoading(false);
     }
   };
 
-  const isFormValid = formData.name && formData.email && formData.subject && formData.message;
+  const valid = form.name && form.email && form.subject && form.message;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="rounded-2xl bg-white/[0.03] border border-white/10 p-6"
-    >
-      <h2 className="text-2xl font-bold text-white mb-6">Mesaj Gönder</h2>
-      
-      {/* Success Message */}
+    <div className="rounded-2xl bg-surface border border-white/[0.07] p-7">
+      <h2 className="font-display font-bold text-white text-2xl mb-6">{t('form.title')}</h2>
+
       {success && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-xl"
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+          className="mb-5 p-4 bg-emerald-500/10 border border-emerald-500/25 rounded-xl flex items-center gap-3"
         >
-          <div className="flex items-center">
-            <svg className="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <p className="text-green-400 font-medium text-sm">
-              Mesajınız başarıyla gönderildi! En kısa sürede size dönüş yapacağım.
-            </p>
-          </div>
+          <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          <p className="text-emerald-400 font-body text-sm font-medium">{t('form.successMsg')}</p>
         </motion.div>
       )}
 
-      {/* Error Message */}
       {error && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl"
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+          className="mb-5 p-4 bg-red-500/10 border border-red-500/25 rounded-xl flex items-center gap-3"
         >
-          <div className="flex items-center">
-            <svg className="w-5 h-5 text-red-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
-            <p className="text-red-400 font-medium text-sm">{error}</p>
-          </div>
+          <svg className="w-5 h-5 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
+          <p className="text-red-400 font-body text-sm">{error}</p>
         </motion.div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Name Field */}
+      <form onSubmit={onSubmit} className="space-y-5">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-            Ad Soyad *
+          <label htmlFor="name" className="block text-sm font-medium font-body text-zinc-300 mb-2">
+            {t('form.name')} <span className="text-emerald-500">*</span>
           </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-200 outline-none"
-            placeholder="Adınız ve soyadınız"
-          />
+          <input type="text" id="name" name="name" value={form.name} onChange={onChange} required
+            placeholder={t('form.namePlaceholder')} className={inputCls} />
         </div>
 
-        {/* Email Field */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-            E-posta *
+          <label htmlFor="email" className="block text-sm font-medium font-body text-zinc-300 mb-2">
+            {t('form.email')} <span className="text-emerald-500">*</span>
           </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-200 outline-none"
-            placeholder="ornek@email.com"
-          />
+          <input type="email" id="email" name="email" value={form.email} onChange={onChange} required
+            placeholder={t('form.emailPlaceholder')} className={inputCls} />
         </div>
 
-        {/* Subject Field */}
         <div>
-          <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-2">
-            Konu *
+          <label htmlFor="subject" className="block text-sm font-medium font-body text-zinc-300 mb-2">
+            {t('form.subject')} <span className="text-emerald-500">*</span>
           </label>
-          <input
-            type="text"
-            id="subject"
-            name="subject"
-            value={formData.subject}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-200 outline-none"
-            placeholder="Mesajınızın konusu"
-          />
+          <input type="text" id="subject" name="subject" value={form.subject} onChange={onChange} required
+            placeholder={t('form.subjectPlaceholder')} className={inputCls} />
         </div>
 
-        {/* Message Field */}
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-            Mesaj *
+          <label htmlFor="message" className="block text-sm font-medium font-body text-zinc-300 mb-2">
+            {t('form.message')} <span className="text-emerald-500">*</span>
           </label>
-          <textarea
-            id="message"
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            required
-            rows={5}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-200 resize-none outline-none"
-            placeholder="Mesajınızı buraya yazın..."
-          />
+          <textarea id="message" name="message" value={form.message} onChange={onChange} required rows={5}
+            placeholder={t('form.messagePlaceholder')} className={`${inputCls} resize-none`} />
         </div>
 
-        {/* Submit Button */}
         <motion.button
           type="submit"
-          disabled={!isFormValid || loading}
-          whileHover={isFormValid && !loading ? { scale: 1.02 } : {}}
-          whileTap={isFormValid && !loading ? { scale: 0.98 } : {}}
-          className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
-            isFormValid && !loading
-              ? 'bg-gradient-to-r from-primary to-cyan-500 text-white hover:shadow-lg hover:shadow-primary/25'
-              : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+          disabled={!valid || loading}
+          whileHover={valid && !loading ? { scale: 1.02 } : {}}
+          whileTap={valid && !loading ? { scale: 0.98 } : {}}
+          className={`w-full py-3 px-6 rounded-xl font-semibold font-body text-sm transition-all duration-200 cursor-pointer ${
+            valid && !loading
+              ? 'bg-emerald-500 hover:bg-emerald-400 text-black'
+              : 'bg-white/[0.04] text-zinc-600 cursor-not-allowed border border-white/[0.06]'
           }`}
         >
           {loading ? (
-            <div className="flex items-center justify-center">
-              <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2"></div>
-              Gönderiliyor...
-            </div>
-          ) : (
-            'Mesaj Gönder'
-          )}
+            <span className="flex items-center justify-center gap-2">
+              <span className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+              {t('form.sending')}
+            </span>
+          ) : t('form.submit')}
         </motion.button>
       </form>
 
-      {/* Additional Info */}
-      <div className="mt-6 pt-6 border-t border-white/10">
-        <p className="text-xs text-gray-500 text-center">
-          Mesajınız güvenli bir şekilde gönderilecek ve kişisel bilgileriniz korunacaktır.
-        </p>
-      </div>
-    </motion.div>
+      <p className="mt-5 text-xs text-zinc-700 font-body text-center">
+        {t('form.secure')}
+      </p>
+    </div>
   );
 };
 

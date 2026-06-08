@@ -6,17 +6,26 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                primary: '#3B82F6',
-                secondary: '#1F2937',
-                accent: '#10B981',
+                primary: '#22C55E',
+                secondary: '#131316',
+                accent: '#22C55E',
+                canvas: '#0C0C0E',
+                surface: {
+                    DEFAULT: '#131316',
+                    2: '#1A1A1F',
+                },
             },
             fontFamily: {
-                sans: ['Inter', 'sans-serif'],
+                sans: ['Plus Jakarta Sans', 'sans-serif'],
+                display: ['Bricolage Grotesque', 'sans-serif'],
+                body: ['Plus Jakarta Sans', 'sans-serif'],
+                mono: ['JetBrains Mono', 'monospace'],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-in-out',
                 'slide-up': 'slideUp 0.5s ease-out',
                 'bounce-slow': 'bounce 2s infinite',
+                'blink': 'blink 1s step-end infinite',
             },
             keyframes: {
                 fadeIn: {
@@ -26,6 +35,10 @@ module.exports = {
                 slideUp: {
                     '0%': { transform: 'translateY(20px)', opacity: '0' },
                     '100%': { transform: 'translateY(0)', opacity: '1' },
+                },
+                blink: {
+                    '0%, 100%': { opacity: '1' },
+                    '50%': { opacity: '0' },
                 },
             },
         },

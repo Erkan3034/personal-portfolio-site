@@ -71,12 +71,13 @@ const RichEditor = ({ value, onChange }) => {
   const editorRef = useRef(null);
   const [source, setSource] = useState(false);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (editorRef.current) {
-      editorRef.current.innerHTML = value || '';
+    if (editorRef.current && !source) {
+      if (editorRef.current.innerHTML !== value) {
+        editorRef.current.innerHTML = value || '';
+      }
     }
-  }, [source]);
+  }, [value, source]);
 
   const exec = (cmd, val = null) => {
     editorRef.current.focus();

@@ -1,3 +1,56 @@
 .App {
     min-height: 100vh;
 }
+
+/* ── Blog içerik alanı ── */
+.blog-content {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+/* Kod bloğu dışında normal wrap */
+.blog-content pre {
+    background: #0d0d0f;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.75rem 0;
+    overflow-x: auto;
+    white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
+    -webkit-overflow-scrolling: touch;
+    line-height: 1.7;
+}
+
+/* Scrollbar — pre */
+.blog-content pre::-webkit-scrollbar { height: 4px; }
+.blog-content pre::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 10px; }
+.blog-content pre::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+
+/* Kod — pre içi (reset inline-code stilini) */
+.blog-content pre code {
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    color: #4ade80;          /* emerald-400 */
+    font-size: 0.875rem;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: pre;
+}
+
+/* Inline code */
+.blog-content code {
+    background: rgba(255, 255, 255, 0.07);
+    color: #4ade80;
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    font-size: 0.85em;
+    font-family: 'JetBrains Mono', monospace;
+    word-break: break-all;
+}
+
+/* Görsel — inline style'ı (width, text-align) ezme */
+.blog-content figure { display: block; }
+.blog-content figure img { display: inline-block; max-width: 100%; height: auto; }
+

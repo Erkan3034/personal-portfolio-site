@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   signIn, signOut, getCurrentUser,
@@ -15,48 +15,53 @@ const slugify = (text) => {
   const trMap = { 'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u', 'Ç': 'c', 'Ğ': 'g', 'İ': 'i', 'Ö': 'o', 'Ş': 's', 'Ü': 'u' };
   return text.toString().toLowerCase()
     .replace(/[çğıöşüÇĞİÖŞÜ]/g, (m) => trMap[m])
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-')
-    .replace(/^-+/, '')
-    .replace(/-+$/, '');
+    .replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+};
+
+/* ─── Icons ─── */
+const Ico = {
+  folder: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7a2 2 0 012-2h3.5L10 7h9a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" /></svg>,
+  badge: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
+  Doc: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+  logout: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>,
+  edit: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
+  trash: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>,
+  search: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
+  home: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
+  check: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>,
+  x: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>,
+  Warn: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>,
+  plus: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
+  refresh: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
+  link: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>,
+  menu: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" /></svg>,
+  star: (p) => <svg {...p} fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>,
 };
 
 /* ─── TagInput ─── */
 const TagInput = ({ tags = [], onChange, placeholder = 'Yazıp Enter\'a basın...' }) => {
   const [input, setInput] = useState('');
-
-  const add = () => {
-    const t = input.trim();
-    if (t && !tags.includes(t)) onChange([...tags, t]);
-    setInput('');
-  };
-
+  const add = () => { const t = input.trim(); if (t && !tags.includes(t)) onChange([...tags, t]); setInput(''); };
   const remove = (i) => onChange(tags.filter((_, idx) => idx !== i));
-
   const onKey = (e) => {
     if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); }
     if (e.key === 'Backspace' && !input && tags.length) remove(tags.length - 1);
   };
-
   return (
-    <div className="w-full min-h-[42px] px-3 py-2 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-primary/40 focus-within:border-primary/50 bg-white transition-all">
+    <div className="w-full min-h-[42px] px-3 py-2 border border-white/10 rounded-lg focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/40 bg-surface-2 transition-all">
       <div className="flex flex-wrap gap-1.5">
         {tags.map((tag, i) => (
-          <span key={i} className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-sm font-medium">
+          <span key={i} className="inline-flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 px-2.5 py-0.5 rounded-full text-xs font-medium">
             {tag}
-            <button type="button" onClick={() => remove(i)} className="text-emerald-400 hover:text-red-500 transition-colors ml-0.5 font-bold leading-none">&times;</button>
+            <button type="button" onClick={() => remove(i)} className="text-primary/50 hover:text-red-400 transition-colors ml-0.5 font-bold leading-none cursor-pointer">&times;</button>
           </span>
         ))}
-        <input
-          type="text"
-          value={input}
+        <input type="text" value={input}
           onChange={(e) => setInput(e.target.value.replace(',', ''))}
-          onKeyDown={onKey}
-          onBlur={() => { if (input.trim()) add(); }}
+          onKeyDown={onKey} onBlur={() => { if (input.trim()) add(); }}
           placeholder={tags.length === 0 ? placeholder : ''}
-          className="flex-1 min-w-[120px] outline-none text-sm bg-transparent py-0.5"
-        />
+          className="flex-1 min-w-[120px] outline-none text-sm bg-transparent py-0.5 text-gray-200 placeholder-gray-600" />
       </div>
     </div>
   );
@@ -76,17 +81,23 @@ const TOOLBAR = [
   { cmd: 'insertOrderedList', label: '1. Liste', title: 'Numaralı Liste', cls: 'text-xs' },
   { type: 'sep' },
   { cmd: 'formatBlock', val: '<blockquote>', label: '" Alıntı', title: 'Alıntı Bloğu', cls: 'text-xs italic' },
-  { type: 'link', label: 'Link', title: 'Bağlantı Ekle', cls: 'text-xs' },
+  { type: 'link', label: '⛓ Link', title: 'Bağlantı Ekle', cls: 'text-xs' },
+  { type: 'sep' },
+  { type: 'image', label: '⬆ Görsel', title: 'İçine Görsel Ekle', cls: 'text-xs' },
 ];
 
-const RichEditor = ({ value, onChange }) => {
+const RichEditor = ({ value, onChange, onImageUpload }) => {
   const editorRef = useRef(null);
+  const imgInputRef = useRef(null);
   const [source, setSource] = useState(false);
+  const [imgUploading, setImgUploading] = useState(false);
+  const [selImg, setSelImg] = useState(null);
 
   useEffect(() => {
     if (editorRef.current && !source) {
       if (editorRef.current.innerHTML !== value) {
         editorRef.current.innerHTML = value || '';
+        setSelImg(null);
       }
     }
   }, [value, source]);
@@ -97,83 +108,281 @@ const RichEditor = ({ value, onChange }) => {
     onChange(editorRef.current.innerHTML);
   };
 
-  const btnCls = 'h-7 px-2 flex items-center justify-center rounded text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors cursor-pointer select-none';
+  /* Görsel seçim / deseçim */
+  const selectImg = (img) => {
+    if (selImg && selImg !== img) selImg.style.outline = '';
+    img.style.outline = '2px solid #22C55E';
+    img.style.outlineOffset = '3px';
+    setSelImg(img);
+  };
+
+  const deselectImg = () => {
+    if (selImg) { selImg.style.outline = ''; selImg.style.outlineOffset = ''; }
+    setSelImg(null);
+  };
+
+  const handleEditorClick = (e) => {
+    if (e.target.tagName === 'IMG') { selectImg(e.target); }
+    else { deselectImg(); }
+  };
+
+  /* Görsel yükleme + DOM'a doğru cursor konumlaması */
+  const handleImageFile = async (file) => {
+    if (!file || !onImageUpload) return;
+    setImgUploading(true);
+    try {
+      const url = await onImageUpload(file);
+      if (!url) return;
+
+      editorRef.current.focus();
+
+      const figure = document.createElement('figure');
+      figure.style.cssText = 'margin:16px auto;text-align:center;';
+
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = '';
+      img.style.cssText = 'width:100%;max-width:100%;border-radius:10px;display:inline-block;';
+      figure.appendChild(img);
+
+      /* cursor'u taşıyacak boş paragraf */
+      const after = document.createElement('p');
+      after.appendChild(document.createElement('br'));
+
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        range.collapse(false);
+        range.insertNode(after);
+        range.insertNode(figure);
+
+        /* cursor'u figure'dan sonraki <p>'ye taşı */
+        const newRange = document.createRange();
+        newRange.setStart(after, 0);
+        newRange.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+      } else {
+        editorRef.current.appendChild(figure);
+        editorRef.current.appendChild(after);
+      }
+
+      onChange(editorRef.current.innerHTML);
+    } finally {
+      setImgUploading(false);
+      if (imgInputRef.current) imgInputRef.current.value = '';
+    }
+  };
+
+  /* Seçili görselin boyutu */
+  const setImgWidth = (w) => {
+    if (!selImg) return;
+    selImg.style.width = w;
+    onChange(editorRef.current.innerHTML);
+  };
+
+  /* Seçili görselin hizası */
+  const setImgAlign = (align) => {
+    if (!selImg) return;
+    const fig = selImg.closest('figure') || selImg.parentElement;
+    if (fig) fig.style.textAlign = align;
+    onChange(editorRef.current.innerHTML);
+  };
+
+  /* Seçili görseli sil */
+  const deleteSelImg = () => {
+    if (!selImg) return;
+    const fig = selImg.closest('figure') || selImg.parentElement;
+    (fig?.tagName === 'FIGURE' ? fig : selImg).remove();
+    setSelImg(null);
+    onChange(editorRef.current.innerHTML);
+  };
+
+  const btn = 'h-7 px-2 flex items-center justify-center rounded text-gray-400 hover:bg-white/10 hover:text-gray-100 transition-colors cursor-pointer select-none text-sm';
+  const ibtn = (active) => `h-6 px-2 rounded text-xs font-medium cursor-pointer transition-colors select-none ${active ? 'bg-primary/20 text-primary' : 'text-gray-400 hover:bg-white/10 hover:text-gray-200'}`;
+
+  const curW = selImg?.style.width;
 
   return (
-    <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/40 focus-within:border-primary/50 transition-all">
-      <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200">
+    <div className="border border-white/10 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/40 transition-all">
+
+      {/* Ana toolbar */}
+      <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 bg-surface border-b border-white/10">
         {!source && TOOLBAR.map((t, i) => {
-          if (t.type === 'sep') return <div key={i} className="w-px h-5 bg-gray-300 mx-0.5" />;
-          if (t.type === 'link') {
-            return (
-              <button key={i} type="button" title={t.title} className={`${btnCls} ${t.cls || ''}`}
-                onClick={() => { const url = prompt('URL girin:'); if (url) exec('createLink', url); }}>
-                {t.label}
-              </button>
-            );
-          }
-          return (
-            <button key={i} type="button" title={t.title} className={`${btnCls} ${t.cls || ''}`}
-              onClick={() => exec(t.cmd, t.val)}>
-              {t.label}
-            </button>
+          if (t.type === 'sep') return <div key={i} className="w-px h-5 bg-white/10 mx-0.5" />;
+          if (t.type === 'link') return (
+            <button key={i} type="button" title={t.title} className={`${btn} ${t.cls || ''}`}
+              onClick={() => { const url = prompt('URL girin:'); if (url) exec('createLink', url); }}>{t.label}</button>
           );
+          if (t.type === 'image') return (
+            <span key={i}>
+              <button type="button" title={t.title}
+                className={`${btn} ${t.cls || ''} ${imgUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={imgUploading || !onImageUpload}
+                onClick={() => imgInputRef.current?.click()}>
+                {imgUploading ? 'Yükleniyor...' : t.label}
+              </button>
+              <input ref={imgInputRef} type="file" accept="image/*" className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFile(f); }} />
+            </span>
+          );
+          return <button key={i} type="button" title={t.title} className={`${btn} ${t.cls || ''}`} onClick={() => exec(t.cmd, t.val)}>{t.label}</button>;
         })}
-        <button type="button"
-          onClick={() => setSource(!source)}
-          className={`ml-auto h-7 px-2 rounded text-xs font-mono cursor-pointer transition-colors ${source ? 'bg-gray-200 text-gray-800' : 'text-gray-400 hover:bg-gray-200 hover:text-gray-800'}`}
-          title="HTML kaynağını göster/gizle">
-          {'</>'}
-        </button>
+        <button type="button" onClick={() => { setSource(!source); deselectImg(); }}
+          className={`ml-auto h-7 px-2 rounded text-xs font-mono cursor-pointer transition-colors ${source ? 'bg-white/10 text-primary' : 'text-gray-500 hover:bg-white/10 hover:text-gray-300'}`} title="HTML kaynağı">{'</>'}</button>
       </div>
 
+      {/* Görsel kontrol toolbar'ı — sadece seçili görsel varken */}
+      {selImg && !source && (
+        <div className="flex flex-wrap items-center gap-1 px-2 py-1.5 bg-primary/[0.04] border-b border-primary/10">
+          <span className="text-[10px] text-gray-600 font-medium uppercase tracking-wide mr-0.5">Boyut</span>
+          <button type="button" onClick={() => setImgWidth('30%')} className={ibtn(curW === '30%')}>S</button>
+          <button type="button" onClick={() => setImgWidth('55%')} className={ibtn(curW === '55%')}>M</button>
+          <button type="button" onClick={() => setImgWidth('80%')} className={ibtn(curW === '80%')}>L</button>
+          <button type="button" onClick={() => setImgWidth('100%')} className={ibtn(!curW || curW === '100%')}>Tam</button>
+          <div className="w-px h-4 bg-white/10 mx-1" />
+          <span className="text-[10px] text-gray-600 font-medium uppercase tracking-wide mr-0.5">Hizala</span>
+          <button type="button" onClick={() => setImgAlign('left')} title="Sola hizala" className={ibtn(false)}>
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h12" /></svg>
+          </button>
+          <button type="button" onClick={() => setImgAlign('center')} title="Ortala" className={ibtn(false)}>
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M7 12h10M6 18h12" /></svg>
+          </button>
+          <button type="button" onClick={() => setImgAlign('right')} title="Sağa hizala" className={ibtn(false)}>
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M10 12h10M8 18h12" /></svg>
+          </button>
+          <button type="button" onClick={deleteSelImg}
+            className="ml-auto h-6 px-2 rounded text-xs text-red-400 hover:bg-red-500/10 cursor-pointer transition-colors">
+            Görseli Kaldır
+          </button>
+        </div>
+      )}
+
+      {/* Editor alanı */}
       {source ? (
-        <textarea
-          value={value || ''}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full p-3 min-h-[220px] outline-none font-mono text-sm resize-y bg-gray-900 text-green-400"
-          spellCheck={false}
-        />
+        <textarea value={value || ''} onChange={(e) => onChange(e.target.value)}
+          className="w-full p-3 min-h-[220px] outline-none font-mono text-sm resize-y bg-[#0a0a0c] text-primary" spellCheck={false} />
       ) : (
-        <div
-          ref={editorRef}
-          contentEditable
-          suppressContentEditableWarning
+        <div ref={editorRef} contentEditable suppressContentEditableWarning
+          onClick={handleEditorClick}
           onInput={(e) => onChange(e.currentTarget.innerHTML)}
-          className="min-h-[220px] p-3 outline-none text-sm leading-relaxed [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mb-1 [&_p]:mb-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_a]:text-blue-600 [&_a]:underline"
-        />
+          className="min-h-[220px] p-3 outline-none text-sm leading-relaxed text-gray-200 bg-surface-2
+            [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:text-white
+            [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mb-1 [&_h3]:text-white
+            [&_p]:mb-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
+            [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-gray-400
+            [&_a]:text-primary [&_a]:underline
+            [&_figure]:my-4 [&_figure]:text-center [&_img]:rounded-xl [&_img]:max-w-full [&_img]:inline-block [&_img]:transition-all" />
       )}
     </div>
   );
 };
 
-/* ─── Modal wrapper ─── */
-const Modal = ({ title, onClose, children }) => (
-  <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/40 p-4 overflow-y-auto">
-    <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 w-full max-w-lg relative my-4 sm:my-0">
-      <div className="flex items-center justify-between mb-5 pb-3 border-b border-gray-100">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-900">{title}</h2>
-        <button type="button" onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors text-xl cursor-pointer">&times;</button>
-      </div>
-      <div className="max-h-[70vh] overflow-y-auto pr-1">{children}</div>
-    </div>
+/* ─── Toast system ─── */
+const ToastContainer = ({ toasts, remove }) => (
+  <div className="fixed bottom-6 right-6 z-[200] flex flex-col gap-2 pointer-events-none">
+    <AnimatePresence>
+      {toasts.map((t) => (
+        <motion.div key={t.id} initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 60 }}
+          className={`pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl border text-sm font-medium backdrop-blur-sm max-w-xs
+            ${t.type === 'success' ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-300' : t.type === 'error' ? 'bg-red-950/90 border-red-500/30 text-red-300' : 'bg-surface border-white/10 text-gray-300'}`}>
+          <span className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${t.type === 'success' ? 'bg-emerald-500/20' : t.type === 'error' ? 'bg-red-500/20' : 'bg-white/10'}`}>
+            {t.type === 'success' ? <Ico.check className="w-3 h-3" /> : <Ico.x className="w-3 h-3" />}
+          </span>
+          <span className="flex-1">{t.msg}</span>
+          <button onClick={() => remove(t.id)} className="text-current opacity-50 hover:opacity-100 cursor-pointer"><Ico.x className="w-3.5 h-3.5" /></button>
+        </motion.div>
+      ))}
+    </AnimatePresence>
   </div>
 );
 
-/* ─── Field wrapper ─── */
+/* ─── Confirm Modal ─── */
+const ConfirmModal = ({ confirm, onCancel, onConfirm }) => {
+  if (!confirm) return null;
+  return (
+    <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+        className="bg-surface border border-white/10 rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
+            <Ico.Warn className="w-5 h-5 text-red-400" />
+          </div>
+          <h3 className="font-semibold text-gray-100 text-lg">{confirm.title}</h3>
+        </div>
+        <p className="text-gray-400 text-sm mb-6 ml-[52px]">{confirm.msg}</p>
+        <div className="flex gap-3 justify-end">
+          <button onClick={onCancel} className="px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-colors cursor-pointer">İptal</button>
+          <button onClick={onConfirm} className="px-4 py-2 rounded-lg text-sm font-medium bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-colors cursor-pointer">Sil</button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+/* ─── Modal ─── */
+const Modal = ({ title, onClose, children, wide }) => (
+  <div className="fixed inset-0 z-[100] flex items-start justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+    <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+      className={`bg-surface border border-white/10 rounded-2xl shadow-2xl p-5 sm:p-6 w-full ${wide ? 'max-w-2xl' : 'max-w-lg'} relative my-4`}>
+      <div className="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
+        <h2 className="text-lg font-bold text-gray-100">{title}</h2>
+        <button type="button" onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-200 hover:bg-white/10 transition-colors cursor-pointer"><Ico.x className="w-4 h-4" /></button>
+      </div>
+      <div className="max-h-[75vh] overflow-y-auto pr-1 scrollbar-thin">{children}</div>
+    </motion.div>
+  </div>
+);
+
+/* ─── Field ─── */
 const Field = ({ label, required, hint, children }) => (
   <div>
-    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-      {label} {required && <span className="text-red-500">*</span>}
+    <label className="block text-sm font-medium text-gray-300 mb-1.5">
+      {label} {required && <span className="text-red-400">*</span>}
     </label>
     {children}
-    {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
+    {hint && <p className="text-xs text-gray-600 mt-1">{hint}</p>}
   </div>
 );
 
-const inputCls = 'w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all outline-none text-sm';
+const inputCls = 'w-full px-3 py-2.5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all outline-none text-sm bg-surface-2 text-gray-200 placeholder-gray-600';
 
-/* ─── Admin ─── */
+/* ─── Badge ─── */
+const Badge = ({ children, color = 'gray' }) => {
+  const c = { green: 'bg-primary/10 text-primary border-primary/20', blue: 'bg-blue-500/10 text-blue-400 border-blue-500/20', gray: 'bg-white/5 text-gray-400 border-white/10', yellow: 'bg-amber-500/10 text-amber-400 border-amber-500/20', purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20' };
+  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border ${c[color] || c.gray}`}>{children}</span>;
+};
+
+/* ─── Image Upload ─── */
+const ImageUpload = ({ value, preview, onChange, onClear }) => (
+  <div>
+    <label className={`flex flex-col items-center gap-2 w-full border-2 border-dashed rounded-lg p-4 cursor-pointer transition-colors ${preview ? 'border-primary/30 bg-primary/5' : 'border-white/10 bg-surface-2 hover:border-white/20'}`}>
+      {preview ? (
+        <div className="relative w-full">
+          <img src={preview} alt="Önizleme" className="rounded-lg max-h-36 mx-auto object-cover" />
+          <button type="button" onClick={(e) => { e.preventDefault(); onClear?.(); }}
+            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-500/80 transition-colors cursor-pointer">
+            <Ico.x className="w-3 h-3" />
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          </div>
+          <span className="text-sm text-gray-500"><span className="text-primary font-medium">Dosya seç</span> veya sürükle</span>
+          <span className="text-xs text-gray-600">PNG, JPG, WEBP</span>
+        </>
+      )}
+      <input type="file" accept="image/*" className="hidden" onChange={onChange} />
+    </label>
+    {value && typeof value === 'string' && !preview && (
+      <img src={value} alt="" className="mt-2 rounded-lg max-h-24 mx-auto opacity-60" />
+    )}
+  </div>
+);
+
+/* ═══════════════════════════════════════════════════════ Admin ═══ */
 const Admin = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -185,7 +394,23 @@ const Admin = () => {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  /* toasts */
+  const [toasts, setToasts] = useState([]);
+  const toast = useCallback((msg, type = 'success') => {
+    const id = Date.now();
+    setToasts((p) => [...p, { id, msg, type }]);
+    setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 3500);
+  }, []);
+  const removeToast = (id) => setToasts((p) => p.filter((t) => t.id !== id));
+
+  /* confirm */
+  const [confirm, setConfirm] = useState(null);
+  const askConfirm = (title, msg, onOk) => setConfirm({ title, msg, onOk });
+
+  /* ─── form state ─── */
   const emptyProject = { title: '', description: '', technologies: [], github_url: '', live_url: '', project_date: '', featured: false, image: null };
   const emptyCert = { title: '', issuer: '', description: '', certificate_date: '', certificate_url: '', image: null };
   const emptyBlog = { title: '', summary: '', content: '', tags: [], is_external: false, external_url: '', image: null, published_at: '' };
@@ -201,12 +426,12 @@ const Admin = () => {
 
   const [showCertificateModal, setShowCertificateModal] = useState(false);
   const [newCertificate, setNewCertificate] = useState(emptyCert);
-  const [certificateImagePreview, setCertificateImagePreview] = useState(null);
-  const [addCertificateLoading, setAddCertificateLoading] = useState(false);
-  const [addCertificateError, setAddCertificateError] = useState('');
+  const [certImagePreview, setCertImagePreview] = useState(null);
+  const [addCertLoading, setAddCertLoading] = useState(false);
+  const [addCertError, setAddCertError] = useState('');
   const [editCertificate, setEditCertificate] = useState(null);
-  const [editCertificateLoading, setEditCertificateLoading] = useState(false);
-  const [editCertificateError, setEditCertificateError] = useState('');
+  const [editCertLoading, setEditCertLoading] = useState(false);
+  const [editCertError, setEditCertError] = useState('');
 
   const [showBlogModal, setShowBlogModal] = useState(false);
   const [newBlog, setNewBlog] = useState(emptyBlog);
@@ -219,14 +444,14 @@ const Admin = () => {
 
   const navigate = useNavigate();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [p, c, b] = await Promise.all([getProjects(), getCertificates(), getBlogs()]);
       setProjects(p.data || []);
       setCertificates(c.data || []);
       setBlogs(b.data || []);
     } catch (err) { console.error('Veri yükleme hatası:', err); }
-  };
+  }, []);
 
   const checkAuth = useCallback(async () => {
     try {
@@ -235,20 +460,17 @@ const Admin = () => {
       else setShowLogin(true);
     } catch { setShowLogin(true); }
     finally { setLoading(false); }
-  }, []);
+  }, [fetchData]);
 
   useEffect(() => { checkAuth(); }, [checkAuth]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoginLoading(true);
-    setLoginError('');
+    setLoginLoading(true); setLoginError('');
     try {
       const { data, error } = await signIn(loginData.email, loginData.password);
       if (error) throw error;
-      setUser(data.user);
-      setShowLogin(false);
-      fetchData();
+      setUser(data.user); setShowLogin(false); fetchData();
     } catch { setLoginError('Giriş başarısız. E-posta ve şifrenizi kontrol edin.'); }
     finally { setLoginLoading(false); }
   };
@@ -258,163 +480,273 @@ const Admin = () => {
     catch (err) { console.error('Çıkış hatası:', err); }
   };
 
-  const confirmDelete = (msg, fn) => async (id) => {
-    if (!window.confirm(msg)) return;
-    try { await fn(id); fetchData(); }
-    catch (err) { alert('Silme hatası: ' + (err.message || err)); }
+  const handleDelete = (label, fn) => (id) => {
+    askConfirm(`${label} Sil`, `Bu ${label.toLowerCase()}ı kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz.`, async () => {
+      setConfirm(null);
+      try { await fn(id); fetchData(); toast(`${label} silindi.`); }
+      catch (err) { toast('Silme hatası: ' + (err.message || err), 'error'); }
+    });
   };
 
-  const handleDeleteProject = confirmDelete('Bu projeyi silmek istediğine emin misin?', deleteProject);
-  const handleDeleteCert = confirmDelete('Bu sertifikayı silmek istediğine emin misin?', deleteCertificate);
-  const handleDeleteBlog = confirmDelete('Bu blogu silmek istediğine emin misin?', deleteBlog);
+  const handleDeleteProject = handleDelete('Proje', deleteProject);
+  const handleDeleteCert = handleDelete('Sertifika', deleteCertificate);
+  const handleDeleteBlog = handleDelete('Blog', deleteBlog);
 
-  const convertToWebP = (file) =>
-    new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        const c = document.createElement('canvas');
-        c.width = img.width; c.height = img.height;
-        c.getContext('2d').drawImage(img, 0, 0);
-        c.toBlob((blob) => {
-          if (!blob) { reject(new Error('WebP dönüşümü başarısız.')); return; }
-          resolve(new File([blob], `${file.name.split('.')[0]}.webp`, { type: 'image/webp' }));
-        }, 'image/webp', 0.9);
-      };
-      img.onerror = () => reject(new Error('Görsel yüklenemedi.'));
-      img.src = URL.createObjectURL(file);
-    });
+  const convertToWebP = (file) => new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = img.width; c.height = img.height;
+      c.getContext('2d').drawImage(img, 0, 0);
+      c.toBlob((blob) => {
+        if (!blob) { reject(new Error('WebP dönüşümü başarısız.')); return; }
+        resolve(new File([blob], `${file.name.split('.')[0]}.webp`, { type: 'image/webp' }));
+      }, 'image/webp', 0.9);
+    };
+    img.onerror = () => reject(new Error('Görsel yüklenemedi.'));
+    img.src = URL.createObjectURL(file);
+  });
 
   const ensureArray = (v) => (Array.isArray(v) ? v : []);
 
+  /* filtered lists */
+  const q = search.toLowerCase();
+  const filteredProjects = projects.filter((p) => !q || p.title?.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q) || ensureArray(p.technologies).some((t) => t.toLowerCase().includes(q)));
+  const filteredCerts = certificates.filter((c) => !q || c.title?.toLowerCase().includes(q) || c.issuer?.toLowerCase().includes(q));
+  const filteredBlogs = blogs.filter((b) => !q || b.title?.toLowerCase().includes(q) || b.summary?.toLowerCase().includes(q) || ensureArray(b.tags).some((t) => t.toLowerCase().includes(q)));
+
+  const tabs = [
+    { id: 'projects', label: 'Projeler', Icon: Ico.folder, count: projects.length },
+    { id: 'certificates', label: 'Sertifikalar', Icon: Ico.badge, count: certificates.length },
+    { id: 'blogs', label: 'Blog', Icon: Ico.Doc, count: blogs.length },
+  ];
+
   /* ─── Loading ─── */
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 pt-20 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary/30 border-t-primary mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Yükleniyor...</p>
-        </div>
+  if (loading) return (
+    <div className="min-h-screen bg-canvas flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-10 h-10 rounded-full border-2 border-primary/20 border-t-primary animate-spin mx-auto mb-3" />
+        <p className="text-gray-600 text-sm">Yükleniyor...</p>
       </div>
-    );
-  }
+    </div>
+  );
 
   /* ─── Login ─── */
-  if (showLogin) {
-    return (
-      <div className="min-h-screen bg-gray-50 pt-20">
-        <div className="max-w-md mx-auto px-4 py-12">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-lg p-5 sm:p-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 text-center">Admin Girişi</h1>
-            {loginError && (
-              <div className="mb-5 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-700 text-sm">{loginError}</p>
-              </div>
-            )}
-            <form onSubmit={handleLogin} className="space-y-5">
-              <Field label="E-posta">
-                <input type="email" value={loginData.email} onChange={(e) => setLoginData({ ...loginData, email: e.target.value })} required className={inputCls} placeholder="admin@example.com" />
-              </Field>
-              <Field label="Şifre">
-                <input type="password" value={loginData.password} onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} required className={inputCls} placeholder="********" />
-              </Field>
-              <button type="submit" disabled={loginLoading}
-                className={`w-full py-3 rounded-lg font-semibold text-sm transition-all cursor-pointer ${loginLoading ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl'}`}>
-                {loginLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
-              </button>
-            </form>
-            <div className="mt-5 text-center">
-              <button onClick={() => navigate('/')} className="text-primary hover:text-primary/80 text-sm cursor-pointer">Ana sayfaya dön</button>
-            </div>
-          </motion.div>
+  if (showLogin) return (
+    <div className="min-h-screen bg-canvas flex items-center justify-center p-4">
+      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
+            <svg className="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-100 font-display">Admin Paneli</h1>
+          <p className="text-gray-500 text-sm mt-1">Devam etmek için giriş yapın</p>
         </div>
-      </div>
-    );
-  }
-
-  /* ─── Helpers for list cards ─── */
-  const Badge = ({ children, color = 'gray' }) => {
-    const colors = {
-      green: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      blue: 'bg-blue-50 text-blue-700 border-blue-200',
-      gray: 'bg-gray-50 text-gray-600 border-gray-200',
-      yellow: 'bg-amber-50 text-amber-700 border-amber-200',
-    };
-    return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border ${colors[color]}`}>{children}</span>;
-  };
+        <div className="bg-surface border border-white/10 rounded-2xl p-6 shadow-2xl">
+          {loginError && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2">
+              <Ico.Warn className="w-4 h-4 text-red-400 shrink-0" />
+              <p className="text-red-400 text-sm">{loginError}</p>
+            </div>
+          )}
+          <form onSubmit={handleLogin} className="space-y-4">
+            <Field label="E-posta">
+              <input type="email" value={loginData.email} onChange={(e) => setLoginData({ ...loginData, email: e.target.value })} required className={inputCls} placeholder="admin@example.com" autoFocus />
+            </Field>
+            <Field label="Şifre">
+              <input type="password" value={loginData.password} onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} required className={inputCls} placeholder="••••••••" />
+            </Field>
+            <button type="submit" disabled={loginLoading}
+              className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer mt-2 ${loginLoading ? 'bg-primary/30 text-primary/50 cursor-not-allowed' : 'bg-primary text-canvas hover:bg-primary/90 shadow-lg shadow-primary/20'}`}>
+              {loginLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+            </button>
+          </form>
+        </div>
+        <div className="mt-4 text-center">
+          <button onClick={() => navigate('/')} className="text-gray-600 hover:text-gray-400 text-sm transition-colors cursor-pointer">← Ana sayfaya dön</button>
+        </div>
+      </motion.div>
+    </div>
+  );
 
   /* ─── Main Panel ─── */
+  const activeTabData = tabs.find((t) => t.id === activeTab);
+
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="min-h-screen bg-canvas">
 
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Admin Paneli</h1>
-            <p className="text-gray-500 text-sm truncate max-w-[260px] sm:max-w-none">{user?.email}</p>
-          </div>
-          <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm font-medium cursor-pointer shrink-0">Çıkış Yap</button>
-        </motion.div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          {[
-            { label: 'Proje', count: projects.length, color: 'text-emerald-600 bg-emerald-50' },
-            { label: 'Sertifika', count: certificates.length, color: 'text-blue-600 bg-blue-50' },
-            { label: 'Blog', count: blogs.length, color: 'text-amber-600 bg-amber-50' },
-          ].map((s) => (
-            <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 text-center">
-              <div className={`text-2xl sm:text-3xl font-bold ${s.color.split(' ')[0]}`}>{s.count}</div>
-              <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
+      {/* ── Sidebar (desktop) ── */}
+      <aside className="hidden lg:flex fixed top-0 left-0 w-64 h-screen bg-surface border-r border-white/[0.06] z-40 flex-col">
+        {/* Brand */}
+        <div className="px-6 py-5 border-b border-white/[0.06]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+              <span className="text-primary text-xs font-bold font-mono">ET</span>
             </div>
-          ))}
+            <div>
+              <p className="text-gray-100 text-sm font-semibold leading-none">Admin Panel</p>
+              <p className="text-gray-600 text-xs mt-0.5 truncate max-w-[140px]">{user?.email}</p>
+            </div>
+          </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto">
-          {[
-            { id: 'projects', label: 'Projeler' },
-            { id: 'certificates', label: 'Sertifikalar' },
-            { id: 'blogs', label: 'Blog' },
-          ].map((tab) => (
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          <p className="text-gray-700 text-[10px] font-semibold uppercase tracking-wider px-3 mb-2">İçerik</p>
+          {tabs.map((tab) => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              className={`py-2.5 px-4 text-sm font-medium whitespace-nowrap transition-colors cursor-pointer ${activeTab === tab.id ? 'text-primary border-b-2 border-primary' : 'text-gray-500 hover:text-gray-700'}`}>
-              {tab.label}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer group ${activeTab === tab.id ? 'bg-primary/10 text-primary' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'}`}>
+              <tab.Icon className="w-4 h-4 shrink-0" />
+              <span className="flex-1 text-left">{tab.label}</span>
+              <span className={`text-[11px] font-mono px-1.5 py-0.5 rounded ${activeTab === tab.id ? 'bg-primary/20 text-primary' : 'bg-white/5 text-gray-600'}`}>{tab.count}</span>
             </button>
           ))}
-        </div>
 
-        {/* ══ Projects Tab ══ */}
-        {activeTab === 'projects' && (
-          <div>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
-              <h2 className="text-xl font-bold text-gray-900">Projeler</h2>
-              <button onClick={() => { setShowProjectModal(true); setNewProject(emptyProject); setImagePreview(null); setAddError(''); }}
-                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium cursor-pointer">
-                + Yeni Proje
-              </button>
+          {/* Stats */}
+          <div className="mt-4 pt-4 border-t border-white/[0.06]">
+            <p className="text-gray-700 text-[10px] font-semibold uppercase tracking-wider px-3 mb-2">Özet</p>
+            <div className="grid grid-cols-3 gap-2 px-1">
+              {[
+                { label: 'Proje', val: projects.length, color: 'text-primary' },
+                { label: 'Sert.', val: certificates.length, color: 'text-blue-400' },
+                { label: 'Blog', val: blogs.length, color: 'text-amber-400' },
+              ].map((s) => (
+                <div key={s.label} className="bg-surface-2 rounded-lg p-2 text-center border border-white/5">
+                  <div className={`text-lg font-bold ${s.color}`}>{s.val}</div>
+                  <div className="text-[10px] text-gray-600 mt-0.5">{s.label}</div>
+                </div>
+              ))}
             </div>
+          </div>
+        </nav>
 
-            <div className="space-y-3">
-              {projects.map((p) => (
-                <div key={p.id} className="bg-white rounded-xl border border-gray-200 p-4 hover:border-gray-300 transition-colors">
-                  <div className="flex gap-4">
-                    {p.image && <img src={p.image} alt="" className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover shrink-0 hidden sm:block" />}
+        {/* Bottom */}
+        <div className="px-3 py-4 border-t border-white/[0.06] space-y-1">
+          <button onClick={() => navigate('/')}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all cursor-pointer">
+            <Ico.home className="w-4 h-4" /> Siteye Git
+          </button>
+          <button onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500/70 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer">
+            <Ico.logout className="w-4 h-4" /> Çıkış Yap
+          </button>
+        </div>
+      </aside>
+
+      {/* ── Mobile Header ── */}
+      <div className="lg:hidden sticky top-0 z-30 bg-surface/95 backdrop-blur border-b border-white/[0.06] px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <span className="text-primary text-[10px] font-bold font-mono">ET</span>
+          </div>
+          <span className="text-gray-200 text-sm font-semibold">Admin Panel</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => navigate('/')} className="p-2 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-colors cursor-pointer">
+            <Ico.home className="w-4 h-4" />
+          </button>
+          <button onClick={handleLogout} className="p-2 rounded-lg text-red-500/70 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer">
+            <Ico.logout className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* ── Mobile Tabs ── */}
+      <div className="lg:hidden flex border-b border-white/[0.06] bg-surface/80 backdrop-blur sticky top-[53px] z-20">
+        {tabs.map((tab) => (
+          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-xs font-medium transition-colors cursor-pointer ${activeTab === tab.id ? 'text-primary border-b-2 border-primary' : 'text-gray-500 hover:text-gray-300'}`}>
+            <tab.Icon className="w-4 h-4" />
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* ── Main Content ── */}
+      <div className="lg:ml-64 min-h-screen">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+          {/* Page Header */}
+          <motion.div key={activeTab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-100 font-display">{activeTabData?.label}</h1>
+              <p className="text-gray-600 text-sm mt-0.5">
+                {activeTab === 'projects' ? filteredProjects.length : activeTab === 'certificates' ? filteredCerts.length : filteredBlogs.length} kayıt
+                {search && <span className="ml-1 text-primary">"{search}" için</span>}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              {/* Search */}
+              <div className="relative flex-1 sm:w-56">
+                <Ico.search className="w-4 h-4 text-gray-600 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Ara..."
+                  className="w-full pl-9 pr-3 py-2 bg-surface border border-white/10 rounded-lg text-sm text-gray-300 placeholder-gray-600 outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all" />
+              </div>
+              {/* Refresh */}
+              <button onClick={fetchData} className="p-2 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/5 border border-white/10 transition-colors cursor-pointer" title="Yenile">
+                <Ico.refresh className="w-4 h-4" />
+              </button>
+              {/* Add button */}
+              {activeTab === 'projects' && (
+                <button onClick={() => { setShowProjectModal(true); setNewProject(emptyProject); setImagePreview(null); setAddError(''); }}
+                  className="flex items-center gap-1.5 bg-primary text-canvas px-3 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm font-semibold cursor-pointer shadow-lg shadow-primary/10 whitespace-nowrap">
+                  <Ico.plus className="w-3.5 h-3.5" /> Proje Ekle
+                </button>
+              )}
+              {activeTab === 'certificates' && (
+                <button onClick={() => { setShowCertificateModal(true); setNewCertificate(emptyCert); setCertImagePreview(null); setAddCertError(''); }}
+                  className="flex items-center gap-1.5 bg-primary text-canvas px-3 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm font-semibold cursor-pointer shadow-lg shadow-primary/10 whitespace-nowrap">
+                  <Ico.plus className="w-3.5 h-3.5" /> Sertifika Ekle
+                </button>
+              )}
+              {activeTab === 'blogs' && (
+                <button onClick={() => { setShowBlogModal(true); setNewBlog(emptyBlog); setBlogImagePreview(null); setAddBlogError(''); }}
+                  className="flex items-center gap-1.5 bg-primary text-canvas px-3 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm font-semibold cursor-pointer shadow-lg shadow-primary/10 whitespace-nowrap">
+                  <Ico.plus className="w-3.5 h-3.5" /> Blog Ekle
+                </button>
+              )}
+            </div>
+          </motion.div>
+
+          {/* ── Projects List ── */}
+          {activeTab === 'projects' && (
+            <div className="space-y-2">
+              {filteredProjects.map((p, i) => (
+                <motion.div key={p.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                  className="group bg-surface border border-white/[0.06] rounded-xl p-4 hover:border-white/10 hover:bg-surface-2/50 transition-all">
+                  <div className="flex gap-3 sm:gap-4">
+                    {p.image ? (
+                      <img src={p.image} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0 hidden sm:block ring-1 ring-white/10" />
+                    ) : (
+                      <div className="w-14 h-14 rounded-lg bg-surface-2 border border-white/10 flex items-center justify-center shrink-0 hidden sm:flex">
+                        <Ico.folder className="w-6 h-6 text-gray-700" />
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-semibold text-gray-900 truncate">{p.title}</h3>
-                            {p.featured && <Badge color="yellow">Öne Çıkan</Badge>}
+                            <h3 className="font-semibold text-gray-100 text-sm truncate">{p.title}</h3>
+                            {p.featured && <Badge color="yellow"><Ico.star className="w-2.5 h-2.5 inline mr-0.5" />Öne Çıkan</Badge>}
                           </div>
-                          <p className="text-gray-500 text-sm mt-0.5 line-clamp-1">{p.description}</p>
+                          {p.description && <p className="text-gray-500 text-xs mt-0.5 line-clamp-2">{p.description}</p>}
                         </div>
-                        <div className="flex gap-2 shrink-0">
-                          <button onClick={() => setEditProject({ ...p, technologies: Array.isArray(p.technologies) ? p.technologies : [] })}
-                            className="text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer">Düzenle</button>
+                        <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {(p.github_url || p.live_url) && (
+                            <a href={p.live_url || p.github_url} target="_blank" rel="noreferrer"
+                              className="p-1.5 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/5 transition-colors cursor-pointer">
+                              <Ico.link className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                          <button onClick={() => setEditProject({ ...p, technologies: ensureArray(p.technologies) })}
+                            className="p-1.5 rounded-lg text-gray-600 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <Ico.edit className="w-3.5 h-3.5" />
+                          </button>
                           <button onClick={() => handleDeleteProject(p.id)}
-                            className="text-red-500 hover:text-red-700 text-sm font-medium cursor-pointer">Sil</button>
+                            className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer">
+                            <Ico.trash className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
                       {ensureArray(p.technologies).length > 0 && (
@@ -424,473 +756,370 @@ const Admin = () => {
                       )}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-              {projects.length === 0 && <p className="text-gray-400 text-center py-10 text-sm">Henüz proje eklenmedi.</p>}
+              {filteredProjects.length === 0 && (
+                <div className="text-center py-16">
+                  <div className="w-14 h-14 rounded-xl bg-surface border border-white/10 flex items-center justify-center mx-auto mb-3">
+                    <Ico.folder className="w-7 h-7 text-gray-700" />
+                  </div>
+                  <p className="text-gray-600 text-sm">{search ? `"${search}" için sonuç bulunamadı.` : 'Henüz proje eklenmedi.'}</p>
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* ══ Certificates Tab ══ */}
-        {activeTab === 'certificates' && (
-          <div>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
-              <h2 className="text-xl font-bold text-gray-900">Sertifikalar</h2>
-              <button onClick={() => { setShowCertificateModal(true); setNewCertificate(emptyCert); setCertificateImagePreview(null); setAddCertificateError(''); }}
-                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium cursor-pointer">
-                + Yeni Sertifika
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {certificates.map((c) => (
-                <div key={c.id} className="bg-white rounded-xl border border-gray-200 p-4 hover:border-gray-300 transition-colors">
-                  <div className="flex gap-4">
-                    {c.image && <img src={c.image} alt="" className="w-16 h-16 rounded-lg object-cover shrink-0 hidden sm:block" />}
+          {/* ── Certificates List ── */}
+          {activeTab === 'certificates' && (
+            <div className="space-y-2">
+              {filteredCerts.map((c, i) => (
+                <motion.div key={c.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                  className="group bg-surface border border-white/[0.06] rounded-xl p-4 hover:border-white/10 hover:bg-surface-2/50 transition-all">
+                  <div className="flex gap-3 sm:gap-4">
+                    {c.image ? (
+                      <img src={c.image} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0 hidden sm:block ring-1 ring-white/10" />
+                    ) : (
+                      <div className="w-14 h-14 rounded-lg bg-surface-2 border border-white/10 flex items-center justify-center shrink-0 hidden sm:flex">
+                        <Ico.badge className="w-6 h-6 text-gray-700" />
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <h3 className="font-semibold text-gray-900 truncate">{c.title}</h3>
-                          <p className="text-gray-500 text-sm">{c.issuer}</p>
-                          {c.certificate_date && <p className="text-gray-400 text-xs mt-0.5">{new Date(c.certificate_date).toLocaleDateString('tr-TR')}</p>}
+                        <div>
+                          <h3 className="font-semibold text-gray-100 text-sm truncate">{c.title}</h3>
+                          {c.issuer && <p className="text-gray-500 text-xs mt-0.5">{c.issuer}</p>}
+                          {c.certificate_date && <p className="text-gray-700 text-xs mt-0.5">{new Date(c.certificate_date).toLocaleDateString('tr-TR')}</p>}
                         </div>
-                        <div className="flex gap-2 shrink-0">
-                          <button onClick={() => setEditCertificate(c)} className="text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer">Düzenle</button>
-                          <button onClick={() => handleDeleteCert(c.id)} className="text-red-500 hover:text-red-700 text-sm font-medium cursor-pointer">Sil</button>
+                        <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {c.certificate_url && (
+                            <a href={c.certificate_url} target="_blank" rel="noreferrer" className="p-1.5 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/5 transition-colors cursor-pointer">
+                              <Ico.link className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                          <button onClick={() => setEditCertificate(c)} className="p-1.5 rounded-lg text-gray-600 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <Ico.edit className="w-3.5 h-3.5" />
+                          </button>
+                          <button onClick={() => handleDeleteCert(c.id)} className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer">
+                            <Ico.trash className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-              {certificates.length === 0 && <p className="text-gray-400 text-center py-10 text-sm">Henüz sertifika eklenmedi.</p>}
+              {filteredCerts.length === 0 && (
+                <div className="text-center py-16">
+                  <div className="w-14 h-14 rounded-xl bg-surface border border-white/10 flex items-center justify-center mx-auto mb-3">
+                    <Ico.badge className="w-7 h-7 text-gray-700" />
+                  </div>
+                  <p className="text-gray-600 text-sm">{search ? `"${search}" için sonuç bulunamadı.` : 'Henüz sertifika eklenmedi.'}</p>
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* ══ Blogs Tab ══ */}
-        {activeTab === 'blogs' && (
-          <div>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
-              <h2 className="text-xl font-bold text-gray-900">Blog</h2>
-              <button onClick={() => { setShowBlogModal(true); setNewBlog(emptyBlog); setBlogImagePreview(null); setAddBlogError(''); }}
-                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium cursor-pointer">
-                + Yeni Blog
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {blogs.map((b) => (
-                <div key={b.id} className="bg-white rounded-xl border border-gray-200 p-4 hover:border-gray-300 transition-colors">
-                  <div className="flex gap-4">
-                    {b.image && <img src={b.image} alt="" className="w-16 h-16 rounded-lg object-cover shrink-0 hidden sm:block" />}
+          {/* ── Blogs List ── */}
+          {activeTab === 'blogs' && (
+            <div className="space-y-2">
+              {filteredBlogs.map((b, i) => (
+                <motion.div key={b.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                  className="group bg-surface border border-white/[0.06] rounded-xl p-4 hover:border-white/10 hover:bg-surface-2/50 transition-all">
+                  <div className="flex gap-3 sm:gap-4">
+                    {b.image ? (
+                      <img src={b.image} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0 hidden sm:block ring-1 ring-white/10" />
+                    ) : (
+                      <div className="w-14 h-14 rounded-lg bg-surface-2 border border-white/10 flex items-center justify-center shrink-0 hidden sm:flex">
+                        <Ico.Doc className="w-6 h-6 text-gray-700" />
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-semibold text-gray-900 truncate">{b.title}</h3>
+                            <h3 className="font-semibold text-gray-100 text-sm truncate">{b.title}</h3>
                             <Badge color={b.is_external ? 'blue' : 'green'}>{b.is_external ? 'External' : 'Site İçi'}</Badge>
                           </div>
-                          <p className="text-gray-500 text-sm mt-0.5 line-clamp-1">{b.summary}</p>
-                          <div className="flex items-center gap-2 mt-1 flex-wrap">
-                            {b.published_at && <span className="text-gray-400 text-xs">{new Date(b.published_at).toLocaleDateString('tr-TR')}</span>}
-                            {ensureArray(b.tags).length > 0 && ensureArray(b.tags).slice(0, 3).map((t) => <Badge key={t}>{t}</Badge>)}
+                          {b.summary && <p className="text-gray-500 text-xs mt-0.5 line-clamp-1">{b.summary}</p>}
+                          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                            {b.published_at && <span className="text-gray-700 text-xs">{new Date(b.published_at).toLocaleDateString('tr-TR')}</span>}
+                            {ensureArray(b.tags).slice(0, 3).map((t) => <Badge key={t}>{t}</Badge>)}
                           </div>
                         </div>
-                        <div className="flex gap-2 shrink-0">
+                        <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {b.is_external && b.external_url && (
+                            <a href={b.external_url} target="_blank" rel="noreferrer" className="p-1.5 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/5 transition-colors cursor-pointer">
+                              <Ico.link className="w-3.5 h-3.5" />
+                            </a>
+                          )}
                           <button onClick={() => setEditBlog({ ...b, tags: ensureArray(b.tags) })}
-                            className="text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer">Düzenle</button>
+                            className="p-1.5 rounded-lg text-gray-600 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <Ico.edit className="w-3.5 h-3.5" />
+                          </button>
                           <button onClick={() => handleDeleteBlog(b.id)}
-                            className="text-red-500 hover:text-red-700 text-sm font-medium cursor-pointer">Sil</button>
+                            className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer">
+                            <Ico.trash className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-              {blogs.length === 0 && <p className="text-gray-400 text-center py-10 text-sm">Henüz blog eklenmedi.</p>}
+              {filteredBlogs.length === 0 && (
+                <div className="text-center py-16">
+                  <div className="w-14 h-14 rounded-xl bg-surface border border-white/10 flex items-center justify-center mx-auto mb-3">
+                    <Ico.Doc className="w-7 h-7 text-gray-700" />
+                  </div>
+                  <p className="text-gray-600 text-sm">{search ? `"${search}" için sonuç bulunamadı.` : 'Henüz blog eklenmedi.'}</p>
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* ════════════════ MODALS ════════════════ */}
+      {/* ════ MODALS ════ */}
 
-      {/* ── Add Project ── */}
+      {/* Add Project */}
       {showProjectModal && (
         <Modal title="Yeni Proje Ekle" onClose={() => setShowProjectModal(false)}>
-          {addError && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{addError}</div>}
+          {addError && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm flex gap-2"><Ico.Warn className="w-4 h-4 shrink-0 mt-0.5" />{addError}</div>}
           <form onSubmit={async (e) => {
-            e.preventDefault();
-            setAddLoading(true); setAddError('');
+            e.preventDefault(); setAddLoading(true); setAddError('');
             if (!newProject.title) { setAddError('Başlık zorunlu!'); setAddLoading(false); return; }
             let imageUrl = null;
             try {
-              if (newProject.image) {
-                const { data: d, error: e2 } = await uploadProjectImage(newProject.image);
-                if (e2) throw e2;
-                imageUrl = d.publicUrl;
-              }
-              const { error } = await addProject({ ...newProject, technologies: newProject.technologies, image: imageUrl });
+              if (newProject.image) { const { data: d, error: e2 } = await uploadProjectImage(newProject.image); if (e2) throw e2; imageUrl = d.publicUrl; }
+              const { error } = await addProject({ ...newProject, image: imageUrl });
               if (error) throw error;
-              setShowProjectModal(false); setNewProject(emptyProject); setImagePreview(null); fetchData();
+              setShowProjectModal(false); setNewProject(emptyProject); setImagePreview(null); fetchData(); toast('Proje başarıyla eklendi!');
             } catch (err) { setAddError('Proje eklenemedi: ' + (err.message || err)); }
             finally { setAddLoading(false); }
           }} className="space-y-4">
-            <Field label="Başlık" required>
-              <input type="text" value={newProject.title} onChange={(e) => setNewProject({ ...newProject, title: e.target.value })} required className={inputCls} placeholder="Proje başlığı" />
-            </Field>
-            <Field label="Açıklama">
-              <textarea value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} className={`${inputCls} resize-none`} rows={3} placeholder="Proje açıklaması" />
-            </Field>
-            <Field label="Teknolojiler" hint="Yazıp Enter'a basarak ekleyin">
-              <TagInput tags={newProject.technologies} onChange={(t) => setNewProject({ ...newProject, technologies: t })} placeholder="React, Node.js..." />
-            </Field>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="GitHub URL">
-                <input type="url" value={newProject.github_url} onChange={(e) => setNewProject({ ...newProject, github_url: e.target.value })} className={inputCls} placeholder="https://github.com/..." />
-              </Field>
-              <Field label="Canlı Demo URL">
-                <input type="url" value={newProject.live_url} onChange={(e) => setNewProject({ ...newProject, live_url: e.target.value })} className={inputCls} placeholder="https://..." />
-              </Field>
+            <Field label="Başlık" required><input type="text" value={newProject.title} onChange={(e) => setNewProject({ ...newProject, title: e.target.value })} required className={inputCls} placeholder="Proje başlığı" autoFocus /></Field>
+            <Field label="Açıklama"><textarea value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} className={`${inputCls} resize-none`} rows={3} placeholder="Proje açıklaması" /></Field>
+            <Field label="Teknolojiler" hint="Yazıp Enter'a basarak ekleyin"><TagInput tags={newProject.technologies} onChange={(t) => setNewProject({ ...newProject, technologies: t })} placeholder="React, Node.js..." /></Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="GitHub URL"><input type="url" value={newProject.github_url} onChange={(e) => setNewProject({ ...newProject, github_url: e.target.value })} className={inputCls} placeholder="https://github.com/..." /></Field>
+              <Field label="Canlı Demo"><input type="url" value={newProject.live_url} onChange={(e) => setNewProject({ ...newProject, live_url: e.target.value })} className={inputCls} placeholder="https://..." /></Field>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Proje Tarihi">
-                <input type="date" value={newProject.project_date} onChange={(e) => setNewProject({ ...newProject, project_date: e.target.value })} className={inputCls} />
-              </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Proje Tarihi"><input type="date" value={newProject.project_date} onChange={(e) => setNewProject({ ...newProject, project_date: e.target.value })} className={inputCls} /></Field>
               <div className="flex items-end pb-1">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={newProject.featured} onChange={(e) => setNewProject({ ...newProject, featured: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/40" />
-                  <span className="text-sm font-medium text-gray-700">Öne Çıkan Proje</span>
+                  <input type="checkbox" checked={newProject.featured} onChange={(e) => setNewProject({ ...newProject, featured: e.target.checked })} className="w-4 h-4 rounded border-white/20 bg-surface-2 text-primary focus:ring-primary/40" />
+                  <span className="text-sm font-medium text-gray-300">Öne Çıkan</span>
                 </label>
               </div>
             </div>
             <Field label="Görsel">
-              <input type="file" accept="image/*" onChange={(e) => {
-                const f = e.target.files[0];
-                setNewProject({ ...newProject, image: f });
-                setImagePreview(f ? URL.createObjectURL(f) : null);
-              }} className={inputCls} />
-              {imagePreview && <img src={imagePreview} alt="Önizleme" className="mt-2 rounded-lg max-h-32 mx-auto" />}
+              <ImageUpload preview={imagePreview} onChange={(e) => { const f = e.target.files[0]; setNewProject({ ...newProject, image: f }); setImagePreview(f ? URL.createObjectURL(f) : null); }} onClear={() => { setNewProject({ ...newProject, image: null }); setImagePreview(null); }} />
             </Field>
-            <button type="submit" disabled={addLoading}
-              className={`w-full py-3 rounded-lg font-semibold text-sm transition-all cursor-pointer ${addLoading ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg'}`}>
+            <button type="submit" disabled={addLoading} className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer ${addLoading ? 'bg-primary/30 text-primary/50 cursor-not-allowed' : 'bg-primary text-canvas hover:bg-primary/90 shadow-lg shadow-primary/10'}`}>
               {addLoading ? 'Ekleniyor...' : 'Projeyi Ekle'}
             </button>
           </form>
         </Modal>
       )}
 
-      {/* ── Edit Project ── */}
+      {/* Edit Project */}
       {editProject && (
         <Modal title="Projeyi Düzenle" onClose={() => { setEditProject(null); setEditError(''); }}>
-          {editError && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{editError}</div>}
+          {editError && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm flex gap-2"><Ico.Warn className="w-4 h-4 shrink-0 mt-0.5" />{editError}</div>}
           <form onSubmit={async (e) => {
-            e.preventDefault();
-            setEditLoading(true); setEditError('');
+            e.preventDefault(); setEditLoading(true); setEditError('');
             if (!editProject.title) { setEditError('Başlık zorunlu!'); setEditLoading(false); return; }
             try {
-              const { error } = await updateProject(editProject.id, {
-                title: editProject.title, description: editProject.description,
-                technologies: editProject.technologies,
-                github_url: editProject.github_url, live_url: editProject.live_url,
-                project_date: editProject.project_date, featured: editProject.featured, image: editProject.image,
-              });
+              const { error } = await updateProject(editProject.id, { title: editProject.title, description: editProject.description, technologies: editProject.technologies, github_url: editProject.github_url, live_url: editProject.live_url, project_date: editProject.project_date, featured: editProject.featured, image: editProject.image });
               if (error) throw error;
-              setEditProject(null); fetchData();
+              setEditProject(null); fetchData(); toast('Proje güncellendi!');
             } catch (err) { setEditError('Güncellenemedi: ' + (err.message || err)); }
             finally { setEditLoading(false); }
           }} className="space-y-4">
-            <Field label="Başlık" required>
-              <input type="text" value={editProject.title} onChange={(e) => setEditProject({ ...editProject, title: e.target.value })} required className={inputCls} />
-            </Field>
-            <Field label="Açıklama">
-              <textarea value={editProject.description} onChange={(e) => setEditProject({ ...editProject, description: e.target.value })} className={`${inputCls} resize-none`} rows={3} />
-            </Field>
-            <Field label="Teknolojiler" hint="Yazıp Enter'a basarak ekleyin">
-              <TagInput tags={ensureArray(editProject.technologies)} onChange={(t) => setEditProject({ ...editProject, technologies: t })} />
-            </Field>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="GitHub URL">
-                <input type="url" value={editProject.github_url || ''} onChange={(e) => setEditProject({ ...editProject, github_url: e.target.value })} className={inputCls} />
-              </Field>
-              <Field label="Canlı Demo URL">
-                <input type="url" value={editProject.live_url || ''} onChange={(e) => setEditProject({ ...editProject, live_url: e.target.value })} className={inputCls} />
-              </Field>
+            <Field label="Başlık" required><input type="text" value={editProject.title} onChange={(e) => setEditProject({ ...editProject, title: e.target.value })} required className={inputCls} /></Field>
+            <Field label="Açıklama"><textarea value={editProject.description || ''} onChange={(e) => setEditProject({ ...editProject, description: e.target.value })} className={`${inputCls} resize-none`} rows={3} /></Field>
+            <Field label="Teknolojiler" hint="Yazıp Enter'a basarak ekleyin"><TagInput tags={ensureArray(editProject.technologies)} onChange={(t) => setEditProject({ ...editProject, technologies: t })} /></Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="GitHub URL"><input type="url" value={editProject.github_url || ''} onChange={(e) => setEditProject({ ...editProject, github_url: e.target.value })} className={inputCls} /></Field>
+              <Field label="Canlı Demo"><input type="url" value={editProject.live_url || ''} onChange={(e) => setEditProject({ ...editProject, live_url: e.target.value })} className={inputCls} /></Field>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Proje Tarihi">
-                <input type="date" value={editProject.project_date || ''} onChange={(e) => setEditProject({ ...editProject, project_date: e.target.value })} className={inputCls} />
-              </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Proje Tarihi"><input type="date" value={editProject.project_date || ''} onChange={(e) => setEditProject({ ...editProject, project_date: e.target.value })} className={inputCls} /></Field>
               <div className="flex items-end pb-1">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={!!editProject.featured} onChange={(e) => setEditProject({ ...editProject, featured: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/40" />
-                  <span className="text-sm font-medium text-gray-700">Öne Çıkan Proje</span>
+                  <input type="checkbox" checked={!!editProject.featured} onChange={(e) => setEditProject({ ...editProject, featured: e.target.checked })} className="w-4 h-4 rounded border-white/20 bg-surface-2 text-primary focus:ring-primary/40" />
+                  <span className="text-sm font-medium text-gray-300">Öne Çıkan</span>
                 </label>
               </div>
             </div>
             <Field label="Görsel">
-              <input type="file" accept="image/*" onChange={async (e) => {
+              <ImageUpload value={editProject.image} onChange={async (e) => {
                 const f = e.target.files[0];
-                if (f) {
-                  const { data: d, error: e2 } = await uploadProjectImage(f);
-                  if (e2) { setEditError('Görsel yüklenemedi: ' + e2.message); return; }
-                  setEditProject({ ...editProject, image: d.publicUrl });
-                }
-              }} className={inputCls} />
-              {editProject.image && <img src={editProject.image} alt="" className="mt-2 rounded-lg max-h-32 mx-auto" />}
+                if (f) { const { data: d, error: e2 } = await uploadProjectImage(f); if (e2) { setEditError('Görsel yüklenemedi: ' + e2.message); return; } setEditProject({ ...editProject, image: d.publicUrl }); }
+              }} />
+              {editProject.image && <img src={editProject.image} alt="" className="mt-2 rounded-lg max-h-28 mx-auto ring-1 ring-white/10" />}
             </Field>
-            <button type="submit" disabled={editLoading}
-              className={`w-full py-3 rounded-lg font-semibold text-sm transition-all cursor-pointer ${editLoading ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg'}`}>
+            <button type="submit" disabled={editLoading} className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer ${editLoading ? 'bg-primary/30 text-primary/50 cursor-not-allowed' : 'bg-primary text-canvas hover:bg-primary/90 shadow-lg shadow-primary/10'}`}>
               {editLoading ? 'Kaydediliyor...' : 'Kaydet'}
             </button>
           </form>
         </Modal>
       )}
 
-      {/* ── Add Certificate ── */}
+      {/* Add Certificate */}
       {showCertificateModal && (
         <Modal title="Yeni Sertifika Ekle" onClose={() => setShowCertificateModal(false)}>
-          {addCertificateError && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{addCertificateError}</div>}
+          {addCertError && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm flex gap-2"><Ico.Warn className="w-4 h-4 shrink-0 mt-0.5" />{addCertError}</div>}
           <form onSubmit={async (e) => {
-            e.preventDefault();
-            setAddCertificateLoading(true); setAddCertificateError('');
-            if (!newCertificate.title) { setAddCertificateError('Başlık zorunlu!'); setAddCertificateLoading(false); return; }
+            e.preventDefault(); setAddCertLoading(true); setAddCertError('');
+            if (!newCertificate.title) { setAddCertError('Başlık zorunlu!'); setAddCertLoading(false); return; }
             let imageUrl = null;
             try {
-              if (newCertificate.image) {
-                const { data: d, error: e2 } = await uploadCertificateImage(newCertificate.image);
-                if (e2) throw e2;
-                imageUrl = d.publicUrl;
-              }
+              if (newCertificate.image) { const { data: d, error: e2 } = await uploadCertificateImage(newCertificate.image); if (e2) throw e2; imageUrl = d.publicUrl; }
               const { error } = await addCertificate({ title: newCertificate.title, issuer: newCertificate.issuer, description: newCertificate.description, certificate_date: newCertificate.certificate_date, certificate_url: newCertificate.certificate_url, image: imageUrl });
               if (error) throw error;
-              setShowCertificateModal(false); setNewCertificate(emptyCert); setCertificateImagePreview(null); fetchData();
-            } catch (err) { setAddCertificateError('Eklenemedi: ' + (err.message || err)); }
-            finally { setAddCertificateLoading(false); }
+              setShowCertificateModal(false); setNewCertificate(emptyCert); setCertImagePreview(null); fetchData(); toast('Sertifika başarıyla eklendi!');
+            } catch (err) { setAddCertError('Eklenemedi: ' + (err.message || err)); }
+            finally { setAddCertLoading(false); }
           }} className="space-y-4">
-            <Field label="Başlık" required>
-              <input type="text" value={newCertificate.title} onChange={(e) => setNewCertificate({ ...newCertificate, title: e.target.value })} required className={inputCls} placeholder="Sertifika başlığı" />
-            </Field>
-            <Field label="Kurum">
-              <input type="text" value={newCertificate.issuer} onChange={(e) => setNewCertificate({ ...newCertificate, issuer: e.target.value })} className={inputCls} placeholder="Veren kurum" />
-            </Field>
-            <Field label="Açıklama">
-              <textarea value={newCertificate.description} onChange={(e) => setNewCertificate({ ...newCertificate, description: e.target.value })} className={`${inputCls} resize-none`} rows={3} placeholder="Sertifika açıklaması" />
-            </Field>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Tarih">
-                <input type="date" value={newCertificate.certificate_date} onChange={(e) => setNewCertificate({ ...newCertificate, certificate_date: e.target.value })} className={inputCls} />
-              </Field>
-              <Field label="Sertifika URL">
-                <input type="url" value={newCertificate.certificate_url} onChange={(e) => setNewCertificate({ ...newCertificate, certificate_url: e.target.value })} className={inputCls} placeholder="https://..." />
-              </Field>
+            <Field label="Başlık" required><input type="text" value={newCertificate.title} onChange={(e) => setNewCertificate({ ...newCertificate, title: e.target.value })} required className={inputCls} placeholder="Sertifika başlığı" autoFocus /></Field>
+            <Field label="Kurum"><input type="text" value={newCertificate.issuer} onChange={(e) => setNewCertificate({ ...newCertificate, issuer: e.target.value })} className={inputCls} placeholder="Veren kurum" /></Field>
+            <Field label="Açıklama"><textarea value={newCertificate.description} onChange={(e) => setNewCertificate({ ...newCertificate, description: e.target.value })} className={`${inputCls} resize-none`} rows={3} placeholder="Sertifika açıklaması" /></Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Tarih"><input type="date" value={newCertificate.certificate_date} onChange={(e) => setNewCertificate({ ...newCertificate, certificate_date: e.target.value })} className={inputCls} /></Field>
+              <Field label="Sertifika URL"><input type="url" value={newCertificate.certificate_url} onChange={(e) => setNewCertificate({ ...newCertificate, certificate_url: e.target.value })} className={inputCls} placeholder="https://..." /></Field>
             </div>
             <Field label="Görsel">
-              <input type="file" accept="image/*" onChange={(e) => {
-                const f = e.target.files[0];
-                setNewCertificate({ ...newCertificate, image: f });
-                setCertificateImagePreview(f ? URL.createObjectURL(f) : null);
-              }} className={inputCls} />
-              {certificateImagePreview && <img src={certificateImagePreview} alt="Önizleme" className="mt-2 rounded-lg max-h-32 mx-auto" />}
+              <ImageUpload preview={certImagePreview} onChange={(e) => { const f = e.target.files[0]; setNewCertificate({ ...newCertificate, image: f }); setCertImagePreview(f ? URL.createObjectURL(f) : null); }} onClear={() => { setNewCertificate({ ...newCertificate, image: null }); setCertImagePreview(null); }} />
             </Field>
-            <button type="submit" disabled={addCertificateLoading}
-              className={`w-full py-3 rounded-lg font-semibold text-sm transition-all cursor-pointer ${addCertificateLoading ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg'}`}>
-              {addCertificateLoading ? 'Ekleniyor...' : 'Sertifikayı Ekle'}
+            <button type="submit" disabled={addCertLoading} className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer ${addCertLoading ? 'bg-primary/30 text-primary/50 cursor-not-allowed' : 'bg-primary text-canvas hover:bg-primary/90 shadow-lg shadow-primary/10'}`}>
+              {addCertLoading ? 'Ekleniyor...' : 'Sertifikayı Ekle'}
             </button>
           </form>
         </Modal>
       )}
 
-      {/* ── Edit Certificate ── */}
+      {/* Edit Certificate */}
       {editCertificate && (
-        <Modal title="Sertifikayı Düzenle" onClose={() => { setEditCertificate(null); setEditCertificateError(''); }}>
-          {editCertificateError && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{editCertificateError}</div>}
+        <Modal title="Sertifikayı Düzenle" onClose={() => { setEditCertificate(null); setEditCertError(''); }}>
+          {editCertError && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm flex gap-2"><Ico.Warn className="w-4 h-4 shrink-0 mt-0.5" />{editCertError}</div>}
           <form onSubmit={async (e) => {
-            e.preventDefault();
-            setEditCertificateLoading(true); setEditCertificateError('');
-            if (!editCertificate.title) { setEditCertificateError('Başlık zorunlu!'); setEditCertificateLoading(false); return; }
+            e.preventDefault(); setEditCertLoading(true); setEditCertError('');
+            if (!editCertificate.title) { setEditCertError('Başlık zorunlu!'); setEditCertLoading(false); return; }
             try {
               let imageUrl = editCertificate.image;
-              if (editCertificate.newImage) {
-                const { data: d, error: e2 } = await uploadCertificateImage(editCertificate.newImage);
-                if (e2) throw e2;
-                imageUrl = d.publicUrl;
-              }
+              if (editCertificate.newImage) { const { data: d, error: e2 } = await uploadCertificateImage(editCertificate.newImage); if (e2) throw e2; imageUrl = d.publicUrl; }
               const { error } = await updateCertificate(editCertificate.id, { title: editCertificate.title, issuer: editCertificate.issuer, description: editCertificate.description, certificate_date: editCertificate.certificate_date, certificate_url: editCertificate.certificate_url, image: imageUrl });
               if (error) throw error;
-              setEditCertificate(null); fetchData();
-            } catch (err) { setEditCertificateError('Güncellenemedi: ' + (err.message || err)); }
-            finally { setEditCertificateLoading(false); }
+              setEditCertificate(null); fetchData(); toast('Sertifika güncellendi!');
+            } catch (err) { setEditCertError('Güncellenemedi: ' + (err.message || err)); }
+            finally { setEditCertLoading(false); }
           }} className="space-y-4">
-            <Field label="Başlık" required>
-              <input type="text" value={editCertificate.title} onChange={(e) => setEditCertificate({ ...editCertificate, title: e.target.value })} required className={inputCls} />
-            </Field>
-            <Field label="Kurum">
-              <input type="text" value={editCertificate.issuer || ''} onChange={(e) => setEditCertificate({ ...editCertificate, issuer: e.target.value })} className={inputCls} />
-            </Field>
-            <Field label="Açıklama">
-              <textarea value={editCertificate.description || ''} onChange={(e) => setEditCertificate({ ...editCertificate, description: e.target.value })} className={`${inputCls} resize-none`} rows={3} />
-            </Field>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Tarih">
-                <input type="date" value={editCertificate.certificate_date || ''} onChange={(e) => setEditCertificate({ ...editCertificate, certificate_date: e.target.value })} className={inputCls} />
-              </Field>
-              <Field label="Sertifika URL">
-                <input type="url" value={editCertificate.certificate_url || ''} onChange={(e) => setEditCertificate({ ...editCertificate, certificate_url: e.target.value })} className={inputCls} />
-              </Field>
+            <Field label="Başlık" required><input type="text" value={editCertificate.title} onChange={(e) => setEditCertificate({ ...editCertificate, title: e.target.value })} required className={inputCls} /></Field>
+            <Field label="Kurum"><input type="text" value={editCertificate.issuer || ''} onChange={(e) => setEditCertificate({ ...editCertificate, issuer: e.target.value })} className={inputCls} /></Field>
+            <Field label="Açıklama"><textarea value={editCertificate.description || ''} onChange={(e) => setEditCertificate({ ...editCertificate, description: e.target.value })} className={`${inputCls} resize-none`} rows={3} /></Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Tarih"><input type="date" value={editCertificate.certificate_date || ''} onChange={(e) => setEditCertificate({ ...editCertificate, certificate_date: e.target.value })} className={inputCls} /></Field>
+              <Field label="Sertifika URL"><input type="url" value={editCertificate.certificate_url || ''} onChange={(e) => setEditCertificate({ ...editCertificate, certificate_url: e.target.value })} className={inputCls} /></Field>
             </div>
             <Field label="Görsel">
-              <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files[0]; if (f) setEditCertificate({ ...editCertificate, newImage: f }); }} className={inputCls} />
-              {editCertificate.image && <img src={editCertificate.image} alt="" className="mt-2 rounded-lg max-h-32 mx-auto" />}
+              <ImageUpload onChange={(e) => { const f = e.target.files[0]; if (f) setEditCertificate({ ...editCertificate, newImage: f }); }} />
+              {editCertificate.image && <img src={editCertificate.image} alt="" className="mt-2 rounded-lg max-h-28 mx-auto ring-1 ring-white/10" />}
             </Field>
-            <button type="submit" disabled={editCertificateLoading}
-              className={`w-full py-3 rounded-lg font-semibold text-sm transition-all cursor-pointer ${editCertificateLoading ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg'}`}>
-              {editCertificateLoading ? 'Kaydediliyor...' : 'Kaydet'}
+            <button type="submit" disabled={editCertLoading} className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer ${editCertLoading ? 'bg-primary/30 text-primary/50 cursor-not-allowed' : 'bg-primary text-canvas hover:bg-primary/90 shadow-lg shadow-primary/10'}`}>
+              {editCertLoading ? 'Kaydediliyor...' : 'Kaydet'}
             </button>
           </form>
         </Modal>
       )}
 
-      {/* ── Add Blog ── */}
+      {/* Add Blog */}
       {showBlogModal && (
-        <Modal title="Yeni Blog Ekle" onClose={() => setShowBlogModal(false)}>
-          {addBlogError && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{addBlogError}</div>}
+        <Modal title="Yeni Blog Ekle" onClose={() => setShowBlogModal(false)} wide>
+          {addBlogError && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm flex gap-2"><Ico.Warn className="w-4 h-4 shrink-0 mt-0.5" />{addBlogError}</div>}
           <form onSubmit={async (e) => {
-            e.preventDefault();
-            setAddBlogLoading(true); setAddBlogError('');
+            e.preventDefault(); setAddBlogLoading(true); setAddBlogError('');
             if (!newBlog.title) { setAddBlogError('Başlık zorunlu!'); setAddBlogLoading(false); return; }
             let imageUrl = null;
             try {
-              if (newBlog.image) {
-                const webp = await convertToWebP(newBlog.image);
-                const { data: d, error: e2 } = await uploadBlogImage(webp);
-                if (e2) throw e2;
-                imageUrl = d.publicUrl;
-              }
-              const { error } = await addBlog({ 
-                title: newBlog.title, 
-                slug: slugify(newBlog.title),
-                summary: newBlog.summary, 
-                content: newBlog.content, 
-                tags: newBlog.tags, 
-                is_external: newBlog.is_external, 
-                external_url: newBlog.external_url, 
-                image: imageUrl, 
-                published_at: newBlog.published_at || null 
-              });
+              if (newBlog.image) { const webp = await convertToWebP(newBlog.image); const { data: d, error: e2 } = await uploadBlogImage(webp); if (e2) throw e2; imageUrl = d.publicUrl; }
+              const { error } = await addBlog({ title: newBlog.title, slug: slugify(newBlog.title), summary: newBlog.summary, content: newBlog.content, tags: newBlog.tags, is_external: newBlog.is_external, external_url: newBlog.external_url, image: imageUrl, published_at: newBlog.published_at || null });
               if (error) throw error;
-              setShowBlogModal(false); setNewBlog(emptyBlog); setBlogImagePreview(null); fetchData();
+              setShowBlogModal(false); setNewBlog(emptyBlog); setBlogImagePreview(null); fetchData(); toast('Blog başarıyla yayınlandı!');
             } catch (err) { setAddBlogError('Eklenemedi: ' + (err.message || err)); }
             finally { setAddBlogLoading(false); }
           }} className="space-y-4">
-            <Field label="Başlık" required>
-              <input type="text" value={newBlog.title} onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })} required className={inputCls} placeholder="Blog başlığı" />
-            </Field>
-            <Field label="Özet">
-              <textarea value={newBlog.summary} onChange={(e) => setNewBlog({ ...newBlog, summary: e.target.value })} className={`${inputCls} resize-none`} rows={2} placeholder="Kısa özet" />
-            </Field>
-            <Field label="İçerik">
-              <RichEditor key="new-blog" value={newBlog.content} onChange={(v) => setNewBlog({ ...newBlog, content: v })} />
-            </Field>
-            <Field label="Etiketler" hint="Yazıp Enter'a basarak ekleyin">
-              <TagInput tags={newBlog.tags} onChange={(t) => setNewBlog({ ...newBlog, tags: t })} placeholder="React, Supabase..." />
-            </Field>
+            <Field label="Başlık" required><input type="text" value={newBlog.title} onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })} required className={inputCls} placeholder="Blog başlığı" autoFocus /></Field>
+            <Field label="Özet"><textarea value={newBlog.summary} onChange={(e) => setNewBlog({ ...newBlog, summary: e.target.value })} className={`${inputCls} resize-none`} rows={2} placeholder="Kısa özet" /></Field>
+            <Field label="İçerik"><RichEditor key="new-blog" value={newBlog.content} onChange={(v) => setNewBlog({ ...newBlog, content: v })} onImageUpload={async (file) => { const webp = await convertToWebP(file); const { data: d, error: e2 } = await uploadBlogImage(webp); if (e2) { toast('Görsel yüklenemedi.', 'error'); return null; } return d.publicUrl; }} /></Field>
+            <Field label="Etiketler" hint="Yazıp Enter'a basarak ekleyin"><TagInput tags={newBlog.tags} onChange={(t) => setNewBlog({ ...newBlog, tags: t })} placeholder="React, Supabase..." /></Field>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={newBlog.is_external} onChange={(e) => setNewBlog({ ...newBlog, is_external: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/40" />
-              <span className="text-sm font-medium text-gray-700">Dış bağlantı (Medium vb.)</span>
+              <input type="checkbox" checked={newBlog.is_external} onChange={(e) => setNewBlog({ ...newBlog, is_external: e.target.checked })} className="w-4 h-4 rounded border-white/20 bg-surface-2 text-primary focus:ring-primary/40" />
+              <span className="text-sm font-medium text-gray-300">Dış bağlantı (Medium vb.)</span>
             </label>
             {newBlog.is_external && (
-              <Field label="External URL">
-                <input type="url" value={newBlog.external_url} onChange={(e) => setNewBlog({ ...newBlog, external_url: e.target.value })} className={inputCls} placeholder="https://medium.com/..." />
-              </Field>
+              <Field label="External URL"><input type="url" value={newBlog.external_url} onChange={(e) => setNewBlog({ ...newBlog, external_url: e.target.value })} className={inputCls} placeholder="https://medium.com/..." /></Field>
             )}
-            <Field label="Yayın Tarihi">
-              <input type="date" value={newBlog.published_at} onChange={(e) => setNewBlog({ ...newBlog, published_at: e.target.value })} className={inputCls} />
-            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Yayın Tarihi"><input type="date" value={newBlog.published_at} onChange={(e) => setNewBlog({ ...newBlog, published_at: e.target.value })} className={inputCls} /></Field>
+            </div>
             <Field label="Kapak Görseli">
-              <input type="file" accept="image/*" onChange={(e) => {
-                const f = e.target.files[0];
-                setNewBlog({ ...newBlog, image: f });
-                setBlogImagePreview(f ? URL.createObjectURL(f) : null);
-              }} className={inputCls} />
-              {blogImagePreview && <img src={blogImagePreview} alt="Önizleme" className="mt-2 rounded-lg max-h-32 mx-auto" />}
+              <ImageUpload preview={blogImagePreview} onChange={(e) => { const f = e.target.files[0]; setNewBlog({ ...newBlog, image: f }); setBlogImagePreview(f ? URL.createObjectURL(f) : null); }} onClear={() => { setNewBlog({ ...newBlog, image: null }); setBlogImagePreview(null); }} />
             </Field>
-            <button type="submit" disabled={addBlogLoading}
-              className={`w-full py-3 rounded-lg font-semibold text-sm transition-all cursor-pointer ${addBlogLoading ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg'}`}>
-              {addBlogLoading ? 'Ekleniyor...' : 'Blogu Yayınla'}
+            <button type="submit" disabled={addBlogLoading} className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer ${addBlogLoading ? 'bg-primary/30 text-primary/50 cursor-not-allowed' : 'bg-primary text-canvas hover:bg-primary/90 shadow-lg shadow-primary/10'}`}>
+              {addBlogLoading ? 'Yayınlanıyor...' : 'Blogu Yayınla'}
             </button>
           </form>
         </Modal>
       )}
 
-      {/* ── Edit Blog ── */}
+      {/* Edit Blog */}
       {editBlog && (
-        <Modal title="Blogu Düzenle" onClose={() => { setEditBlog(null); setEditBlogError(''); }}>
-          {editBlogError && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{editBlogError}</div>}
+        <Modal title="Blogu Düzenle" onClose={() => { setEditBlog(null); setEditBlogError(''); }} wide>
+          {editBlogError && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm flex gap-2"><Ico.Warn className="w-4 h-4 shrink-0 mt-0.5" />{editBlogError}</div>}
           <form onSubmit={async (e) => {
-            e.preventDefault();
-            setEditBlogLoading(true); setEditBlogError('');
+            e.preventDefault(); setEditBlogLoading(true); setEditBlogError('');
             if (!editBlog.title) { setEditBlogError('Başlık zorunlu!'); setEditBlogLoading(false); return; }
             try {
               let imageUrl = editBlog.image;
-              if (editBlog.newImage) {
-                const webp = await convertToWebP(editBlog.newImage);
-                const { data: d, error: e2 } = await uploadBlogImage(webp);
-                if (e2) throw e2;
-                imageUrl = d.publicUrl;
-              }
-              const { error } = await updateBlog(editBlog.id, { 
-                title: editBlog.title, 
-                slug: slugify(editBlog.title),
-                summary: editBlog.summary, 
-                content: editBlog.content, 
-                tags: ensureArray(editBlog.tags), 
-                is_external: editBlog.is_external, 
-                external_url: editBlog.external_url, 
-                image: imageUrl, 
-                published_at: editBlog.published_at || null 
-              });
+              if (editBlog.newImage) { const webp = await convertToWebP(editBlog.newImage); const { data: d, error: e2 } = await uploadBlogImage(webp); if (e2) throw e2; imageUrl = d.publicUrl; }
+              const { error } = await updateBlog(editBlog.id, { title: editBlog.title, slug: slugify(editBlog.title), summary: editBlog.summary, content: editBlog.content, tags: ensureArray(editBlog.tags), is_external: editBlog.is_external, external_url: editBlog.external_url, image: imageUrl, published_at: editBlog.published_at || null });
               if (error) throw error;
-              setEditBlog(null); fetchData();
+              setEditBlog(null); fetchData(); toast('Blog güncellendi!');
             } catch (err) { setEditBlogError('Güncellenemedi: ' + (err.message || err)); }
             finally { setEditBlogLoading(false); }
           }} className="space-y-4">
-            <Field label="Başlık" required>
-              <input type="text" value={editBlog.title} onChange={(e) => setEditBlog({ ...editBlog, title: e.target.value })} required className={inputCls} />
-            </Field>
-            <Field label="Özet">
-              <textarea value={editBlog.summary || ''} onChange={(e) => setEditBlog({ ...editBlog, summary: e.target.value })} className={`${inputCls} resize-none`} rows={2} />
-            </Field>
-            <Field label="İçerik">
-              <RichEditor key={editBlog.id} value={editBlog.content || ''} onChange={(v) => setEditBlog({ ...editBlog, content: v })} />
-            </Field>
-            <Field label="Etiketler" hint="Yazıp Enter'a basarak ekleyin">
-              <TagInput tags={ensureArray(editBlog.tags)} onChange={(t) => setEditBlog({ ...editBlog, tags: t })} />
-            </Field>
+            <Field label="Başlık" required><input type="text" value={editBlog.title} onChange={(e) => setEditBlog({ ...editBlog, title: e.target.value })} required className={inputCls} /></Field>
+            <Field label="Özet"><textarea value={editBlog.summary || ''} onChange={(e) => setEditBlog({ ...editBlog, summary: e.target.value })} className={`${inputCls} resize-none`} rows={2} /></Field>
+            <Field label="İçerik"><RichEditor key={editBlog.id} value={editBlog.content || ''} onChange={(v) => setEditBlog({ ...editBlog, content: v })} onImageUpload={async (file) => { const webp = await convertToWebP(file); const { data: d, error: e2 } = await uploadBlogImage(webp); if (e2) { toast('Görsel yüklenemedi.', 'error'); return null; } return d.publicUrl; }} /></Field>
+            <Field label="Etiketler" hint="Yazıp Enter'a basarak ekleyin"><TagInput tags={ensureArray(editBlog.tags)} onChange={(t) => setEditBlog({ ...editBlog, tags: t })} /></Field>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={!!editBlog.is_external} onChange={(e) => setEditBlog({ ...editBlog, is_external: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/40" />
-              <span className="text-sm font-medium text-gray-700">Dış bağlantı (Medium vb.)</span>
+              <input type="checkbox" checked={!!editBlog.is_external} onChange={(e) => setEditBlog({ ...editBlog, is_external: e.target.checked })} className="w-4 h-4 rounded border-white/20 bg-surface-2 text-primary focus:ring-primary/40" />
+              <span className="text-sm font-medium text-gray-300">Dış bağlantı (Medium vb.)</span>
             </label>
             {editBlog.is_external && (
-              <Field label="External URL">
-                <input type="url" value={editBlog.external_url || ''} onChange={(e) => setEditBlog({ ...editBlog, external_url: e.target.value })} className={inputCls} />
-              </Field>
+              <Field label="External URL"><input type="url" value={editBlog.external_url || ''} onChange={(e) => setEditBlog({ ...editBlog, external_url: e.target.value })} className={inputCls} /></Field>
             )}
-            <Field label="Yayın Tarihi">
-              <input type="date" value={editBlog.published_at ? editBlog.published_at.substring(0, 10) : ''} onChange={(e) => setEditBlog({ ...editBlog, published_at: e.target.value })} className={inputCls} />
-            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Yayın Tarihi"><input type="date" value={editBlog.published_at ? editBlog.published_at.substring(0, 10) : ''} onChange={(e) => setEditBlog({ ...editBlog, published_at: e.target.value })} className={inputCls} /></Field>
+            </div>
             <Field label="Kapak Görseli">
-              <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files[0]; if (f) setEditBlog({ ...editBlog, newImage: f }); }} className={inputCls} />
-              {editBlog.image && <img src={editBlog.image} alt="" className="mt-2 rounded-lg max-h-32 mx-auto" />}
+              <ImageUpload onChange={(e) => { const f = e.target.files[0]; if (f) setEditBlog({ ...editBlog, newImage: f }); }} />
+              {editBlog.image && <img src={editBlog.image} alt="" className="mt-2 rounded-lg max-h-28 mx-auto ring-1 ring-white/10" />}
             </Field>
-            <button type="submit" disabled={editBlogLoading}
-              className={`w-full py-3 rounded-lg font-semibold text-sm transition-all cursor-pointer ${editBlogLoading ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-lg'}`}>
+            <button type="submit" disabled={editBlogLoading} className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer ${editBlogLoading ? 'bg-primary/30 text-primary/50 cursor-not-allowed' : 'bg-primary text-canvas hover:bg-primary/90 shadow-lg shadow-primary/10'}`}>
               {editBlogLoading ? 'Kaydediliyor...' : 'Kaydet'}
             </button>
           </form>
         </Modal>
       )}
+
+      {/* Confirm Modal */}
+      <ConfirmModal confirm={confirm} onCancel={() => setConfirm(null)} onConfirm={() => confirm?.onOk?.()} />
+
+      {/* Toasts */}
+      <ToastContainer toasts={toasts} remove={removeToast} />
     </div>
   );
 };

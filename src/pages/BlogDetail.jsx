@@ -186,17 +186,24 @@ const BlogDetail = () => {
           className="mb-14"
         >
           <div
-            className="prose prose-lg prose-invert max-w-none
-              prose-headings:font-display prose-headings:text-white prose-headings:font-bold
-              prose-p:text-zinc-300 prose-p:leading-relaxed prose-p:font-body
-              prose-a:text-emerald-400 prose-a:no-underline hover:prose-a:underline
-              prose-strong:text-white prose-strong:font-semibold
-              prose-code:text-emerald-400 prose-code:bg-white/[0.06] prose-code:px-2 prose-code:py-0.5 prose-code:rounded-md prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
-              prose-pre:bg-surface prose-pre:border prose-pre:border-white/[0.07] prose-pre:rounded-xl
-              prose-blockquote:border-l-emerald-500 prose-blockquote:bg-emerald-500/[0.04] prose-blockquote:rounded-r-xl prose-blockquote:italic prose-blockquote:text-zinc-300
-              prose-li:text-zinc-300 prose-li:font-body
-              prose-img:rounded-xl prose-img:border prose-img:border-white/[0.07]
-              [&_*]:!text-zinc-300 [&_h1]:!text-white [&_h2]:!text-white [&_h3]:!text-white [&_h4]:!text-white [&_strong]:!text-white [&_a]:!text-emerald-400"
+            className="blog-content max-w-none
+              [&_h2]:text-2xl [&_h2]:sm:text-3xl [&_h2]:font-bold [&_h2]:font-display [&_h2]:text-white [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:tracking-tight
+              [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:font-display [&_h3]:text-white [&_h3]:mt-8 [&_h3]:mb-3
+              [&_h4]:text-lg [&_h4]:font-semibold [&_h4]:text-white [&_h4]:mt-6 [&_h4]:mb-2
+              [&_p]:text-zinc-300 [&_p]:leading-7 [&_p]:mb-5 [&_p]:font-body
+              [&_a]:text-emerald-400 [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-emerald-400/40 [&_a]:transition-colors hover:[&_a]:text-emerald-300
+              [&_strong]:text-white [&_strong]:font-semibold
+              [&_em]:italic [&_em]:text-zinc-300
+              [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-5
+              [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-5
+              [&_li]:text-zinc-300 [&_li]:leading-7 [&_li]:mb-1.5
+              [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-500/50 [&_blockquote]:pl-5 [&_blockquote]:py-2 [&_blockquote]:my-8 [&_blockquote]:bg-emerald-500/[0.04] [&_blockquote]:rounded-r-xl [&_blockquote]:italic [&_blockquote]:text-zinc-400
+              [&_figure]:my-8 [&_figure]:block
+              [&_img]:rounded-xl [&_img]:border [&_img]:border-white/[0.07] [&_img]:inline-block [&_img]:max-w-full [&_img]:h-auto
+              [&_hr]:border-white/[0.07] [&_hr]:my-10
+              [&_table]:w-full [&_table]:my-6 [&_table]:border-collapse
+              [&_th]:border [&_th]:border-white/10 [&_th]:bg-surface [&_th]:px-4 [&_th]:py-2 [&_th]:text-white [&_th]:text-left [&_th]:text-sm [&_th]:font-semibold
+              [&_td]:border [&_td]:border-white/[0.07] [&_td]:px-4 [&_td]:py-2 [&_td]:text-zinc-300 [&_td]:text-sm"
             dangerouslySetInnerHTML={{ __html: blog.content || blog.excerpt }}
           />
         </motion.article>

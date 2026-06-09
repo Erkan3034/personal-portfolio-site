@@ -72,6 +72,7 @@ const Projects = () => {
 
   const allTechs = [...new Set(projects.flatMap((p) => p.technologies || []))];
   const filtered = filter === 'all' ? projects : projects.filter((p) => p.technologies?.includes(filter));
+  const techCount = (tech) => projects.filter((p) => p.technologies?.includes(tech)).length;
 
   if (loading) {
     return (
@@ -131,21 +132,44 @@ const Projects = () => {
         <motion.div
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="flex flex-wrap gap-2 mb-10"
+          className="relative mb-10"
         >
-          {['all', ...allTechs.slice(0, 8)].map((tech) => (
-            <button
-              key={tech}
-              onClick={() => setFilter(tech)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium font-body transition-all duration-200 cursor-pointer ${
-                filter === tech
-                  ? 'bg-emerald-500 text-black'
-                  : 'bg-surface border border-white/[0.07] text-zinc-400 hover:text-white hover:border-white/[0.15]'
-              }`}
-            >
-              {tech === 'all' ? t('projects.all') : tech}
-            </button>
-          ))}
+          {/* Fade edges */}
+          <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-canvas to-transparent z-10 pointer-events-none rounded-l-2xl" />
+          <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-canvas to-transparent z-10 pointer-events-none rounded-r-2xl" />
+
+          {/* Scroll container */}
+          <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="inline-flex items-center gap-1 p-1.5 bg-surface border border-white/[0.07] rounded-2xl min-w-max">
+              {['all', ...allTechs].map((tech) => (
+                <button
+                  key={tech}
+                  onClick={() => setFilter(tech)}
+                  className={`relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-sm font-medium font-body transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                    filter === tech
+                      ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20'
+                      : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                  }`}
+                >
+                  {tech === 'all' ? t('projects.all') : tech}
+                  {tech !== 'all' && (
+                    <span className={`text-[10px] font-mono px-1 py-0.5 rounded-md leading-none ${
+                      filter === tech ? 'bg-black/20 text-black/70' : 'bg-white/[0.07] text-zinc-600'
+                    }`}>
+                      {techCount(tech)}
+                    </span>
+                  )}
+                  {tech === 'all' && (
+                    <span className={`text-[10px] font-mono px-1 py-0.5 rounded-md leading-none ${
+                      filter === 'all' ? 'bg-black/20 text-black/70' : 'bg-white/[0.07] text-zinc-600'
+                    }`}>
+                      {projects.length}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
         </motion.div>
 
         {/* Grid */}

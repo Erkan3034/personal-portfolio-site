@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/index';
@@ -14,27 +14,36 @@ import ProjectDetail from './pages/ProjectDetail';
 import { LanguageProvider } from './context/LanguageContext';
 import './App.css';
 
+function AppContent() {
+  const location = useLocation();
+  const isAdmin = location.pathname === '/admin';
+
+  return (
+    <div className="App">
+      {!isAdmin && <Navbar />}
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/projects/:id" element={<ProjectDetail />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:idOrSlug" element={<BlogDetail />} />
+          <Route path="/certificates" element={<Certificates />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/admin" element={<Admin />} />
+        </Routes>
+      </main>
+      {!isAdmin && <Footer />}
+    </div>
+  );
+}
+
 function App() {
   return (
     <LanguageProvider>
       <Router>
-        <div className="App">
-          <Navbar />
-          <main>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/:id" element={<ProjectDetail />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:idOrSlug" element={<BlogDetail />} />
-              <Route path="/certificates" element={<Certificates />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/admin" element={<Admin />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <AppContent />
       </Router>
     </LanguageProvider>
   );

@@ -32,7 +32,7 @@ const SOCIALS = [
   },
   {
     name: 'Email',
-    url: 'mailto:turguterkan1306@gmail.com',
+    url: 'mailto:turguterkan55@gmail.com',
     icon: (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -56,7 +56,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-canvas border-t border-white/[0.06]">
-      <div className="max-w-screen-xl mx-auto px-8 sm:px-12 lg:px-16 py-14">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-8 md:px-12 lg:px-16 py-14">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
 
           {/* Brand */}
@@ -107,9 +107,9 @@ const Footer = () => {
             <h3 className="text-white text-sm font-semibold font-body mb-4 tracking-wide">{t('footer.contact')}</h3>
             <ul className="space-y-2.5">
               <li>
-                <a href="mailto:turguterkan1306@gmail.com"
+                <a href="mailto:turguterkan55@gmail.com"
                   className="text-zinc-500 hover:text-zinc-300 text-sm font-body transition-colors duration-150 break-all">
-                  turguterkan1306@gmail.com
+                  turguterkan55@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-2 text-zinc-500 text-sm font-body">

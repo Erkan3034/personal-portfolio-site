@@ -65,7 +65,7 @@ const Certificates = () => {
     <div className="min-h-screen bg-canvas pt-24">
       <SEOHead title={t('certificates.seoTitle')} description={t('certificates.seoDesc')} />
 
-      <div className="max-w-screen-xl mx-auto px-8 sm:px-12 lg:px-16 py-14">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-8 md:px-12 lg:px-16 py-14">
 
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-12">

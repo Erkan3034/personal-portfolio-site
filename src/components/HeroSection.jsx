@@ -45,7 +45,7 @@ const SOCIALS = [
   { href: 'https://github.com/Erkan3034', label: 'GitHub', Icon: GitHubIcon },
   { href: 'https://www.linkedin.com/in/erkanturgut1205', label: 'LinkedIn', Icon: LinkedInIcon },
   { href: 'https://x.com/Erkan_0630', label: 'X', Icon: XIcon },
-  { href: 'mailto:turguterkan1306@gmail.com', label: 'Email', Icon: EmailIcon, self: true },
+  { href: 'mailto:turguterkan55@gmail.com', label: 'Email', Icon: EmailIcon, self: true },
 ];
 
 const useTypewriter = (words) => {
@@ -115,7 +115,7 @@ const HeroSection = () => {
       <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-emerald-500/[0.06] blur-[120px] pointer-events-none" />
       <div className="absolute top-1/3 right-0 w-[300px] h-[300px] rounded-full bg-emerald-500/[0.04] blur-[80px] pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-screen-xl mx-auto px-8 sm:px-12 lg:px-16 pt-28 sm:pt-32 pb-24">
+      <div className="relative z-10 w-full max-w-screen-xl mx-auto px-4 sm:px-8 md:px-12 lg:px-16 pt-28 sm:pt-32 pb-24">
         <div className="grid lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_400px] gap-8 lg:gap-12 items-center">
 
           {/* ── Left: content ── */}
@@ -133,7 +133,7 @@ const HeroSection = () => {
             <motion.h1
               variants={itemAnim}
               className="font-display font-extrabold text-white leading-[0.88] tracking-tight mb-8 select-none"
-              style={{ fontSize: 'clamp(48px, 8.5vw, 104px)' }}
+              style={{ fontSize: 'clamp(40px, 8.5vw, 104px)' }}
             >
               ERKAN<br />
               <span className="text-zinc-500">TURGUT</span>
@@ -183,7 +183,7 @@ const HeroSection = () => {
             </motion.div>
 
             {/* Social links */}
-            <motion.div variants={itemAnim} className="flex items-center gap-1">
+            <motion.div variants={itemAnim} className="flex items-center flex-wrap gap-1">
               {SOCIALS.map(({ href, label, Icon, self }) => (
                 <motion.a
                   key={label}
@@ -199,9 +199,9 @@ const HeroSection = () => {
                 </motion.a>
               ))}
 
-              <div className="w-px h-4 bg-white/10 mx-3" />
+              <div className="hidden sm:block w-px h-4 bg-white/10 mx-3" />
 
-              <span className="font-mono text-xs text-zinc-700 select-all">
+              <span className="hidden sm:inline font-mono text-xs text-zinc-700 select-all">
                 turguterkan55@gmail.com
               </span>
             </motion.div>
@@ -264,7 +264,7 @@ const HeroSection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2, duration: 0.8 }}
-          className="absolute bottom-8 left-8 sm:left-12 lg:left-16 flex items-center gap-3"
+          className="absolute bottom-8 left-4 sm:left-8 md:left-12 lg:left-16 flex items-center gap-3"
         >
           <motion.div
             animate={{ y: [0, 5, 0] }}

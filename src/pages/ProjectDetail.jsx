@@ -68,7 +68,7 @@ const ProjectDetail = () => {
     <div className="min-h-screen bg-canvas pt-24">
       <SEOHead title={project.title} description={project.description} />
 
-      <div className="max-w-3xl mx-auto px-8 sm:px-12 py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-8 md:px-12 py-12">
 
         {/* Breadcrumb */}
         <motion.div
@@ -99,7 +99,7 @@ const ProjectDetail = () => {
             </div>
           )}
 
-          <div className="p-8">
+          <div className="p-4 sm:p-8">
             {/* Featured badge */}
             {project.featured && (
               <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-medium font-body mb-5">

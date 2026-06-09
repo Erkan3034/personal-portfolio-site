@@ -88,7 +88,7 @@ const Projects = () => {
     <div className="min-h-screen bg-canvas pt-24">
       <SEOHead title={t('projects.seoTitle')} description={t('projects.seoDesc')} />
 
-      <div className="max-w-screen-xl mx-auto px-8 sm:px-12 lg:px-16 py-14">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-8 md:px-12 lg:px-16 py-14">
 
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-12">
@@ -108,20 +108,20 @@ const Projects = () => {
         <motion.div
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid grid-cols-3 gap-4 mb-10"
+          className="grid grid-cols-3 gap-2 sm:gap-4 mb-10"
         >
           {[
             { label: t('projects.totalProjects'), value: projects.length, icon: STAT_ICONS.projects },
             { label: t('projects.technologies'), value: allTechs.length, icon: STAT_ICONS.tech },
             { label: t('projects.featured'), value: projects.filter((p) => p.featured).length, icon: STAT_ICONS.featured },
           ].map((s) => (
-            <div key={s.label} className="bg-surface border border-white/[0.07] rounded-xl p-4 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+            <div key={s.label} className="bg-surface border border-white/[0.07] rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-center sm:items-center gap-1.5 sm:gap-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
                 {s.icon}
               </div>
-              <div>
-                <div className="text-xl font-display font-bold text-white">{s.value}</div>
-                <div className="text-xs text-zinc-500 font-body">{s.label}</div>
+              <div className="text-center sm:text-left">
+                <div className="text-lg sm:text-xl font-display font-bold text-white">{s.value}</div>
+                <div className="text-[10px] sm:text-xs text-zinc-500 font-body leading-tight">{s.label}</div>
               </div>
             </div>
           ))}

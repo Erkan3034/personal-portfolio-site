@@ -41,7 +41,7 @@ const ContactForm = () => {
   const valid = form.name && form.email && form.subject && form.message;
 
   return (
-    <div className="rounded-2xl bg-surface border border-white/[0.07] p-7">
+    <div className="rounded-2xl bg-surface border border-white/[0.07] p-4 sm:p-7">
       <h2 className="font-display font-bold text-white text-2xl mb-6">{t('form.title')}</h2>
 
       {success && (

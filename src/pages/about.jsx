@@ -27,7 +27,7 @@ const About = () => {
     <div className="min-h-screen bg-canvas pt-24">
       <SEOHead title={t('about.seoTitle')} description={t('about.seoDesc')} />
 
-      <div className="max-w-screen-xl mx-auto px-8 sm:px-12 lg:px-16 py-14">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-8 md:px-12 lg:px-16 py-14">
 
         {/* Header */}
         <motion.div variants={stagger} initial="hidden" animate="show" className="mb-14">

@@ -90,7 +90,7 @@ const BlogDetail = () => {
         style={{ width: `${scrollProgress}%` }}
       />
 
-      <div className="max-w-3xl mx-auto px-8 sm:px-12 py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-8 md:px-12 py-12">
 
         {/* Back nav */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-10">

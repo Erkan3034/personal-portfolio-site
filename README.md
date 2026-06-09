@@ -158,7 +158,7 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 ## 📞 İletişim
 
 Herhangi bir sorunuz varsa, lütfen iletişime geçin:
-- Email: turguterkan1306@gmail.com
+- Email: turguterkan@55gmail.com
 - GitHub: [https://github.com/Erkan3034]
 - LinkedIn: [https://www.linkedin.com/in/erkanturgut1205]
 

@@ -21,22 +21,22 @@ const slugify = (text) => {
 
 /* ─── Icons ─── */
 const Ico = {
-  folder: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7a2 2 0 012-2h3.5L10 7h9a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" /></svg>,
-  badge: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
+  Folder: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7a2 2 0 012-2h3.5L10 7h9a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" /></svg>,
+  Badge: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
   Doc: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
-  logout: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>,
-  edit: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
-  trash: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>,
-  search: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
-  home: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
-  check: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>,
-  x: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>,
+  Logout: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>,
+  Edit: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
+  Trash: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>,
+  Search: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
+  Home: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
+  Check: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>,
+  X: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>,
   Warn: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>,
-  plus: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
-  refresh: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
-  link: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>,
-  menu: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" /></svg>,
-  star: (p) => <svg {...p} fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>,
+  Plus: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
+  Refresh: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
+  Link: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>,
+  Menu: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" /></svg>,
+  Star: (p) => <svg {...p} fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>,
 };
 
 /* ─── TagInput ─── */
@@ -287,10 +287,10 @@ const ToastContainer = ({ toasts, remove }) => (
           className={`pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl border text-sm font-medium backdrop-blur-sm max-w-xs
             ${t.type === 'success' ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-300' : t.type === 'error' ? 'bg-red-950/90 border-red-500/30 text-red-300' : 'bg-surface border-white/10 text-gray-300'}`}>
           <span className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${t.type === 'success' ? 'bg-emerald-500/20' : t.type === 'error' ? 'bg-red-500/20' : 'bg-white/10'}`}>
-            {t.type === 'success' ? <Ico.check className="w-3 h-3" /> : <Ico.x className="w-3 h-3" />}
+            {t.type === 'success' ? <Ico.Check className="w-3 h-3" /> : <Ico.X className="w-3 h-3" />}
           </span>
           <span className="flex-1">{t.msg}</span>
-          <button onClick={() => remove(t.id)} className="text-current opacity-50 hover:opacity-100 cursor-pointer"><Ico.x className="w-3.5 h-3.5" /></button>
+          <button onClick={() => remove(t.id)} className="text-current opacity-50 hover:opacity-100 cursor-pointer"><Ico.X className="w-3.5 h-3.5" /></button>
         </motion.div>
       ))}
     </AnimatePresence>
@@ -327,7 +327,7 @@ const Modal = ({ title, onClose, children, wide }) => (
       className={`bg-surface border border-white/10 rounded-2xl shadow-2xl p-5 sm:p-6 w-full ${wide ? 'max-w-2xl' : 'max-w-lg'} relative my-4`}>
       <div className="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
         <h2 className="text-lg font-bold text-gray-100">{title}</h2>
-        <button type="button" onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-200 hover:bg-white/10 transition-colors cursor-pointer"><Ico.x className="w-4 h-4" /></button>
+        <button type="button" onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-200 hover:bg-white/10 transition-colors cursor-pointer"><Ico.X className="w-4 h-4" /></button>
       </div>
       <div className="max-h-[75vh] overflow-y-auto pr-1 scrollbar-thin">{children}</div>
     </motion.div>
@@ -362,7 +362,7 @@ const ImageUpload = ({ value, preview, onChange, onClear }) => (
           <img src={preview} alt="Önizleme" className="rounded-lg max-h-36 mx-auto object-cover" />
           <button type="button" onClick={(e) => { e.preventDefault(); onClear?.(); }}
             className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-500/80 transition-colors cursor-pointer">
-            <Ico.x className="w-3 h-3" />
+            <Ico.X className="w-3 h-3" />
           </button>
         </div>
       ) : (
@@ -395,7 +395,6 @@ const Admin = () => {
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [search, setSearch] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   /* toasts */
   const [toasts, setToasts] = useState([]);
@@ -516,8 +515,8 @@ const Admin = () => {
   const filteredBlogs = blogs.filter((b) => !q || b.title?.toLowerCase().includes(q) || b.summary?.toLowerCase().includes(q) || ensureArray(b.tags).some((t) => t.toLowerCase().includes(q)));
 
   const tabs = [
-    { id: 'projects', label: 'Projeler', Icon: Ico.folder, count: projects.length },
-    { id: 'certificates', label: 'Sertifikalar', Icon: Ico.badge, count: certificates.length },
+    { id: 'projects', label: 'Projeler', Icon: Ico.Folder, count: projects.length },
+    { id: 'certificates', label: 'Sertifikalar', Icon: Ico.Badge, count: certificates.length },
     { id: 'blogs', label: 'Blog', Icon: Ico.Doc, count: blogs.length },
   ];
 
@@ -624,11 +623,11 @@ const Admin = () => {
         <div className="px-3 py-4 border-t border-white/[0.06] space-y-1">
           <button onClick={() => navigate('/')}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all cursor-pointer">
-            <Ico.home className="w-4 h-4" /> Siteye Git
+            <Ico.Home className="w-4 h-4" /> Siteye Git
           </button>
           <button onClick={handleLogout}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500/70 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer">
-            <Ico.logout className="w-4 h-4" /> Çıkış Yap
+            <Ico.Logout className="w-4 h-4" /> Çıkış Yap
           </button>
         </div>
       </aside>
@@ -643,10 +642,10 @@ const Admin = () => {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => navigate('/')} className="p-2 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-colors cursor-pointer">
-            <Ico.home className="w-4 h-4" />
+            <Ico.Home className="w-4 h-4" />
           </button>
           <button onClick={handleLogout} className="p-2 rounded-lg text-red-500/70 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer">
-            <Ico.logout className="w-4 h-4" />
+            <Ico.Logout className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -679,31 +678,31 @@ const Admin = () => {
             <div className="flex items-center gap-2 w-full sm:w-auto">
               {/* Search */}
               <div className="relative flex-1 sm:w-56">
-                <Ico.search className="w-4 h-4 text-gray-600 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Ico.Search className="w-4 h-4 text-gray-600 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Ara..."
                   className="w-full pl-9 pr-3 py-2 bg-surface border border-white/10 rounded-lg text-sm text-gray-300 placeholder-gray-600 outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all" />
               </div>
               {/* Refresh */}
               <button onClick={fetchData} className="p-2 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/5 border border-white/10 transition-colors cursor-pointer" title="Yenile">
-                <Ico.refresh className="w-4 h-4" />
+                <Ico.Refresh className="w-4 h-4" />
               </button>
               {/* Add button */}
               {activeTab === 'projects' && (
                 <button onClick={() => { setShowProjectModal(true); setNewProject(emptyProject); setImagePreview(null); setAddError(''); }}
                   className="flex items-center gap-1.5 bg-primary text-canvas px-3 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm font-semibold cursor-pointer shadow-lg shadow-primary/10 whitespace-nowrap">
-                  <Ico.plus className="w-3.5 h-3.5" /> Proje Ekle
+                  <Ico.Plus className="w-3.5 h-3.5" /> Proje Ekle
                 </button>
               )}
               {activeTab === 'certificates' && (
                 <button onClick={() => { setShowCertificateModal(true); setNewCertificate(emptyCert); setCertImagePreview(null); setAddCertError(''); }}
                   className="flex items-center gap-1.5 bg-primary text-canvas px-3 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm font-semibold cursor-pointer shadow-lg shadow-primary/10 whitespace-nowrap">
-                  <Ico.plus className="w-3.5 h-3.5" /> Sertifika Ekle
+                  <Ico.Plus className="w-3.5 h-3.5" /> Sertifika Ekle
                 </button>
               )}
               {activeTab === 'blogs' && (
                 <button onClick={() => { setShowBlogModal(true); setNewBlog(emptyBlog); setBlogImagePreview(null); setAddBlogError(''); }}
                   className="flex items-center gap-1.5 bg-primary text-canvas px-3 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm font-semibold cursor-pointer shadow-lg shadow-primary/10 whitespace-nowrap">
-                  <Ico.plus className="w-3.5 h-3.5" /> Blog Ekle
+                  <Ico.Plus className="w-3.5 h-3.5" /> Blog Ekle
                 </button>
               )}
             </div>
@@ -720,7 +719,7 @@ const Admin = () => {
                       <img src={p.image} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0 hidden sm:block ring-1 ring-white/10" />
                     ) : (
                       <div className="w-14 h-14 rounded-lg bg-surface-2 border border-white/10 flex items-center justify-center shrink-0 hidden sm:flex">
-                        <Ico.folder className="w-6 h-6 text-gray-700" />
+                        <Ico.Folder className="w-6 h-6 text-gray-700" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
@@ -728,7 +727,7 @@ const Admin = () => {
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="font-semibold text-gray-100 text-sm truncate">{p.title}</h3>
-                            {p.featured && <Badge color="yellow"><Ico.star className="w-2.5 h-2.5 inline mr-0.5" />Öne Çıkan</Badge>}
+                            {p.featured && <Badge color="yellow"><Ico.Star className="w-2.5 h-2.5 inline mr-0.5" />Öne Çıkan</Badge>}
                           </div>
                           {p.description && <p className="text-gray-500 text-xs mt-0.5 line-clamp-2">{p.description}</p>}
                         </div>
@@ -736,16 +735,16 @@ const Admin = () => {
                           {(p.github_url || p.live_url) && (
                             <a href={p.live_url || p.github_url} target="_blank" rel="noreferrer"
                               className="p-1.5 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/5 transition-colors cursor-pointer">
-                              <Ico.link className="w-3.5 h-3.5" />
+                              <Ico.Link className="w-3.5 h-3.5" />
                             </a>
                           )}
                           <button onClick={() => setEditProject({ ...p, technologies: ensureArray(p.technologies) })}
                             className="p-1.5 rounded-lg text-gray-600 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer">
-                            <Ico.edit className="w-3.5 h-3.5" />
+                            <Ico.Edit className="w-3.5 h-3.5" />
                           </button>
                           <button onClick={() => handleDeleteProject(p.id)}
                             className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer">
-                            <Ico.trash className="w-3.5 h-3.5" />
+                            <Ico.Trash className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
@@ -761,7 +760,7 @@ const Admin = () => {
               {filteredProjects.length === 0 && (
                 <div className="text-center py-16">
                   <div className="w-14 h-14 rounded-xl bg-surface border border-white/10 flex items-center justify-center mx-auto mb-3">
-                    <Ico.folder className="w-7 h-7 text-gray-700" />
+                    <Ico.Folder className="w-7 h-7 text-gray-700" />
                   </div>
                   <p className="text-gray-600 text-sm">{search ? `"${search}" için sonuç bulunamadı.` : 'Henüz proje eklenmedi.'}</p>
                 </div>
@@ -780,7 +779,7 @@ const Admin = () => {
                       <img src={c.image} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0 hidden sm:block ring-1 ring-white/10" />
                     ) : (
                       <div className="w-14 h-14 rounded-lg bg-surface-2 border border-white/10 flex items-center justify-center shrink-0 hidden sm:flex">
-                        <Ico.badge className="w-6 h-6 text-gray-700" />
+                        <Ico.Badge className="w-6 h-6 text-gray-700" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
@@ -793,14 +792,14 @@ const Admin = () => {
                         <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                           {c.certificate_url && (
                             <a href={c.certificate_url} target="_blank" rel="noreferrer" className="p-1.5 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/5 transition-colors cursor-pointer">
-                              <Ico.link className="w-3.5 h-3.5" />
+                              <Ico.Link className="w-3.5 h-3.5" />
                             </a>
                           )}
                           <button onClick={() => setEditCertificate(c)} className="p-1.5 rounded-lg text-gray-600 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer">
-                            <Ico.edit className="w-3.5 h-3.5" />
+                            <Ico.Edit className="w-3.5 h-3.5" />
                           </button>
                           <button onClick={() => handleDeleteCert(c.id)} className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer">
-                            <Ico.trash className="w-3.5 h-3.5" />
+                            <Ico.Trash className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
@@ -811,7 +810,7 @@ const Admin = () => {
               {filteredCerts.length === 0 && (
                 <div className="text-center py-16">
                   <div className="w-14 h-14 rounded-xl bg-surface border border-white/10 flex items-center justify-center mx-auto mb-3">
-                    <Ico.badge className="w-7 h-7 text-gray-700" />
+                    <Ico.Badge className="w-7 h-7 text-gray-700" />
                   </div>
                   <p className="text-gray-600 text-sm">{search ? `"${search}" için sonuç bulunamadı.` : 'Henüz sertifika eklenmedi.'}</p>
                 </div>
@@ -849,16 +848,16 @@ const Admin = () => {
                         <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                           {b.is_external && b.external_url && (
                             <a href={b.external_url} target="_blank" rel="noreferrer" className="p-1.5 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/5 transition-colors cursor-pointer">
-                              <Ico.link className="w-3.5 h-3.5" />
+                              <Ico.Link className="w-3.5 h-3.5" />
                             </a>
                           )}
                           <button onClick={() => setEditBlog({ ...b, tags: ensureArray(b.tags) })}
                             className="p-1.5 rounded-lg text-gray-600 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer">
-                            <Ico.edit className="w-3.5 h-3.5" />
+                            <Ico.Edit className="w-3.5 h-3.5" />
                           </button>
                           <button onClick={() => handleDeleteBlog(b.id)}
                             className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer">
-                            <Ico.trash className="w-3.5 h-3.5" />
+                            <Ico.Trash className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>

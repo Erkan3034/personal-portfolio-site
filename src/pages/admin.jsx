@@ -72,7 +72,7 @@ const RichEditor = ({ value, onChange }) => {
   const [source, setSource] = useState(false);
 
   useEffect(() => {
-    if (editorRef.current) editorRef.current.innerHTML = value || '';
+    if (editorRef.current) editorRef.current.innerHTML = [value] || '';
   }, [source]);
 
   const exec = (cmd, val = null) => {

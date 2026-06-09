@@ -41,12 +41,18 @@ export const getCertificates = async() => {
     return { data, error }
 }
 
-export const getBlogById = async(id) => {
-    const { data, error } = await supabase
-        .from('blogs')
-        .select('*')
-        .eq('id', id)
-        .single()
+export const getBlogById = async (id) => {
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    
+    let query = supabase.from('blogs').select('*');
+    
+    if (isUUID) {
+        query = query.or(`id.eq.${id},slug.eq.${id}`);
+    } else {
+        query = query.eq('slug', id);
+    }
+
+    const { data, error } = await query.single();
     return { data, error }
 }
 

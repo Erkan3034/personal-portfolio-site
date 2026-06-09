@@ -10,6 +10,18 @@ import {
   updateProject, updateCertificate, updateBlog,
 } from '../lib/supabase';
 
+const slugify = (text) => {
+  if (!text) return '';
+  const trMap = { 'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u', 'Ç': 'c', 'Ğ': 'g', 'İ': 'i', 'Ö': 'o', 'Ş': 's', 'Ü': 'u' };
+  return text.toString().toLowerCase()
+    .replace(/[çğıöşüÇĞİÖŞÜ]/g, (m) => trMap[m])
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+};
+
 /* ─── TagInput ─── */
 const TagInput = ({ tags = [], onChange, placeholder = 'Yazıp Enter\'a basın...' }) => {
   const [input, setInput] = useState('');
@@ -756,7 +768,17 @@ const Admin = () => {
                 if (e2) throw e2;
                 imageUrl = d.publicUrl;
               }
-              const { error } = await addBlog({ title: newBlog.title, summary: newBlog.summary, content: newBlog.content, tags: newBlog.tags, is_external: newBlog.is_external, external_url: newBlog.external_url, image: imageUrl, published_at: newBlog.published_at || null });
+              const { error } = await addBlog({ 
+                title: newBlog.title, 
+                slug: slugify(newBlog.title),
+                summary: newBlog.summary, 
+                content: newBlog.content, 
+                tags: newBlog.tags, 
+                is_external: newBlog.is_external, 
+                external_url: newBlog.external_url, 
+                image: imageUrl, 
+                published_at: newBlog.published_at || null 
+              });
               if (error) throw error;
               setShowBlogModal(false); setNewBlog(emptyBlog); setBlogImagePreview(null); fetchData();
             } catch (err) { setAddBlogError('Eklenemedi: ' + (err.message || err)); }
@@ -818,7 +840,17 @@ const Admin = () => {
                 if (e2) throw e2;
                 imageUrl = d.publicUrl;
               }
-              const { error } = await updateBlog(editBlog.id, { title: editBlog.title, summary: editBlog.summary, content: editBlog.content, tags: ensureArray(editBlog.tags), is_external: editBlog.is_external, external_url: editBlog.external_url, image: imageUrl, published_at: editBlog.published_at || null });
+              const { error } = await updateBlog(editBlog.id, { 
+                title: editBlog.title, 
+                slug: slugify(editBlog.title),
+                summary: editBlog.summary, 
+                content: editBlog.content, 
+                tags: ensureArray(editBlog.tags), 
+                is_external: editBlog.is_external, 
+                external_url: editBlog.external_url, 
+                image: imageUrl, 
+                published_at: editBlog.published_at || null 
+              });
               if (error) throw error;
               setEditBlog(null); fetchData();
             } catch (err) { setEditBlogError('Güncellenemedi: ' + (err.message || err)); }

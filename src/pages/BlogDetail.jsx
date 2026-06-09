@@ -11,7 +11,7 @@ const calculateReadingTime = (content) => {
 };
 
 const BlogDetail = () => {
-  const { id } = useParams();
+  const { idOrSlug } = useParams();
   const { lang, t } = useLanguage();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,13 +20,13 @@ const BlogDetail = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const { data, error } = await getBlogById(id);
+        const { data, error } = await getBlogById(idOrSlug);
         if (!error) setBlog(data);
       } catch {}
       finally { setLoading(false); }
     };
     fetchBlog();
-  }, [id]);
+  }, [idOrSlug]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -195,7 +195,8 @@ const BlogDetail = () => {
               prose-pre:bg-surface prose-pre:border prose-pre:border-white/[0.07] prose-pre:rounded-xl
               prose-blockquote:border-l-emerald-500 prose-blockquote:bg-emerald-500/[0.04] prose-blockquote:rounded-r-xl prose-blockquote:italic prose-blockquote:text-zinc-300
               prose-li:text-zinc-300 prose-li:font-body
-              prose-img:rounded-xl prose-img:border prose-img:border-white/[0.07]"
+              prose-img:rounded-xl prose-img:border prose-img:border-white/[0.07]
+              [&_*]:!text-zinc-300 [&_h1]:!text-white [&_h2]:!text-white [&_h3]:!text-white [&_h4]:!text-white [&_strong]:!text-white [&_a]:!text-emerald-400"
             dangerouslySetInnerHTML={{ __html: blog.content || blog.excerpt }}
           />
         </motion.article>

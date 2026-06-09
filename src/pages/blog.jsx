@@ -10,6 +10,18 @@ const calculateReadingTime = (content) => {
   return Math.max(1, Math.ceil(content.split(/\s+/).length / 200));
 };
 
+const slugify = (text) => {
+  if (!text) return '';
+  const trMap = { 'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u', 'Ç': 'c', 'Ğ': 'g', 'İ': 'i', 'Ö': 'o', 'Ş': 's', 'Ü': 'u' };
+  return text.toString().toLowerCase()
+    .replace(/[çğıöşüÇĞİÖŞÜ]/g, (m) => trMap[m])
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+};
+
 const BlogCard = ({ post, index }) => {
   const { lang, t } = useLanguage();
   const isExternal = post.is_external && post.external_url;
@@ -106,7 +118,7 @@ const BlogCard = ({ post, index }) => {
           <CardContent />
         </button>
       ) : (
-        <Link to={`/blog/${post.id}`} className={`${cardCls} cursor-pointer`}>
+        <Link to={`/blog/${slugify(post.title)}`} className={`${cardCls} cursor-pointer`}>
           <CardContent />
         </Link>
       )}

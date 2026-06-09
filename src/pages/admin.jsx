@@ -82,6 +82,7 @@ const TOOLBAR = [
   { type: 'sep' },
   { cmd: 'formatBlock', val: '<blockquote>', label: '" Alıntı', title: 'Alıntı Bloğu', cls: 'text-xs italic' },
   { type: 'link', label: '⛓ Link', title: 'Bağlantı Ekle', cls: 'text-xs' },
+  { type: 'code', label: '</> Kod', title: 'Kod Bloğu Ekle', cls: 'text-xs font-mono' },
   { type: 'sep' },
   { type: 'image', label: '⬆ Görsel', title: 'İçine Görsel Ekle', cls: 'text-xs' },
 ];
@@ -198,6 +199,32 @@ const RichEditor = ({ value, onChange, onImageUpload }) => {
     onChange(editorRef.current.innerHTML);
   };
 
+  const insertCodeBlock = () => {
+    editorRef.current.focus();
+    const pre = document.createElement('pre');
+    const code = document.createElement('code');
+    code.appendChild(document.createTextNode('​'));
+    pre.appendChild(code);
+    const after = document.createElement('p');
+    after.appendChild(document.createElement('br'));
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      range.collapse(false);
+      range.insertNode(after);
+      range.insertNode(pre);
+      const newRange = document.createRange();
+      newRange.setStart(code, 0);
+      newRange.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+    } else {
+      editorRef.current.appendChild(pre);
+      editorRef.current.appendChild(after);
+    }
+    onChange(editorRef.current.innerHTML);
+  };
+
   const btn = 'h-7 px-2 flex items-center justify-center rounded text-gray-400 hover:bg-white/10 hover:text-gray-100 transition-colors cursor-pointer select-none text-sm';
   const ibtn = (active) => `h-6 px-2 rounded text-xs font-medium cursor-pointer transition-colors select-none ${active ? 'bg-primary/20 text-primary' : 'text-gray-400 hover:bg-white/10 hover:text-gray-200'}`;
 
@@ -213,6 +240,10 @@ const RichEditor = ({ value, onChange, onImageUpload }) => {
           if (t.type === 'link') return (
             <button key={i} type="button" title={t.title} className={`${btn} ${t.cls || ''}`}
               onClick={() => { const url = prompt('URL girin:'); if (url) exec('createLink', url); }}>{t.label}</button>
+          );
+          if (t.type === 'code') return (
+            <button key={i} type="button" title={t.title} className={`${btn} ${t.cls || ''}`}
+              onClick={insertCodeBlock}>{t.label}</button>
           );
           if (t.type === 'image') return (
             <span key={i}>
@@ -271,6 +302,8 @@ const RichEditor = ({ value, onChange, onImageUpload }) => {
             [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mb-1 [&_h3]:text-white
             [&_p]:mb-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
             [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-gray-400
+            [&_pre]:bg-black/40 [&_pre]:rounded-lg [&_pre]:p-3 [&_pre]:my-2 [&_pre]:border [&_pre]:border-white/10 [&_pre]:overflow-x-auto
+            [&_code]:font-mono [&_code]:text-sm [&_code]:text-green-300
             [&_a]:text-primary [&_a]:underline
             [&_figure]:my-4 [&_figure]:text-center [&_img]:rounded-xl [&_img]:max-w-full [&_img]:inline-block [&_img]:transition-all" />
       )}

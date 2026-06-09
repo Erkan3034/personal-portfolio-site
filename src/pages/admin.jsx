@@ -72,8 +72,8 @@ const RichEditor = ({ value, onChange }) => {
   const [source, setSource] = useState(false);
 
   useEffect(() => {
-    if (editorRef.current) editorRef.current.innerHTML = [value] || '';
-  }, [source]);
+    if (editorRef.current) editorRef.current.innerHTML = value || '';
+  }, [source, value]);
 
   const exec = (cmd, val = null) => {
     editorRef.current.focus();

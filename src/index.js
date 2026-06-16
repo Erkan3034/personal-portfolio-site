@@ -1,25 +1,28 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const rootElement = document.getElementById('root');
-const root = ReactDOM.createRoot(rootElement);
 
-if (rootElement.hasChildNodes()) {
-  ReactDOM.hydrateRoot(
-    rootElement,
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+const PRERENDERED_PATHS = ['/', '/about', '/projects', '/blog', '/certificates', '/contact'];
+const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+const isPrerendered = PRERENDERED_PATHS.includes(currentPath);
+
+const app = (
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+if (rootElement.hasChildNodes() && isPrerendered) {
+
+  hydrateRoot(rootElement, app);
 } else {
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+
+  rootElement.innerHTML = '';
+  createRoot(rootElement).render(app);
 }
 
 // If you want to start measuring performance in your app, pass a function

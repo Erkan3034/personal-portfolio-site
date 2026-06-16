@@ -59,10 +59,13 @@ const translations = {
       seoTitle: 'Projelerim',
       seoDesc:
         'Erkan Turgut tarafından geliştirilen web uygulamaları, AI projeleri ve yazılım çözümleri.',
+      about: 'Proje Hakkında',
       usedTech: 'Kullanılan Teknolojiler',
       liveDemo: 'Canlı Demo',
       goBack: 'Geri Dön',
       projectsLabel: 'Projeler',
+      viewImage: 'Görseli büyüt',
+      closePreview: 'Önizlemeyi kapat',
     },
     blog: {
       badge: 'Yazılarım & Paylaşımlarım',
@@ -223,10 +226,13 @@ const translations = {
       seoTitle: 'My Projects',
       seoDesc:
         'Web applications, AI projects, and software solutions developed by Erkan Turgut.',
+      about: 'About the Project',
       usedTech: 'Technologies Used',
       liveDemo: 'Live Demo',
       goBack: 'Go Back',
       projectsLabel: 'Projects',
+      viewImage: 'View image',
+      closePreview: 'Close preview',
     },
     blog: {
       badge: 'My Articles & Posts',

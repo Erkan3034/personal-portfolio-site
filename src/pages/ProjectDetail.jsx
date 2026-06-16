@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import SEOHead from '../components/SEOHead';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -12,6 +12,7 @@ const ProjectDetail = () => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [lightbox, setLightbox] = useState(false);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -29,6 +30,19 @@ const ProjectDetail = () => {
     fetchProject();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // Lightbox: Esc ile kapat + arka plan scroll kilidi
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e) => { if (e.key === 'Escape') setLightbox(false); };
+    window.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [lightbox]);
 
   if (loading) {
     return (
@@ -93,10 +107,26 @@ const ProjectDetail = () => {
         >
           {/* Project image */}
           {project.image && (
-            <div className="relative overflow-hidden">
-              <img src={project.image} alt={project.title} className="w-full max-h-80 object-cover" />
+            <button
+              type="button"
+              onClick={() => setLightbox(true)}
+              aria-label={t('projects.viewImage')}
+              className="relative overflow-hidden block w-full group/img cursor-zoom-in"
+            >
+              <img
+                src={project.image}
+                alt={project.title}
+                className="w-full max-h-80 object-cover transition-transform duration-500 group-hover/img:scale-[1.03]"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-surface/90 to-transparent" />
-            </div>
+              {/* Hover ipucu */}
+              <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/15 text-white text-xs font-body opacity-0 group-hover/img:opacity-100 transition-opacity duration-200">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803zM10.5 7.5v6m3-3h-6" />
+                </svg>
+                {t('projects.viewImage')}
+              </span>
+            </button>
           )}
 
           <div className="p-4 sm:p-8">
@@ -123,11 +153,28 @@ const ProjectDetail = () => {
             )}
 
             {/* Description */}
-            <div className="mb-8 space-y-3">
-              {project.description?.split('\n').filter((p) => p.trim()).map((paragraph, i) => (
-                <p key={i} className="text-zinc-300 font-body text-base leading-relaxed">{paragraph}</p>
-              ))}
-            </div>
+            {project.description?.trim() && (
+              <div className="mb-8">
+                <h3 className="flex items-center gap-2 text-white font-semibold font-body text-sm mb-4">
+                  <span className="w-1 h-4 rounded-full bg-emerald-500" />
+                  {t('projects.about')}
+                </h3>
+                <div className="space-y-4 border-l border-white/[0.07] pl-4 sm:pl-5">
+                  {project.description.split('\n').filter((p) => p.trim()).map((paragraph, i) => (
+                    <p
+                      key={i}
+                      className={
+                        i === 0
+                          ? 'text-zinc-200 font-body text-base sm:text-lg leading-relaxed'
+                          : 'text-zinc-400 font-body text-base leading-relaxed'
+                      }
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Technologies */}
             {techList.length > 0 && (
@@ -186,6 +233,41 @@ const ProjectDetail = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightbox && project.image && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setLightbox(false)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 sm:p-8 cursor-zoom-out"
+          >
+            <button
+              type="button"
+              onClick={() => setLightbox(false)}
+              aria-label={t('projects.closePreview')}
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-colors cursor-pointer z-10"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <motion.img
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              src={project.image}
+              alt={project.title}
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl cursor-default"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

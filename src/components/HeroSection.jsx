@@ -216,13 +216,13 @@ const HeroSection = () => {
           >
             <div className="relative">
               {/* Border frame */}
-              <div className="rounded-[22px] lg:rounded-[28px] p-px" style={{ background: gradientBorder }}>
-                {/* Photo container — no fixed height, shaped by image */}
-                <div className="w-48 sm:w-56 lg:w-72 xl:w-80 rounded-[19px] lg:rounded-[27px] bg-surface overflow-hidden">
+              <div className="rounded-full p-px" style={{ background: gradientBorder }}>
+                {/* Photo container — full circle, image fills via object-cover */}
+                <div className="w-48 h-48 sm:w-56 sm:h-56 lg:w-72 lg:h-72 xl:w-80 xl:h-80 rounded-full bg-surface overflow-hidden">
                   <img
                     src="/img/profile.png"
                     alt="Erkan Turgut — Full Stack Developer"
-                    className="w-full h-auto block"
+                    className="w-full h-full object-cover object-top block"
                     loading="eager"
                   />
                 </div>

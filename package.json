@@ -21,7 +21,7 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "generate:webp": "node scripts/convert-webp.js",
-        "postbuild": "react-snap"
+        "postbuild": "react-snap && node scripts/fix-fonts.js"
     },
     "eslintConfig": {
         "extends": [

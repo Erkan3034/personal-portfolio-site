@@ -220,10 +220,10 @@ const HeroSection = () => {
                 {/* Photo container — full circle, image fills via object-cover */}
                 <div className="w-48 h-48 sm:w-56 sm:h-56 lg:w-72 lg:h-72 xl:w-80 xl:h-80 rounded-full bg-surface overflow-hidden">
                   <picture>
-                    <source srcSet="/img/profile.webp" type="image/webp" />
-                    <source srcSet="/img/profile.png" type="image/png" />
+                    <source srcSet="/img/profile-336.webp 336w, /img/profile.webp 640w" type="image/webp" sizes="(max-width: 640px) 192px, (max-width: 1024px) 224px, 320px" />
+                    <source srcSet="/img/profile-336.png 336w, /img/profile.png 640w" type="image/png" sizes="(max-width: 640px) 192px, (max-width: 1024px) 224px, 320px" />
                     <img
-                      src="/img/profile.png"
+                      src="/img/profile-336.png"
                       alt="Erkan Turgut — Full Stack Developer"
                       className="w-full h-full object-cover object-top block"
                       loading="eager"

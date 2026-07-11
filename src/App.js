@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -9,10 +9,11 @@ import Blog from './pages/blog';
 import BlogDetail from './pages/BlogDetail';
 import Certificates from './pages/certificates';
 import Contact from './pages/contact';
-import Admin from './pages/admin';
 import ProjectDetail from './pages/ProjectDetail';
 import { LanguageProvider } from './context/LanguageContext';
 import './App.css';
+
+const Admin = lazy(() => import('./pages/admin'));
 
 function AppContent() {
   const location = useLocation();
@@ -31,7 +32,7 @@ function AppContent() {
           <Route path="/blog/:idOrSlug" element={<BlogDetail />} />
           <Route path="/certificates" element={<Certificates />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-canvas"><div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" /></div>}><Admin /></Suspense>} />
         </Routes>
       </main>
       {!isAdmin && <Footer />}

@@ -16,11 +16,14 @@ const app = (
   </React.StrictMode>
 );
 
-if (rootElement.hasChildNodes() && isPrerendered) {
-
-  hydrateRoot(rootElement, app);
-} else {
-
+try {
+  if (rootElement.hasChildNodes() && isPrerendered) {
+    hydrateRoot(rootElement, app);
+  } else {
+    rootElement.innerHTML = '';
+    createRoot(rootElement).render(app);
+  }
+} catch {
   rootElement.innerHTML = '';
   createRoot(rootElement).render(app);
 }

@@ -162,7 +162,7 @@ const HeroSection = () => {
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className="cursor-pointer inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold font-body text-sm transition-colors duration-200"
+                  className="cursor-pointer inline-flex items-center gap-2 px-6 py-3.5 min-h-[48px] rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold font-body text-sm transition-colors duration-200"
                 >
                   {t('hero.ctaProjects')}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} aria-hidden="true">
@@ -175,7 +175,7 @@ const HeroSection = () => {
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className="cursor-pointer inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 font-semibold font-body text-sm transition-all duration-200"
+                  className="cursor-pointer inline-flex items-center gap-2 px-6 py-3.5 min-h-[48px] rounded-xl border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 font-semibold font-body text-sm transition-all duration-200"
                 >
                   {t('hero.ctaContact')}
                 </motion.button>
@@ -219,12 +219,19 @@ const HeroSection = () => {
               <div className="rounded-full p-px" style={{ background: gradientBorder }}>
                 {/* Photo container — full circle, image fills via object-cover */}
                 <div className="w-48 h-48 sm:w-56 sm:h-56 lg:w-72 lg:h-72 xl:w-80 xl:h-80 rounded-full bg-surface overflow-hidden">
-                  <img
-                    src="/img/profile.png"
-                    alt="Erkan Turgut — Full Stack Developer"
-                    className="w-full h-full object-cover object-top block"
-                    loading="eager"
-                  />
+                  <picture>
+                    <source srcSet="/img/profile.webp" type="image/webp" />
+                    <source srcSet="/img/profile.png" type="image/png" />
+                    <img
+                      src="/img/profile.png"
+                      alt="Erkan Turgut — Full Stack Developer"
+                      className="w-full h-full object-cover object-top block"
+                      loading="eager"
+                      fetchpriority="high"
+                      width="320"
+                      height="320"
+                    />
+                  </picture>
                 </div>
               </div>
 

@@ -1,0 +1,157 @@
+# Erkan Turgut — Kişisel Portföy Sitesi
+
+Full Stack Developer ve AI meraklısı **Erkan Turgut**'un kişisel portföy sitesi. Modern web teknolojileri, Python, Java ve yapay zeka alanlarında kullanıcı odaklı uygulamalar geliştiriyorum.
+
+> **Site:** https://erkanturgut.com
+> **Dil:** Türkçe & English (çift dilli, dil değiştirme butonu ile)
+> **Durum:** Yeni fırsatlara açık
+
+---
+
+## Kişisel Bilgiler
+
+| Alan | Detay |
+|------|-------|
+| **İsim** | Erkan Turgut |
+| **Unvan** | Full Stack Developer & AI Enthusiast |
+| **Konum** | İstanbul, Türkiye |
+| **E-posta** | turguterkan55@gmail.com |
+| **CV** | [/cv.pdf](/cv.pdf) |
+| **GitHub** | [github.com/Erkan3034](https://github.com/Erkan3034) |
+| **LinkedIn** | [linkedin.com/in/erkanturgut1205](https://www.linkedin.com/in/erkanturgut1205) |
+| **Medium** | [medium.com/@turguterkan55](https://medium.com/@turguterkan55) |
+| **X (Twitter)** | [x.com/Erkan_0630](https://x.com/Erkan_0630) |
+
+### Rol Etiketleri (Hero Typewriter)
+
+Full Stack Developer, Python Developer, Java Developer, AI Enthusiast, Problem Solver
+
+---
+
+## Yetenekler
+
+**Frontend:** React, JavaScript, TypeScript, HTML/CSS, Tailwind CSS, Framer Motion, React Router
+**Backend:** Node.js, Django, Flask, PHP
+**Diller:** Python, Java, C#, SQL
+**Veritabanı:** MongoDB, PostgreSQL, Supabase
+**Araçlar:** Git, Unity
+**Diğer:** REST API, SEO, Performans Optimizasyonu, Responsive Design
+
+---
+
+## Kariyer Hedefleri
+
+### Kısa Vadeli
+- Yeni teknolojiler öğrenmek
+- Açık kaynak katkısı yapmak
+- Daha fazla proje geliştirmek
+
+### Uzun Vadeli
+- Yazılım şirketi kurmak
+- Mentorluk yapmak
+- Topluluğa katkı sağlamak
+
+---
+
+## Site Sayfaları
+
+### Ana Sayfa `/`
+Hero bölümü, tip yazı (typewriter) efekti, profil fotoğrafı ve sosyal bağlantılar içerir. Sayfa yüklenirken animasyonlu giriş efektleri (stagger) kullanılır. Ayrıca bir "scroll" göstergesi ve iki adet badge (Full Stack Developer, AI Enthusiast) bulunur.
+
+- **Bileşenler:** HeroSection, Navbar, Footer
+- **SEO:** "Yazılım Geliştirici & Full Stack Developer" / "Software Developer & Full Stack Developer"
+
+### Hakkımda `/about`
+Kullanıcının hikayesi (3 paragraf), kısa/uzun vadeli hedefler ve teknoloji yığını (17 yetenek) listelenir. CV indirme butonu bulunur. Tüm bölümler stagger animasyonlarla açılır.
+
+- **Bileşenler:** SEOHead
+- **SEO:** "Hakkımda" / "About Me"
+
+### Projeler `/projects`
+Projeler Supabase'den çekilir, yoksa statik sampleProjects dizisi gösterilir. Teknolojiye göre filtreleme, istatistik kartları (toplam proje, teknoloji sayısı, öne çıkan sayısı) ve responsive grid (1-2-3 sütun) içerir. Her proje tıklanabilir, `/projects/:id` sayfasına yönlendirir.
+
+- **Bileşenler:** ProjectCard, SEOHead
+- **Dinamik Route:** `/projects/:id` — Proje detay sayfası (görsel, açıklama, teknolojiler, GitHub/demo linkleri, lightbox ile görsel büyütme)
+- **Örnek Projeler:** E-Ticaret Platformu (React, Node.js, MongoDB, Stripe), Task Management App (React, Firebase, Tailwind CSS)
+- **SEO:** "Projelerim" / "My Projects"
+
+### Blog `/blog`
+Blog yazıları Supabase'den çekilir, Medium entegrasyonu vardır. İç site yazıları ve Medium yazıları olarak filtrelenebilir. Arama, etiket bazlı filtreleme, okuma süresi hesaplama, istatistik kartları (toplam yazı, site içi, Medium, etiket sayısı) içerir.
+
+- **Bileşenler:** BlogCard, SEOHead
+- **Dinamik Route:** `/blog/:slug` — Blog detay sayfası (okuma ilerleme çubuğu, paylaş butonları, yazar kartı, etiketler)
+- **Harici Link:** Medium profili: https://medium.com/@turguterkan55
+- **SEO:** "Blog" / "Blog"
+
+### Sertifikalar `/certificates`
+Sertifikalar Supabase'den çekilir, yoksa statik sampleCertificates dizisi gösterilir. İstatistik kartları (toplam sertifika, kurum sayısı, son 1 yıl, öğrenme ∞) ve responsive grid içerir.
+
+- **Bileşenler:** CertificateCard, SEOHead
+- **Örnek Sertifikalar:** React Developer Certification (Meta), JavaScript Algorithms (freeCodeCamp)
+- **SEO:** "Sertifikalarım" / "My Certificates"
+
+### İletişim `/contact`
+İletişim formu (isim, e-posta, konu, mesaj), sosyal medya bağlantıları (E-posta, LinkedIn, GitHub, X/Twitter), konum (İstanbul, Türkiye) ve müsaitlik durumu gösterilir.
+
+- **Bileşenler:** ContactForm, SEOHead
+- **SEO:** "İletişim" / "Contact"
+
+---
+
+## Site Geneli Özellikler
+
+- **Çift Dilli (TR/EN):** Tüm içerik Türkçe ve İngilizce olarak mevcut, LanguageContext ile yönetilir
+- **Responsive Tasarım:** Mobil, tablet ve masaüstü uyumlu
+- **Animasyonlar:** Framer Motion ile sayfa geçişleri, hover efektleri, stagger animasyonlar
+- **Koyu Tema:** Koyu renk paleti (canvas, surface, zinc, emerald)
+- **SEO:** SEOHead bileşeni ile dinamik title, description, canonical URL ve OG etiketleri
+- **Analytics:** react-snap ile statik HTML ön oluşturma (SSR/SSG)
+
+---
+
+## Teknik Altyapı
+
+| Teknoloji | Kullanım |
+|-----------|----------|
+| **React 19** | UI framework |
+| **React Router v7** | Sayfa yönlendirme |
+| **Framer Motion** | Animasyonlar |
+| **Tailwind CSS** | Stil ve responsive tasarım |
+| **Supabase** | Veritabanı (projeler, bloglar, sertifikalar) |
+| **Netlify** | Hosting & deploy |
+| **react-snap** | Pre-rendering (statik HTML) |
+| **Sharp** | WebP dönüşümü |
+
+### Veritabanı Tabloları (Supabase)
+
+- `projects` — id, title, description, technologies, github_url, live_url, project_date, featured, image
+- `blogs` / `blog_posts` — id, title, content, excerpt, summary, image, tags, published_at, is_external, external_url
+- `certificates` — id, title, issuer, description, certificate_date, certificate_url, image
+
+### Yapılandırma
+
+- **Netlify Redirects:** SPA fallback, netlify.app → custom domain redirect
+- **Security Headers:** X-Frame-Options, XSS Protection, HSTS, Permissions-Policy
+- **Cache Policy:** Statik dosyalar için 1 yıl, favicon için 1 gün
+- **SEO:** robots.txt, sitemap.xml (build/output klasöründe)
+
+---
+
+## Navigasyon
+
+```
+Ana Sayfa  → /
+Hakkımda   → /about
+Projeler   → /projects
+Blog       → /blog
+Sertifikalar → /certificates
+İletişim    → /contact
+```
+
+## Sosyal Bağlantılar
+
+- GitHub: https://github.com/Erkan3034
+- LinkedIn: https://www.linkedin.com/in/erkanturgut1205
+- X (Twitter): https://x.com/Erkan_0630
+- E-posta: mailto:turguterkan55@gmail.com
+- Medium: https://medium.com/@turguterkan55

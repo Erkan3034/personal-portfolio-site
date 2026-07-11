@@ -66,7 +66,7 @@ const Footer = () => {
                 erkan turgut
               </span>
             </Link>
-            <p className="text-zinc-500 text-sm font-body leading-relaxed max-w-xs">
+            <p className="text-zinc-400 text-sm font-body leading-relaxed max-w-xs">
               {t('footer.description')}
             </p>
             <div className="flex items-center gap-1 mt-5">
@@ -77,7 +77,7 @@ const Footer = () => {
                   target={s.url.startsWith('mailto') ? '_self' : '_blank'}
                   rel="noopener noreferrer"
                   aria-label={s.name}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-600 hover:text-zinc-300 hover:bg-white/[0.05] transition-all duration-150 cursor-pointer"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05] transition-all duration-150 cursor-pointer"
                 >
                   {s.icon}
                 </a>
@@ -87,13 +87,13 @@ const Footer = () => {
 
           {/* Navigation */}
           <div>
-            <h3 className="text-white text-sm font-semibold font-body mb-4 tracking-wide">{t('footer.pages')}</h3>
+            <h2 className="text-white text-sm font-semibold font-body mb-4 tracking-wide">{t('footer.pages')}</h2>
             <ul className="space-y-2.5">
               {NAV_LINKS.map((link) => (
                 <li key={link.key}>
                   <Link
                     to={link.path}
-                    className="text-zinc-500 hover:text-zinc-300 text-sm font-body transition-colors duration-150"
+                    className="text-zinc-400 hover:text-zinc-300 text-sm font-body transition-colors duration-150"
                   >
                     {t(link.key)}
                   </Link>
@@ -104,15 +104,15 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h3 className="text-white text-sm font-semibold font-body mb-4 tracking-wide">{t('footer.contact')}</h3>
+            <h2 className="text-white text-sm font-semibold font-body mb-4 tracking-wide">{t('footer.contact')}</h2>
             <ul className="space-y-2.5">
               <li>
                 <a href="mailto:turguterkan55@gmail.com"
-                  className="text-zinc-500 hover:text-zinc-300 text-sm font-body transition-colors duration-150 break-all">
+                  className="text-zinc-400 hover:text-zinc-300 text-sm font-body transition-colors duration-150 break-all">
                   turguterkan55@gmail.com
                 </a>
               </li>
-              <li className="flex items-center gap-2 text-zinc-500 text-sm font-body">
+              <li className="flex items-center gap-2 text-zinc-400 text-sm font-body">
                 <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
@@ -130,10 +130,10 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-white/[0.06] mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <p className="text-zinc-600 text-xs font-body">
+          <p className="text-zinc-500 text-xs font-body">
             © {year} Erkan Turgut. {t('footer.rights')}
           </p>
-          <p className="text-zinc-700 text-xs font-body italic text-center">
+          <p className="text-zinc-500 text-xs font-body italic text-center">
             Simplicity is prerequisite for reliability — Edsger W. Dijkstra
           </p>
         </div>

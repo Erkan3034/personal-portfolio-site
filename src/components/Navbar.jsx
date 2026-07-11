@@ -67,8 +67,9 @@ const Navbar = () => {
         <Link to="/" className="flex items-center px-3 mr-1">
           <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
             <picture className="block h-7">
+              <source srcSet="/logo.webp" type="image/webp" />
               <source srcSet="/logo.png" type="image/png" />
-              <img src="/logo.png" alt="Logo" className="h-7 w-auto object-contain" />
+              <img src="/logo.png" alt="Logo" className="h-7 w-auto object-contain" width="340" height="74" />
             </picture>
           </motion.div>
         </Link>
@@ -112,8 +113,9 @@ const Navbar = () => {
       >
         <Link to="/">
           <picture className="block h-6">
+            <source srcSet="/logo.webp" type="image/webp" />
             <source srcSet="/logo.png" type="image/png" />
-            <img src="/logo.png" alt="Logo" className="h-6 w-auto object-contain" />
+            <img src="/logo.png" alt="Logo" className="h-6 w-auto object-contain" width="340" height="74" />
           </picture>
         </Link>
 

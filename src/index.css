@@ -2,8 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Fonts — loaded via <link> in index.html with media="print" onload trick */
 
 body {
     margin: 0;

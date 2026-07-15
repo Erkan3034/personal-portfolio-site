@@ -29,13 +29,14 @@ const BlogDetail = () => {
   }, [idOrSlug]);
 
   useEffect(() => {
+    if (blog?.kaggle_notebook_id) return;
     const handleScroll = () => {
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
       setScrollProgress(totalHeight > 0 ? (window.scrollY / totalHeight) * 100 : 0);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [blog]);
 
   if (loading) {
     return (
@@ -69,6 +70,77 @@ const BlogDetail = () => {
             {t('blog.backToBlog')}
           </Link>
         </motion.div>
+      </div>
+    );
+  }
+
+  if (blog.kaggle_notebook_id) {
+    const getKaggleUrl = (html) => {
+      const m = html?.match(/src="https:\/\/www\.kaggle\.com\/embed\/([^?"\s]+)/);
+      return m ? `https://www.kaggle.com/code/${m[1]}` : null;
+    };
+    const kaggleUrl = getKaggleUrl(blog.content);
+    return (
+      <div className="min-h-screen bg-canvas pt-24">
+        <SEOHead title={blog.title} description={blog.summary || blog.excerpt} />
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 md:px-12 py-12">
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-6">
+            <Link to="/blog"
+              className="group inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-surface border border-white/[0.07] text-zinc-400 hover:text-white hover:border-emerald-500/25 transition-all duration-200 text-sm font-body font-medium">
+              <svg className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              {t('blog.backToBlog')}
+            </Link>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+            {blog.tags?.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {blog.tags.map((tag, i) => (
+                  <span key={i} className="px-3 py-1 rounded-lg text-xs font-medium font-body bg-blue-500/[0.08] text-blue-400 border border-blue-500/20">#{tag}</span>
+                ))}
+              </div>
+            )}
+            <div className="flex items-center gap-3 mb-2">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide uppercase bg-blue-500/70 text-white">Kaggle Notebook</span>
+            </div>
+            <h1 className="font-display font-extrabold text-white text-3xl sm:text-4xl leading-tight tracking-tight mb-3">{blog.title}</h1>
+            {blog.summary && <p className="text-zinc-400 font-body text-base mb-4">{blog.summary}</p>}
+            {blog.published_at && (
+              <div className="flex items-center gap-2 text-zinc-500 text-sm font-body">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
+                {new Date(blog.published_at).toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </div>
+            )}
+          </motion.div>
+
+          <motion.div key="kaggle-iframe" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+            className="rounded-2xl overflow-hidden border border-white/[0.07] bg-surface">
+            <div className="relative">
+              <div
+                dangerouslySetInnerHTML={{ __html: blog.content }}
+                className="[&_iframe]:w-full [&_iframe]:min-h-[500px] [&_iframe]:md:min-h-[700px] [&_iframe]:border-0 [&_iframe]:block"
+              />
+              {kaggleUrl && (
+                <div className="flex justify-center pb-5 pt-2">
+                  <a href={kaggleUrl} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold text-sm hover:from-blue-500 hover:to-blue-400 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-200 group">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                    Kaggle'da Oku
+                    <svg className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </div>
       </div>
     );
   }

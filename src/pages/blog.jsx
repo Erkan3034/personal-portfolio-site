@@ -24,8 +24,11 @@ const slugify = (text) => {
 
 const BlogCard = ({ post, index }) => {
   const { lang, t } = useLanguage();
-  const isExternal = post.is_external && post.external_url;
-  const readingTime = calculateReadingTime(post.content || post.excerpt);
+  const isKaggle = !!post.kaggle_notebook_id;
+  const isExternal = post.is_external && post.external_url && !isKaggle;
+  const readingTime = isKaggle ? null : calculateReadingTime(post.content || post.excerpt);
+
+  const contentType = isKaggle ? 'kaggle' : isExternal ? 'medium' : 'blog';
 
   const CardContent = () => (
     <>
@@ -39,25 +42,31 @@ const BlogCard = ({ post, index }) => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-surface/80 to-transparent" />
           <div className="absolute top-3 left-3">
-            <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase bg-emerald-500/70 text-white backdrop-blur-md">
-              {isExternal ? 'Medium' : 'Blog'}
+            <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase text-white backdrop-blur-md ${
+              contentType === 'kaggle' ? 'bg-blue-500/70' : 'bg-emerald-500/70'
+            }`}>
+              {contentType === 'kaggle' ? 'Kaggle' : contentType === 'medium' ? 'Medium' : 'Blog'}
             </span>
           </div>
-          <div className="absolute top-3 right-3">
-            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-black/50 backdrop-blur-md text-white/90">
-              {readingTime} {t('blog.minRead')}
-            </span>
-          </div>
+          {readingTime && (
+            <div className="absolute top-3 right-3">
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-black/50 backdrop-blur-md text-white/90">
+                {readingTime} {t('blog.minRead')}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
       <div className={`p-4 flex flex-col flex-1 ${!post.image ? 'pt-5' : ''}`}>
         {!post.image && (
           <div className="flex items-center justify-between mb-3">
-            <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase bg-emerald-500/[0.08] text-emerald-400 border border-emerald-500/20">
-              {isExternal ? 'Medium' : 'Blog'}
+            <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase border ${
+              contentType === 'kaggle' ? 'bg-blue-500/[0.08] text-blue-400 border-blue-500/20' : 'bg-emerald-500/[0.08] text-emerald-400 border-emerald-500/20'
+            }`}>
+              {contentType === 'kaggle' ? 'Kaggle' : contentType === 'medium' ? 'Medium' : 'Blog'}
             </span>
-            <span className="text-[10px] text-zinc-500">{readingTime} {t('blog.minRead')}</span>
+            {readingTime && <span className="text-[10px] text-zinc-500">{readingTime} {t('blog.minRead')}</span>}
           </div>
         )}
 
@@ -151,14 +160,16 @@ const Blog = () => {
 
   const counts = useMemo(() => ({
     all: blogs.length,
-    internal: blogs.filter((b) => !b.is_external).length,
+    internal: blogs.filter((b) => !b.is_external && !b.kaggle_notebook_id).length,
     external: blogs.filter((b) => b.is_external && b.external_url).length,
+    kaggle: blogs.filter((b) => b.kaggle_notebook_id).length,
   }), [blogs]);
 
   const filteredBlogs = useMemo(() => {
     let result = [...blogs];
-    if (activeFilter === 'internal') result = result.filter((b) => !b.is_external);
+    if (activeFilter === 'internal') result = result.filter((b) => !b.is_external && !b.kaggle_notebook_id);
     else if (activeFilter === 'external') result = result.filter((b) => b.is_external && b.external_url);
+    else if (activeFilter === 'kaggle') result = result.filter((b) => b.kaggle_notebook_id);
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter((b) =>
@@ -230,7 +241,8 @@ const Blog = () => {
             {[
               { id: 'all', label: t('blog.all'), count: counts.all },
               { id: 'internal', label: t('blog.internal'), count: counts.internal },
-              { id: 'external', label: t('blog.external'), count: counts.external },
+              { id: 'external', label: 'Medium', count: counts.external },
+              { id: 'kaggle', label: 'Kaggle', count: counts.kaggle },
             ].map((f) => (
               <button
                 key={f.id}
@@ -336,6 +348,7 @@ const Blog = () => {
               { label: t('blog.totalPosts'), value: blogs.length, icon: <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" /></svg> },
               { label: t('blog.internal'), value: counts.internal, icon: <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg> },
               { label: 'Medium', value: counts.external, icon: <svg className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z" /></svg> },
+              { label: 'Kaggle', value: counts.kaggle, icon: <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M8 4h8M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2M8 4v2m8-2v2m-4 2v8m0 0l-3-3m3 3l3-3"/></svg> },
               { label: t('blog.totalTags'), value: uniqueTags, icon: <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" /></svg> },
             ].map((s) => (
               <div key={s.label} className="bg-surface border border-white/[0.07] rounded-xl p-4 flex items-center gap-3">

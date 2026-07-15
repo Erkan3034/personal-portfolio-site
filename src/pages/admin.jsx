@@ -24,6 +24,7 @@ const Ico = {
   Folder: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7a2 2 0 012-2h3.5L10 7h9a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" /></svg>,
   Badge: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
   Doc: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+  Kaggle: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M8 4h8M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2M8 4v2m8-2v2m-4 2v8m0 0l-3-3m3 3l3-3"/></svg>,
   Logout: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>,
   Edit: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
   Trash: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>,
@@ -445,7 +446,7 @@ const Admin = () => {
   /* ─── form state ─── */
   const emptyProject = { title: '', description: '', technologies: [], github_url: '', live_url: '', project_date: '', featured: false, image: null };
   const emptyCert = { title: '', issuer: '', description: '', certificate_date: '', certificate_url: '', image: null };
-  const emptyBlog = { title: '', summary: '', content: '', tags: [], is_external: false, external_url: '', image: null, published_at: '' };
+  const emptyBlog = { title: '', summary: '', content: '', tags: [], is_external: false, blog_type: 'blog', external_url: '', kaggle_notebook_id: '', image: null, published_at: '' };
 
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [newProject, setNewProject] = useState(emptyProject);
@@ -870,7 +871,7 @@ const Admin = () => {
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="font-semibold text-gray-100 text-sm truncate">{b.title}</h3>
-                            <Badge color={b.is_external ? 'blue' : 'green'}>{b.is_external ? 'External' : 'Site İçi'}</Badge>
+                            <Badge color={b.kaggle_notebook_id ? 'purple' : b.is_external ? 'blue' : 'green'}>{b.kaggle_notebook_id ? 'Kaggle' : b.is_external ? 'External' : 'Site İçi'}</Badge>
                           </div>
                           {b.summary && <p className="text-gray-500 text-xs mt-0.5 line-clamp-1">{b.summary}</p>}
                           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
@@ -879,12 +880,15 @@ const Admin = () => {
                           </div>
                         </div>
                         <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {b.is_external && b.external_url && (
-                            <a href={b.external_url} target="_blank" rel="noreferrer" className="p-1.5 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/5 transition-colors cursor-pointer">
+                          {(b.is_external && b.external_url) || b.kaggle_notebook_id ? (
+                            <a href={b.kaggle_notebook_id ? `https://www.kaggle.com/${b.kaggle_notebook_id}` : b.external_url} target="_blank" rel="noreferrer" className="p-1.5 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/5 transition-colors cursor-pointer">
                               <Ico.Link className="w-3.5 h-3.5" />
                             </a>
-                          )}
-                          <button onClick={() => setEditBlog({ ...b, tags: ensureArray(b.tags) })}
+                          ) : null}
+                          <button onClick={() => {
+                            const inferredType = b.kaggle_notebook_id ? 'kaggle' : b.is_external ? 'medium' : 'blog';
+                            setEditBlog({ ...b, tags: ensureArray(b.tags), blog_type: inferredType });
+                          }}
                             className="p-1.5 rounded-lg text-gray-600 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer">
                             <Ico.Edit className="w-3.5 h-3.5" />
                           </button>
@@ -1076,7 +1080,20 @@ const Admin = () => {
             let imageUrl = null;
             try {
               if (newBlog.image) { const webp = await convertToWebP(newBlog.image); const { data: d, error: e2 } = await uploadBlogImage(webp); if (e2) throw e2; imageUrl = d.publicUrl; }
-              const { error } = await addBlog({ title: newBlog.title, slug: slugify(newBlog.title), summary: newBlog.summary, content: newBlog.content, tags: newBlog.tags, is_external: newBlog.is_external, external_url: newBlog.external_url, image: imageUrl, published_at: newBlog.published_at || null });
+              const isKaggle = newBlog.blog_type === 'kaggle';
+              const isMedium = newBlog.blog_type === 'medium';
+              const getKaggleId = (code) => {
+                const m = code?.match(/src="https:\/\/www\.kaggle\.com\/embed\/([^?"\s]+)/);
+                return m ? m[1] : null;
+              };
+              const { error } = await addBlog({
+                title: newBlog.title, slug: slugify(newBlog.title), summary: newBlog.summary,
+                tags: newBlog.tags, image: imageUrl, published_at: newBlog.published_at || null,
+                is_external: isMedium,
+                external_url: isMedium ? newBlog.external_url : null,
+                kaggle_notebook_id: isKaggle ? getKaggleId(newBlog.content) : null,
+                content: isMedium ? null : newBlog.content,
+              });
               if (error) throw error;
               setShowBlogModal(false); setNewBlog(emptyBlog); setBlogImagePreview(null); fetchData(); toast('Blog başarıyla yayınlandı!');
             } catch (err) { setAddBlogError('Eklenemedi: ' + (err.message || err)); }
@@ -1084,14 +1101,42 @@ const Admin = () => {
           }} className="space-y-4">
             <Field label="Başlık" required><input type="text" value={newBlog.title} onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })} required className={inputCls} placeholder="Blog başlığı" autoFocus /></Field>
             <Field label="Özet"><textarea value={newBlog.summary} onChange={(e) => setNewBlog({ ...newBlog, summary: e.target.value })} className={`${inputCls} resize-none`} rows={2} placeholder="Kısa özet" /></Field>
-            <Field label="İçerik"><RichEditor key="new-blog" value={newBlog.content} onChange={(v) => setNewBlog({ ...newBlog, content: v })} onImageUpload={async (file) => { const webp = await convertToWebP(file); const { data: d, error: e2 } = await uploadBlogImage(webp); if (e2) { toast('Görsel yüklenemedi.', 'error'); return null; } return d.publicUrl; }} /></Field>
             <Field label="Etiketler" hint="Yazıp Enter'a basarak ekleyin"><TagInput tags={newBlog.tags} onChange={(t) => setNewBlog({ ...newBlog, tags: t })} placeholder="React, Supabase..." /></Field>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={newBlog.is_external} onChange={(e) => setNewBlog({ ...newBlog, is_external: e.target.checked })} className="w-4 h-4 rounded border-white/20 bg-surface-2 text-primary focus:ring-primary/40" />
-              <span className="text-sm font-medium text-gray-300">Dış bağlantı (Medium vb.)</span>
-            </label>
-            {newBlog.is_external && (
-              <Field label="External URL"><input type="url" value={newBlog.external_url} onChange={(e) => setNewBlog({ ...newBlog, external_url: e.target.value })} className={inputCls} placeholder="https://medium.com/..." /></Field>
+
+            {/* İçerik Türü */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">İçerik Türü</label>
+              <div className="flex gap-2">
+                {[
+                  { id: 'blog', label: 'Blog Yazısı', icon: Ico.Doc },
+                  { id: 'medium', label: 'Medium', icon: Ico.Link },
+                  { id: 'kaggle', label: 'Kaggle Notebook', icon: Ico.Kaggle },
+                ].map((t) => (
+                  <button key={t.id} type="button" onClick={() => setNewBlog({ ...newBlog, blog_type: t.id })}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer border ${
+                      newBlog.blog_type === t.id ? 'bg-primary/10 text-primary border-primary/30' : 'bg-surface-2 text-gray-400 border-white/10 hover:border-white/20'
+                    }`}>
+                    <t.icon className="w-4 h-4" />
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {newBlog.blog_type === 'blog' && (
+              <Field label="İçerik"><RichEditor key="new-blog" value={newBlog.content} onChange={(v) => setNewBlog({ ...newBlog, content: v })} onImageUpload={async (file) => { const webp = await convertToWebP(file); const { data: d, error: e2 } = await uploadBlogImage(webp); if (e2) { toast('Görsel yüklenemedi.', 'error'); return null; } return d.publicUrl; }} /></Field>
+            )}
+            {newBlog.blog_type === 'medium' && (
+              <Field label="Medium URL" hint="Medium'daki yazınızın tam bağlantısı">
+                <input type="url" value={newBlog.external_url} onChange={(e) => setNewBlog({ ...newBlog, external_url: e.target.value })}
+                  className={inputCls} placeholder="https://medium.com/..." />
+              </Field>
+            )}
+            {newBlog.blog_type === 'kaggle' && (
+              <Field label="Kaggle Embed Kodu" hint="Kaggle not defterinizden aldığınız iframe kodunu yapıştırın">
+                <textarea rows={4} value={newBlog.content} onChange={(e) => setNewBlog({ ...newBlog, content: e.target.value })}
+                  className={`${inputCls} font-mono text-xs resize-y`} placeholder='<iframe src="https://www.kaggle.com/embed/..." ...>' />
+              </Field>
             )}
             <div className="grid grid-cols-2 gap-3">
               <Field label="Yayın Tarihi"><input type="date" value={newBlog.published_at} onChange={(e) => setNewBlog({ ...newBlog, published_at: e.target.value })} className={inputCls} /></Field>
@@ -1116,7 +1161,20 @@ const Admin = () => {
             try {
               let imageUrl = editBlog.image;
               if (editBlog.newImage) { const webp = await convertToWebP(editBlog.newImage); const { data: d, error: e2 } = await uploadBlogImage(webp); if (e2) throw e2; imageUrl = d.publicUrl; }
-              const { error } = await updateBlog(editBlog.id, { title: editBlog.title, slug: slugify(editBlog.title), summary: editBlog.summary, content: editBlog.content, tags: ensureArray(editBlog.tags), is_external: editBlog.is_external, external_url: editBlog.external_url, image: imageUrl, published_at: editBlog.published_at || null });
+              const isKaggle = editBlog.blog_type === 'kaggle';
+              const isMedium = editBlog.blog_type === 'medium';
+              const getKaggleId = (code) => {
+                const m = code?.match(/src="https:\/\/www\.kaggle\.com\/embed\/([^?"\s]+)/);
+                return m ? m[1] : null;
+              };
+              const { error } = await updateBlog(editBlog.id, {
+                title: editBlog.title, slug: slugify(editBlog.title), summary: editBlog.summary,
+                tags: ensureArray(editBlog.tags), image: imageUrl, published_at: editBlog.published_at || null,
+                is_external: isMedium,
+                external_url: isMedium ? editBlog.external_url : null,
+                kaggle_notebook_id: isKaggle ? getKaggleId(editBlog.content) : null,
+                content: isMedium ? null : editBlog.content,
+              });
               if (error) throw error;
               setEditBlog(null); fetchData(); toast('Blog güncellendi!');
             } catch (err) { setEditBlogError('Güncellenemedi: ' + (err.message || err)); }
@@ -1124,14 +1182,42 @@ const Admin = () => {
           }} className="space-y-4">
             <Field label="Başlık" required><input type="text" value={editBlog.title} onChange={(e) => setEditBlog({ ...editBlog, title: e.target.value })} required className={inputCls} /></Field>
             <Field label="Özet"><textarea value={editBlog.summary || ''} onChange={(e) => setEditBlog({ ...editBlog, summary: e.target.value })} className={`${inputCls} resize-none`} rows={2} /></Field>
-            <Field label="İçerik"><RichEditor key={editBlog.id} value={editBlog.content || ''} onChange={(v) => setEditBlog({ ...editBlog, content: v })} onImageUpload={async (file) => { const webp = await convertToWebP(file); const { data: d, error: e2 } = await uploadBlogImage(webp); if (e2) { toast('Görsel yüklenemedi.', 'error'); return null; } return d.publicUrl; }} /></Field>
             <Field label="Etiketler" hint="Yazıp Enter'a basarak ekleyin"><TagInput tags={ensureArray(editBlog.tags)} onChange={(t) => setEditBlog({ ...editBlog, tags: t })} /></Field>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={!!editBlog.is_external} onChange={(e) => setEditBlog({ ...editBlog, is_external: e.target.checked })} className="w-4 h-4 rounded border-white/20 bg-surface-2 text-primary focus:ring-primary/40" />
-              <span className="text-sm font-medium text-gray-300">Dış bağlantı (Medium vb.)</span>
-            </label>
-            {editBlog.is_external && (
-              <Field label="External URL"><input type="url" value={editBlog.external_url || ''} onChange={(e) => setEditBlog({ ...editBlog, external_url: e.target.value })} className={inputCls} /></Field>
+
+            {/* İçerik Türü */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">İçerik Türü</label>
+              <div className="flex gap-2">
+                {[
+                  { id: 'blog', label: 'Blog Yazısı', icon: Ico.Doc },
+                  { id: 'medium', label: 'Medium', icon: Ico.Link },
+                  { id: 'kaggle', label: 'Kaggle Notebook', icon: Ico.Kaggle },
+                ].map((t) => (
+                  <button key={t.id} type="button" onClick={() => setEditBlog({ ...editBlog, blog_type: t.id })}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer border ${
+                      editBlog.blog_type === t.id ? 'bg-primary/10 text-primary border-primary/30' : 'bg-surface-2 text-gray-400 border-white/10 hover:border-white/20'
+                    }`}>
+                    <t.icon className="w-4 h-4" />
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {editBlog.blog_type === 'blog' && (
+              <Field label="İçerik"><RichEditor key={editBlog.id} value={editBlog.content || ''} onChange={(v) => setEditBlog({ ...editBlog, content: v })} onImageUpload={async (file) => { const webp = await convertToWebP(file); const { data: d, error: e2 } = await uploadBlogImage(webp); if (e2) { toast('Görsel yüklenemedi.', 'error'); return null; } return d.publicUrl; }} /></Field>
+            )}
+            {editBlog.blog_type === 'medium' && (
+              <Field label="Medium URL" hint="Medium'daki yazınızın tam bağlantısı">
+                <input type="url" value={editBlog.external_url || ''} onChange={(e) => setEditBlog({ ...editBlog, external_url: e.target.value })}
+                  className={inputCls} placeholder="https://medium.com/..." />
+              </Field>
+            )}
+            {editBlog.blog_type === 'kaggle' && (
+              <Field label="Kaggle Embed Kodu" hint="Kaggle not defterinizden aldığınız iframe kodunu yapıştırın">
+                <textarea rows={4} value={editBlog.content || ''} onChange={(e) => setEditBlog({ ...editBlog, content: e.target.value })}
+                  className={`${inputCls} font-mono text-xs resize-y`} placeholder='<iframe src="https://www.kaggle.com/embed/..." ...>' />
+              </Field>
             )}
             <div className="grid grid-cols-2 gap-3">
               <Field label="Yayın Tarihi"><input type="date" value={editBlog.published_at ? editBlog.published_at.substring(0, 10) : ''} onChange={(e) => setEditBlog({ ...editBlog, published_at: e.target.value })} className={inputCls} /></Field>

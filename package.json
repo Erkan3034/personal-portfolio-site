@@ -47,7 +47,9 @@
             "--no-sandbox",
             "--disable-setuid-sandbox"
         ],
-        "inlineCss": false
+        "inlineCss": false,
+        "skipThirdPartyRequests": true,
+        "sourceMaps": false
     },
     "browserslist": {
         "production": [

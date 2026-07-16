@@ -8,13 +8,11 @@ for (const file of fs.readdirSync(buildDir)) {
   const filePath = path.join(buildDir, file);
   let html = fs.readFileSync(filePath, 'utf-8');
 
-  // react-snap fires the onload handler, turning media="print" into media="all"
-  // This makes the font CSS render-blocking again
-  // We need to restore media="print" with the onload handler
-  // Handle both: 200.html (plain &, single quotes) and index.html (&amp;, &quot;)
+  // react-snap runs font-loader.js, turning media="print" into media="all"
+  // Restore media="print" with id="font-css" for the external script approach
   html = html.replace(
-    /<link rel="stylesheet" href="(https:\/\/fonts\.googleapis\.com\/[^"]+)" media="all"(?: onload=(?:"[^"]*"|'[^']*'))?>/g,
-    '<link rel="stylesheet" href="$1" media="print" onload="this.media=\'all\'" />'
+    /<link rel="stylesheet" href="(https:\/\/fonts\.googleapis\.com\/[^"]+)"[^>]*media="all"[^>]*\/?>/g,
+    '<link rel="stylesheet" href="$1" media="print" id="font-css" />'
   );
 
   fs.writeFileSync(filePath, html, 'utf-8');

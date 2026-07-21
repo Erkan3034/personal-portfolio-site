@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const CertificateCard = ({ certificate, onDetail, onImagePreview }) => {
-  const { title, issuer, description, certificate_date, image, certificate_url } = certificate;
+  const { title, issuer, description, certificate_date, image } = certificate;
 
   return (
     <motion.div

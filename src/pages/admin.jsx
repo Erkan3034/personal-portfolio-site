@@ -516,7 +516,7 @@ const Admin = () => {
   const handleDelete = (label, fn) => (id) => {
     askConfirm(`${label} Sil`, `Bu ${label.toLowerCase()}ı kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz.`, async () => {
       setConfirm(null);
-      try { await fn(id); fetchData(); toast(`${label} silindi.`); }
+      try { const { error } = await fn(id); if (error) throw error; fetchData(); toast(`${label} silindi.`); }
       catch (err) { toast('Silme hatası: ' + (err.message || err), 'error'); }
     });
   };

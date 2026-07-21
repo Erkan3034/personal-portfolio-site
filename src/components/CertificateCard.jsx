@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 
-const CertificateCard = ({ certificate }) => {
-  const [expanded, setExpanded] = useState(false);
+const CertificateCard = ({ certificate, onDetail, onImagePreview }) => {
   const { title, issuer, description, certificate_date, image, certificate_url } = certificate;
 
   return (
     <motion.div
       whileHover={{ y: -3 }}
-      onClick={() => setExpanded(!expanded)}
+      onClick={() => onDetail?.(certificate)}
       className="rounded-xl overflow-hidden bg-surface border border-white/[0.07] hover:border-white/[0.14] transition-all duration-300 group cursor-pointer"
     >
       {/* Image / Placeholder */}
-      <div className="relative h-40 overflow-hidden">
+      <div className="relative h-49 overflow-hidden">
         {image ? (
-          <img src={image} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+          <img
+            src={image} alt={title}
+            className="w-full h-full object-cover bg-surface-2 transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+            onClick={(e) => { e.stopPropagation(); onImagePreview?.(image); }}
+          />
         ) : (
           <div className="w-full h-full bg-surface-2 flex items-center justify-center">
             <div className="flex flex-col items-center gap-2">
@@ -28,6 +32,11 @@ const CertificateCard = ({ certificate }) => {
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-surface/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {image && (
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <span className="text-[11px] bg-black/60 text-white px-2 py-1 rounded-md font-body">Büyüt</span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -47,46 +56,15 @@ const CertificateCard = ({ certificate }) => {
         <p className="text-sm text-zinc-500 font-body mb-4 line-clamp-2 leading-relaxed">{description}</p>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm text-zinc-500 font-body">{expanded ? 'Kapat' : 'Detaylar'}</span>
-          <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.25 }}>
-            <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          <span className="text-sm text-emerald-400/80 font-body group-hover:text-emerald-400 transition-colors">
+            Detayı Aç
+          </span>
+          <motion.div className="text-zinc-600 group-hover:text-zinc-400 transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </motion.div>
         </div>
-
-        <AnimatePresence>
-          {expanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.28 }}
-              className="overflow-hidden"
-            >
-              <div className="pt-4 mt-4 border-t border-white/[0.07]">
-                <div className="text-sm text-zinc-500 font-body leading-relaxed mb-4">
-                  {description?.split('\n').filter(Boolean).map((p, i) => (
-                    <p key={i} className="mb-2">{p}</p>
-                  ))}
-                </div>
-                {certificate_url && (
-                  <motion.a
-                    href={certificate_url} target="_blank" rel="noopener noreferrer"
-                    onClick={e => e.stopPropagation()}
-                    whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                    className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black px-4 py-2 rounded-lg text-sm font-semibold font-body transition-colors duration-150 cursor-pointer"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                    Sertifikayı Gör
-                  </motion.a>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </motion.div>
   );

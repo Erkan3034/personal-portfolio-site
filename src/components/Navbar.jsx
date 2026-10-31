@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
+import Logo from './Logo';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,7 @@ const Navbar = () => {
   const NAV_ITEMS = [
     { key: 'nav.home', path: '/' },
     { key: 'nav.about', path: '/about' },
+    { key: 'nav.experience', path: '/experience' },
     { key: 'nav.projects', path: '/projects' },
     { key: 'nav.blog', path: '/blog' },
     { key: 'nav.certificates', path: '/certificates' },
@@ -61,16 +63,12 @@ const Navbar = () => {
         }}
         transition={{ duration: 0.25 }}
         style={{ backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)' }}
-        className="hidden md:flex items-center gap-0.5 px-2 py-1.5 rounded-2xl"
+        className="hidden lg:flex items-center gap-0.5 px-2 py-1.5 rounded-2xl"
       >
         {/* Logo */}
-        <Link to="/" className="flex items-center px-3 mr-1">
+        <Link to="/" className="flex items-center px-3 mr-1" aria-label="Erkan Turgut — Ana Sayfa">
           <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
-            <picture className="block h-7">
-              <source srcSet="/logo.webp" type="image/webp" />
-              <source srcSet="/logo.png" type="image/png" />
-              <img src="/logo.png" alt="Logo" className="h-7 w-auto object-contain" width="340" height="74" />
-            </picture>
+            <Logo />
           </motion.div>
         </Link>
 
@@ -109,14 +107,10 @@ const Navbar = () => {
           WebkitBackdropFilter: 'blur(18px)',
           boxShadow: '0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.07)',
         }}
-        className="md:hidden flex items-center justify-between w-full max-w-lg px-4 py-3 rounded-2xl"
+        className="lg:hidden flex items-center justify-between w-full max-w-lg px-4 py-3 rounded-2xl"
       >
-        <Link to="/">
-          <picture className="block h-6">
-            <source srcSet="/logo.webp" type="image/webp" />
-            <source srcSet="/logo.png" type="image/png" />
-            <img src="/logo.png" alt="Logo" className="h-6 w-auto object-contain" width="340" height="74" />
-          </picture>
+        <Link to="/" aria-label="Erkan Turgut — Ana Sayfa">
+          <Logo size="sm" />
         </Link>
 
         <div className="flex items-center gap-2">
@@ -151,7 +145,7 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.18, ease: 'easeOut' }}
-            className="md:hidden absolute top-full left-4 right-4 mt-2"
+            className="lg:hidden absolute top-full left-4 right-4 mt-2"
           >
             <div
               className="p-2 rounded-2xl"

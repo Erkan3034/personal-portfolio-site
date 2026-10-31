@@ -1,5 +1,6 @@
 import React from 'react';
 import HeroSection from '../components/HeroSection';
+import HomeSections from '../components/HomeSections';
 import SEOHead from '../components/SEOHead';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -12,6 +13,7 @@ const Home = () => {
         description={t('home.seoDesc')}
       />
       <HeroSection />
+      <HomeSections />
     </div>
   );
 };

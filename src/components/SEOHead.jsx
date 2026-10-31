@@ -1,10 +1,53 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-const SEOHead = ({ title, description, path }) => {
+const BASE_URL = 'https://erkanturgut.com';
+const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
+
+// Netlify prerender edilen sayfaları sondaki eğik çizgili adrese 301 ile yönlendirir;
+// canonical yönlendirmenin kendisini göstermemeli.
+const withTrailingSlash = (p) => (p === '/' || p.endsWith('/') ? p : `${p}/`);
+
+const setMeta = (attr, key, content) => {
+    if (!content) return;
+    let el = document.querySelector(`meta[${attr}="${key}"]`);
+    if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+    }
+    el.setAttribute('content', content);
+};
+
+const absolute = (url) => (url && url.startsWith('/') ? `${BASE_URL}${url}` : url);
+
+const SEOHead = ({ title, description, path, image, type = 'website', jsonLd }) => {
     const location = useLocation();
-    const baseUrl = 'https://erkanturgut.com';
-    const fullUrl = `${baseUrl}${path || location.pathname}`;
+    const fullUrl = `${BASE_URL}${withTrailingSlash(path || location.pathname)}`;
+    const ogImage = absolute(image) || DEFAULT_IMAGE;
+    const jsonLdString = jsonLd ? JSON.stringify(jsonLd) : '';
+
+    useEffect(() => {
+        const fullTitle = title ? `${title} | Erkan Turgut` : null;
+        setMeta('property', 'og:type', type);
+        setMeta('property', 'og:image', ogImage);
+        setMeta('name', 'twitter:image', ogImage);
+        setMeta('name', 'twitter:title', fullTitle);
+        setMeta('name', 'twitter:description', description);
+
+        let script = document.getElementById('page-jsonld');
+        if (jsonLdString) {
+            if (!script) {
+                script = document.createElement('script');
+                script.type = 'application/ld+json';
+                script.id = 'page-jsonld';
+                document.head.appendChild(script);
+            }
+            script.textContent = jsonLdString;
+        } else if (script) {
+            script.remove();
+        }
+    }, [title, description, type, ogImage, jsonLdString]);
 
     useEffect(() => {
         // Update Title
@@ -38,5 +81,7 @@ const SEOHead = ({ title, description, path }) => {
 
     return null;
 };
+
+export const SITE_URL = BASE_URL;
 
 export default SEOHead;

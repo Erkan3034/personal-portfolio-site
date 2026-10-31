@@ -1,9 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { getProjectById } from '../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
-import SEOHead from '../components/SEOHead';
+import SEOHead, { SITE_URL } from '../components/SEOHead';
 import { useLanguage } from '../context/LanguageContext';
+import { projectPath, parseProjectId } from '../lib/slug';
+
+const shortDescription = (text, max = 160) => {
+  const firstParagraph = (text || '').split('\n').find((p) => p.trim()) || '';
+  return firstParagraph.length > max ? `${firstParagraph.slice(0, max - 1).trimEnd()}…` : firstParagraph;
+};
+
+const projectSeoProps = (project) => {
+  const path = projectPath(project);
+  return {
+    title: project.title,
+    description: shortDescription(project.description),
+    image: project.image,
+    path,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareSourceCode',
+      name: project.title,
+      description: shortDescription(project.description, 300),
+      image: project.image || undefined,
+      url: `${SITE_URL}${path}/`,
+      codeRepository: project.github_url || undefined,
+      programmingLanguage: Array.isArray(project.technologies) ? project.technologies : undefined,
+      dateCreated: project.project_date || project.created_at,
+      author: { '@type': 'Person', '@id': `${SITE_URL}/#person`, name: 'Erkan Turgut' },
+    },
+  };
+};
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -18,11 +46,7 @@ const ProjectDetail = () => {
     const fetchProject = async () => {
       setLoading(true);
       setError('');
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await getProjectById(parseProjectId(id));
       if (error) setError(t('projects.projectsLabel'));
       else setProject(data);
       setLoading(false);
@@ -80,7 +104,7 @@ const ProjectDetail = () => {
 
   return (
     <div className="min-h-screen bg-canvas pt-24">
-      <SEOHead title={project.title} description={project.description} />
+      <SEOHead {...projectSeoProps(project)} />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-8 md:px-12 py-12">
 

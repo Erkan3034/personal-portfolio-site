@@ -8,7 +8,9 @@ import {
   deleteProject, deleteCertificate, deleteBlog,
   uploadProjectImage, uploadCertificateImage, uploadBlogImage,
   updateProject, updateCertificate, updateBlog,
+  getExperiences,
 } from '../lib/supabase';
+import ExperienceAdmin from '../components/admin/ExperienceAdmin';
 
 const slugify = (text) => {
   if (!text) return '';
@@ -37,6 +39,7 @@ const Ico = {
   Refresh: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
   Link: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>,
   Menu: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" /></svg>,
+  Briefcase: (p) => <svg {...p} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>,
   Star: (p) => <svg {...p} fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>,
 };
 
@@ -424,6 +427,8 @@ const Admin = () => {
   const [projects, setProjects] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [blogs, setBlogs] = useState([]);
+  const [experiences, setExperiences] = useState([]);
+  const [expTableMissing, setExpTableMissing] = useState(false);
   const [showLogin, setShowLogin] = useState(true);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
@@ -479,10 +484,13 @@ const Admin = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      const [p, c, b] = await Promise.all([getProjects(), getCertificates(), getBlogs()]);
+      const [p, c, b, e] = await Promise.all([getProjects(), getCertificates(), getBlogs(), getExperiences()]);
       setProjects(p.data || []);
       setCertificates(c.data || []);
       setBlogs(b.data || []);
+      setExperiences(e.data || []);
+      // supabase/experiences.sql henüz çalıştırılmadıysa tablo yoktur
+      setExpTableMissing(!!e.error && /PGRST205|42P01|does not exist|Could not find the table/i.test(`${e.error.code} ${e.error.message}`));
     } catch (err) { console.error('Veri yükleme hatası:', err); }
   }, []);
 
@@ -552,6 +560,7 @@ const Admin = () => {
     { id: 'projects', label: 'Projeler', Icon: Ico.Folder, count: projects.length },
     { id: 'certificates', label: 'Sertifikalar', Icon: Ico.Badge, count: certificates.length },
     { id: 'blogs', label: 'Blog', Icon: Ico.Doc, count: blogs.length },
+    { id: 'experiences', label: 'Deneyimler', Icon: Ico.Briefcase, count: experiences.length },
   ];
 
   /* ─── Loading ─── */
@@ -705,7 +714,7 @@ const Admin = () => {
             <div>
               <h1 className="text-xl sm:text-2xl font-bold text-gray-100 font-display">{activeTabData?.label}</h1>
               <p className="text-gray-600 text-sm mt-0.5">
-                {activeTab === 'projects' ? filteredProjects.length : activeTab === 'certificates' ? filteredCerts.length : filteredBlogs.length} kayıt
+                {activeTab === 'projects' ? filteredProjects.length : activeTab === 'certificates' ? filteredCerts.length : activeTab === 'experiences' ? experiences.length : filteredBlogs.length} kayıt
                 {search && <span className="ml-1 text-primary">"{search}" için</span>}
               </p>
             </div>
@@ -911,6 +920,19 @@ const Admin = () => {
                 </div>
               )}
             </div>
+          )}
+
+          {/* ── Experiences ── */}
+          {activeTab === 'experiences' && (
+            <ExperienceAdmin
+              items={experiences}
+              search={search}
+              tableMissing={expTableMissing}
+              onChanged={fetchData}
+              toast={toast}
+              askConfirm={(title, msg, onOk) => askConfirm(title, msg, async () => { setConfirm(null); await onOk(); })}
+              ui={{ Modal, Field, TagInput, Badge, Ico, inputCls }}
+            />
           )}
         </div>
       </div>

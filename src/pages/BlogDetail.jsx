@@ -2,8 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getBlogById } from '../lib/supabase';
-import SEOHead from '../components/SEOHead';
+import SEOHead, { SITE_URL } from '../components/SEOHead';
 import { useLanguage } from '../context/LanguageContext';
+import { blogPath } from '../lib/slug';
+
+const blogSeoProps = (blog) => {
+  const url = `${SITE_URL}${blogPath(blog)}/`;
+  const description = blog.summary || blog.excerpt;
+  return {
+    title: blog.title,
+    description,
+    image: blog.image,
+    type: 'article',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: blog.title,
+      description,
+      image: blog.image ? [blog.image] : undefined,
+      datePublished: blog.published_at || blog.created_at,
+      dateModified: blog.updated_at || blog.published_at || blog.created_at,
+      inLanguage: 'tr-TR',
+      keywords: Array.isArray(blog.tags) ? blog.tags.join(', ') : undefined,
+      mainEntityOfPage: url,
+      url,
+      author: { '@type': 'Person', '@id': `${SITE_URL}/#person`, name: 'Erkan Turgut', url: `${SITE_URL}/` },
+      publisher: { '@id': `${SITE_URL}/#person` },
+    },
+  };
+};
 
 const calculateReadingTime = (content) => {
   if (!content) return 3;
@@ -82,7 +109,7 @@ const BlogDetail = () => {
     const kaggleUrl = getKaggleUrl(blog.content);
     return (
       <div className="min-h-screen bg-canvas pt-24">
-        <SEOHead title={blog.title} description={blog.summary || blog.excerpt} />
+        <SEOHead {...blogSeoProps(blog)} />
         <div className="max-w-5xl mx-auto px-4 sm:px-8 md:px-12 py-12">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-6">
             <Link to="/blog"
@@ -146,7 +173,7 @@ const BlogDetail = () => {
   }
 
   if (blog.is_external && blog.external_url) {
-    window.location.href = blog.external_url;
+    if (navigator.userAgent !== 'ReactSnap') window.location.href = blog.external_url;
     return null;
   }
 
@@ -154,7 +181,7 @@ const BlogDetail = () => {
 
   return (
     <div className="min-h-screen bg-canvas pt-24">
-      <SEOHead title={blog.title} description={blog.summary || blog.excerpt} />
+      <SEOHead {...blogSeoProps(blog)} />
 
       {/* Reading progress bar */}
       <div

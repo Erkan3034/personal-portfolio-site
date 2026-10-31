@@ -1,4 +1,11 @@
 
+# Deploy sonrası değişen adresleri IndexNow'a bildirir (anahtar: public/<key>.txt)
+[[plugins]]
+  package = "./netlify/plugins/indexnow"
+  [plugins.inputs]
+    host = "erkanturgut.com"
+    key = "a1ef9ecb497fb87d831f5a6cb6fde375"
+
 # sitemap
 [[redirects]]
   from = "/sitemap.xml"
@@ -33,6 +40,17 @@ force = true
   for = "/static/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/rss.xml"
+  [headers.values]
+    Content-Type = "application/rss+xml; charset=utf-8"
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/llms*.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
 
 [[headers]]
   for = "/favicon.ico"

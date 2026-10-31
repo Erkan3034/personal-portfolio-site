@@ -4,10 +4,11 @@ import SEOHead from '../components/SEOHead';
 import { useLanguage } from '../context/LanguageContext';
 
 const SKILLS = [
-  'React', 'JavaScript', 'TypeScript', 'Python', 'Java', 'C#',
-  'Node.js', 'Django', 'Flask', 'PHP', 'SQL', 'MongoDB',
-  'PostgreSQL', 'HTML/CSS', 'Tailwind CSS', 'Unity',
-  'Git', 'Framer Motion',
+  'Python', 'Java', 'JavaScript', 'TypeScript', 'C#', 'SQL',
+  'React', 'Next.js', 'Tailwind CSS', 'Spring Boot', 'FastAPI', 'Django',
+  'Flask', 'Node.js', 'PostgreSQL', 'MySQL', 'SQLite', 'Supabase',
+  'RAG', 'LLM', 'scikit-learn', 'XGBoost', 'Pandas', 'NumPy',
+  'Docker', 'Git', 'GitHub Actions',
 ];
 
 const stagger = {

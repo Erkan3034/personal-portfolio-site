@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
-const ProjectCard = ({ project }) => {
+const ProjectCard = ({ project, href }) => {
   const [hovered, setIsHovered] = useState(false);
   const { title, description, image, technologies = [], github_url, live_url, project_date, featured } = project;
 
@@ -83,7 +84,7 @@ const ProjectCard = ({ project }) => {
       <div className="p-5">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-base font-semibold font-body text-white group-hover:text-emerald-400 transition-colors duration-200 line-clamp-1 flex-1">
-            {title}
+            {href ? <Link to={href} onClick={(e) => e.stopPropagation()}>{title}</Link> : title}
           </h3>
           {project_date && (
             <span className="text-[11px] text-zinc-600 bg-white/[0.04] px-2 py-0.5 rounded-full ml-2 whitespace-nowrap font-body">

@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/index';
 import About from './pages/about';
+import Experience from './pages/experience';
 import Projects from './pages/projects';
 import Blog from './pages/blog';
 import BlogDetail from './pages/BlogDetail';
@@ -26,6 +27,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/experience" element={<Experience />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/projects/:id" element={<ProjectDetail />} />
           <Route path="/blog" element={<Blog />} />

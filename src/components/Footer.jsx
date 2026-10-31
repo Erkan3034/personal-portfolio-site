@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import Logo from './Logo';
 
 const SOCIALS = [
   {
@@ -48,6 +49,7 @@ const Footer = () => {
   const NAV_LINKS = [
     { key: 'nav.home', path: '/' },
     { key: 'nav.about', path: '/about' },
+    { key: 'nav.experience', path: '/experience' },
     { key: 'nav.projects', path: '/projects' },
     { key: 'nav.blog', path: '/blog' },
     { key: 'nav.certificates', path: '/certificates' },
@@ -61,10 +63,8 @@ const Footer = () => {
 
           {/* Brand */}
           <div>
-            <Link to="/" className="inline-block mb-4">
-              <span className="font-display font-bold text-white text-xl tracking-tight">
-                erkan turgut
-              </span>
+            <Link to="/" className="inline-block mb-4" aria-label="Erkan Turgut — Ana Sayfa">
+              <Logo />
             </Link>
             <p className="text-zinc-400 text-sm font-body leading-relaxed max-w-xs">
               {t('footer.description')}

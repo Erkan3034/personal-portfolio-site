@@ -1,0 +1,7 @@
+name: indexnow
+inputs:
+  - name: host
+    description: Bildirilecek alan adı
+    default: erkanturgut.com
+  - name: key
+    description: IndexNow anahtarı (public/<key>.txt dosyasıyla aynı)

@@ -23,3 +23,11 @@ yarn-debug.log*
 yarn-error.log*
 
 .env
+
+# scripts/generate-seo.js tarafından her build'de üretilir
+/prerender-routes.json
+/public/sitemap.xml
+/public/rss.xml
+/public/llms.txt
+/public/llms-full.txt
+/public/data/

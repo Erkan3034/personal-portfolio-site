@@ -3,9 +3,11 @@
 
 <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="%PUBLIC_URL%/logo-mark.svg" type="image/svg+xml" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon-32x32.png" type="image/png" sizes="32x32" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#23153c" />
+    <meta name="theme-color" content="#0C0C0E" />
     <meta name="description"
         content="Erkan Turgut'un kişisel portfolyo sitesi. Web geliştirici, yazılım mühendisi, Erkan Turgut hakkında bilgiler, projeler ve iletişim." />
     <meta name="keywords"
@@ -20,7 +22,9 @@
         content="Erkan Turgut'un kişisel portfolyo sitesi. Projeler, yetenekler ve iletişim bilgileri." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://erkanturgut.com/" />
-    <meta property="og:image" content="https://erkanturgut.com/logo512.png" />
+    <meta property="og:image" content="https://erkanturgut.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -29,10 +33,13 @@
     <meta name="twitter:title" content="Erkan Turgut | Kişisel Portfolyo" />
     <meta name="twitter:description"
         content="Erkan Turgut'un kişisel portfolyo sitesi. Projeler, yetenekler ve iletişim bilgileri." />
-    <meta name="twitter:image" content="https://erkanturgut.com/logo512.png" />
+    <meta name="twitter:image" content="https://erkanturgut.com/og-image.png" />
 
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.webp" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="alternate" type="application/rss+xml" title="Erkan Turgut — Blog" href="https://erkanturgut.com/rss.xml" />
+    <meta property="og:site_name" content="Erkan Turgut" />
+    <meta property="og:locale" content="tr_TR" />
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -45,14 +52,15 @@
           "name": "Erkan Turgut",
           "url": "https://erkanturgut.com/",
           "jobTitle": "Software Developer",
-          "image": "https://erkanturgut.com/img/profile.png",
+          "image": "https://erkanturgut.com/img/erkan-turgut.jpeg",
           "sameAs": [
             "https://github.com/Erkan3034",
             "https://www.linkedin.com/in/erkanturgut1205",
             "https://x.com/Erkan_0630",
             "https://medium.com/@turguterkan55"
           ],
-          "knowsAbout": ["React", "JavaScript", "Python", "Java", "AI", "Software Engineering"]
+          "knowsAbout": ["React", "JavaScript", "Python", "Java", "Spring Boot", "FastAPI", "Artificial Intelligence", "Retrieval-Augmented Generation", "Large Language Models", "Machine Learning", "Software Engineering"],
+          "address": { "@type": "PostalAddress", "addressLocality": "İstanbul", "addressCountry": "TR" }
         },
         {
           "@type": "WebSite",
@@ -73,14 +81,14 @@
     <script src="/font-loader.js"></script>
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=JetBrains+Mono:wght@400;500;600&display=optional" /></noscript>
 
-    <link rel="preload" as="image" href="/img/profile.webp" />
+    <link rel="preload" as="image" href="/img/erkan-turgut-336.webp" type="image/webp" />
 
     <title>Erkan Turgut | Kişisel Portfolyo</title>
 </head>
 
 <body>
     <noscript>
-        <div style="padding: 20px; text-align: center; background: #23153c; color: white;">
+        <div style="padding: 20px; text-align: center; background: #0C0C0E; color: white;">
             <h1>Erkan Turgut | Yazılım Geliştirici</h1>
             <p>Üzgünüz, bu web sitesini görüntülemek için JavaScript'i etkinleştirmeniz gerekmektedir.</p>
             <p>Erkan Turgut; React, Python ve Java uzmanlığı ile modern yazılım çözümleri üretmektedir. Portfolyosunda

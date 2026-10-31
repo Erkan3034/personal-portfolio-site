@@ -16,12 +16,15 @@
         "web-vitals": "^2.1.4"
     },
     "scripts": {
+        "prestart": "node scripts/generate-seo.js",
         "start": "react-scripts start",
+        "prebuild": "node scripts/generate-seo.js",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "generate:webp": "node scripts/convert-webp.js",
-        "postbuild": "react-snap && node scripts/fix-fonts.js"
+        "generate:seo": "node scripts/generate-seo.js",
+        "postbuild": "node scripts/prerender.js && node scripts/fix-fonts.js"
     },
     "eslintConfig": {
         "extends": [
@@ -32,11 +35,12 @@
     "reactSnap": {
         "include": [
             "/",
-            "/about",
-            "/projects",
-            "/blog",
-            "/certificates",
-            "/contact"
+            "/about/",
+            "/experience/",
+            "/projects/",
+            "/blog/",
+            "/certificates/",
+            "/contact/"
         ],
         "skipIndexing": false,
         "minifyHtml": {

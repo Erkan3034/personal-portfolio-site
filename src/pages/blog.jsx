@@ -4,22 +4,11 @@ import { Link } from 'react-router-dom';
 import { getBlogs } from '../lib/supabase';
 import SEOHead from '../components/SEOHead';
 import { useLanguage } from '../context/LanguageContext';
+import { blogPath } from '../lib/slug';
 
 const calculateReadingTime = (content) => {
   if (!content) return 3;
   return Math.max(1, Math.ceil(content.split(/\s+/).length / 200));
-};
-
-const slugify = (text) => {
-  if (!text) return '';
-  const trMap = { 'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u', 'Ç': 'c', 'Ğ': 'g', 'İ': 'i', 'Ö': 'o', 'Ş': 's', 'Ü': 'u' };
-  return text.toString().toLowerCase()
-    .replace(/[çğıöşüÇĞİÖŞÜ]/g, (m) => trMap[m])
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-')
-    .replace(/^-+/, '')
-    .replace(/-+$/, '');
 };
 
 const BlogCard = ({ post, index }) => {
@@ -127,7 +116,7 @@ const BlogCard = ({ post, index }) => {
           <CardContent />
         </button>
       ) : (
-        <Link to={`/blog/${slugify(post.title)}`} className={`${cardCls} cursor-pointer`}>
+        <Link to={blogPath(post)} className={`${cardCls} cursor-pointer`}>
           <CardContent />
         </Link>
       )}

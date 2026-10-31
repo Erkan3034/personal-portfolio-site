@@ -23,6 +23,8 @@ export const LanguageProvider = ({ children }) => {
 
   // Mount sonrası gerçek dili (localStorage / tarayıcı) tespit edip uygula.
   useEffect(() => {
+    // Prerender'daki headless tarayıcı İngilizce raporlar; HTML her zaman Türkçe üretilmeli.
+    if (navigator.userAgent === 'ReactSnap') return;
     const detected = detectLang();
     if (detected !== DEFAULT_LANG) setLangState(detected);
   }, []);

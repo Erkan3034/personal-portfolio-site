@@ -24,8 +24,23 @@ export const getCurrentUser = async() => {
     return user
 }
 
+// react-snap prerender sırasında üçüncü taraf istekleri engelliyor; Supabase yerine
+// build'de scripts/generate-seo.js'in yazdığı aynı-kaynak kopyayı (/data/*.json) okuruz.
+const isPrerender = typeof navigator !== 'undefined' && navigator.userAgent === 'ReactSnap';
+
+const readSnapshot = async(name) => {
+    try {
+        const res = await fetch(`/data/${name}.json`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return { data: await res.json(), error: null };
+    } catch (error) {
+        return { data: null, error };
+    }
+}
+
 // Database helper functions
 export const getProjects = async() => {
+    if (isPrerender) return readSnapshot('projects');
     const { data, error } = await supabase
         .from('projects')
         .select('*')
@@ -41,7 +56,26 @@ export const getCertificates = async() => {
     return { data, error }
 }
 
+export const getProjectById = async(id) => {
+    if (isPrerender) {
+        const { data, error } = await readSnapshot('projects');
+        const project = data?.find((p) => p.id === id);
+        return project ? { data: project, error: null } : { data: null, error: error || new Error('not found') };
+    }
+    const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', id)
+        .single()
+    return { data, error }
+}
+
 export const getBlogById = async (id) => {
+    if (isPrerender) {
+        const { data, error } = await readSnapshot('blogs');
+        const blog = data?.find((b) => b.slug === id || b.id === id);
+        return blog ? { data: blog, error: null } : { data: null, error: error || new Error('not found') };
+    }
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
     
     let query = supabase.from('blogs').select('*');
@@ -57,11 +91,46 @@ export const getBlogById = async (id) => {
 }
 
 export const getBlogs = async() => {
+    if (isPrerender) return readSnapshot('blogs');
     const { data, error } = await supabase
         .from('blogs')
         .select('*')
         .order('published_at', { ascending: false })
     return { data, error }
+}
+
+// Sıralama istemcide yapılır (src/lib/experience.js → sortExperiences).
+export const getExperiences = async() => {
+    if (isPrerender) return readSnapshot('experiences');
+    const { data, error } = await supabase
+        .from('experiences')
+        .select('*')
+    return { data, error }
+}
+
+export const addExperience = async(experienceData) => {
+    const { data, error } = await supabase
+        .from('experiences')
+        .insert([experienceData])
+        .select()
+    return { data, error }
+}
+
+export const updateExperience = async(id, updates) => {
+    const { data, error } = await supabase
+        .from('experiences')
+        .update(updates)
+        .eq('id', id)
+        .select()
+    return { data, error }
+}
+
+export const deleteExperience = async(id) => {
+    const { error } = await supabase
+        .from('experiences')
+        .delete()
+        .eq('id', id)
+    return { error }
 }
 
 export const addProject = async(projectData) => {

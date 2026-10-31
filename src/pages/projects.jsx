@@ -5,6 +5,7 @@ import { getProjects } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import { useLanguage } from '../context/LanguageContext';
+import { projectPath } from '../lib/slug';
 
 const sampleProjects = [
   {
@@ -180,10 +181,10 @@ const Projects = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: i * 0.06 }}
-              onClick={() => navigate(`/projects/${project.id}`)}
+              onClick={() => navigate(projectPath(project))}
               className="cursor-pointer"
             >
-              <ProjectCard project={project} />
+              <ProjectCard project={project} href={projectPath(project)} />
             </motion.div>
           ))}
         </div>

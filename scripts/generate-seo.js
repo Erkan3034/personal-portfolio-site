@@ -16,13 +16,14 @@ const ROOT = path.resolve(__dirname, '..');
 const PUBLIC = path.join(ROOT, 'public');
 
 const STATIC_PAGES = [
-  { path: '/', changefreq: 'weekly', priority: '1.0' },
-  { path: '/about/', changefreq: 'monthly', priority: '0.8' },
-  { path: '/experience/', changefreq: 'monthly', priority: '0.8' },
-  { path: '/projects/', changefreq: 'weekly', priority: '0.9' },
-  { path: '/blog/', changefreq: 'weekly', priority: '0.9' },
-  { path: '/certificates/', changefreq: 'monthly', priority: '0.6' },
-  { path: '/contact/', changefreq: 'yearly', priority: '0.5' },
+  { path: '/', name: 'Ana Sayfa', changefreq: 'weekly', priority: '1.0' },
+  { path: '/about/', name: 'Hakkımda', changefreq: 'monthly', priority: '0.8' },
+  { path: '/experience/', name: 'Deneyimler', changefreq: 'monthly', priority: '0.8' },
+  { path: '/projects/', name: 'Projeler', changefreq: 'weekly', priority: '0.9' },
+  { path: '/blog/', name: 'Blog', changefreq: 'weekly', priority: '0.9' },
+  { path: '/certificates/', name: 'Sertifikalar', changefreq: 'monthly', priority: '0.6' },
+  { path: '/contact/', name: 'İletişim', changefreq: 'yearly', priority: '0.5' },
+  { path: '/gizlilik/', name: 'Gizlilik ve Çerezler', changefreq: 'yearly', priority: '0.2' },
 ];
 
 // src/lib/slug.js ile aynı kurallar.
@@ -120,37 +121,112 @@ ${body}
 `;
 };
 
-const buildRss = (blogs) => {
-  const items = blogs.map((b) => {
+// Blog yazıları ve projeler tek beslemede, en yeniden eskiye.
+// İnsanlar için okunur site haritası (/site-haritasi/). sitemap.xml arama motorları içindir.
+// Not: Bu sayfa React uygulamasının bir rotası değildir; prerender listesine eklenmemeli.
+const buildSitemapHtml = (blogs, projects) => {
+  const esc = xml;
+  const li = (href, label, meta) => `<li><a href="${esc(href)}">${esc(label)}</a>${meta ? `<span>${esc(meta)}</span>` : ''}</li>`;
+  const pages = STATIC_PAGES.map((p) => li(p.path, p.name));
+  const posts = blogs.map((b) => (isOnSite(b)
+    ? li(blogPath(b), b.title, isoDate(b.published_at || b.created_at))
+    : li(b.external_url, `${b.title} ↗`, 'Medium')));
+  const projs = projects.map((p) => li(projectPath(p), p.title, isoDate(p.project_date || p.created_at)));
+  const section = (title, items) => `<section><h2>${title} <small>${items.length}</small></h2><ul>${items.join('')}</ul></section>`;
+  return `<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Site Haritası | Erkan Turgut</title>
+<meta name="description" content="erkanturgut.com üzerindeki tüm sayfalar, blog yazıları ve projeler.">
+<link rel="canonical" href="${SITE}/site-haritasi/">
+<link rel="icon" href="/logo-mark.svg" type="image/svg+xml">
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 48px 20px; background: #0C0C0E; color: #e4e4e7; font: 15px/1.6 system-ui, -apple-system, Segoe UI, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; }
+  header a { color: #a1a1aa; text-decoration: none; font-size: 14px; }
+  h1 { color: #fff; font-size: 30px; margin: 14px 0 6px; letter-spacing: -.02em; }
+  header p { color: #71717a; margin: 0 0 36px; }
+  h2 { color: #fff; font-size: 18px; margin: 32px 0 10px; }
+  h2 small { color: #22C55E; font: 600 12px ui-monospace, Consolas, monospace; margin-left: 6px; }
+  ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(255,255,255,.07); }
+  li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 2px; border-bottom: 1px solid rgba(255,255,255,.07); }
+  li a { color: #e4e4e7; text-decoration: none; }
+  li a:hover { color: #4ade80; }
+  li span { color: #71717a; font: 12px ui-monospace, Consolas, monospace; white-space: nowrap; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <a href="/">← erkanturgut.com</a>
+    <h1>Site Haritası</h1>
+    <p>Sitedeki tüm sayfalar, blog yazıları ve projeler.</p>
+  </header>
+  ${section('Sayfalar', pages)}
+  ${section('Blog Yazıları', posts)}
+  ${section('Projeler', projs)}
+</main>
+</body>
+</html>
+`;
+};
+
+const buildRss = (blogs, projects = []) => {
+  const blogItems = blogs.map((b) => {
     const link = isOnSite(b) ? `${SITE}${blogPath(b)}` : b.external_url;
-    const date = new Date(b.published_at || b.created_at || Date.now()).toUTCString();
+    const date = new Date(b.published_at || b.created_at || 0);
     const tags = Array.isArray(b.tags) ? b.tags : [];
     const full = isOnSite(b) && b.content && !b.kaggle_notebook_id
       ? `\n      <content:encoded><![CDATA[${String(b.content).replace(/]]>/g, ']]]]><![CDATA[>')}]]></content:encoded>`
       : '';
-    return `    <item>
+    const item = `    <item>
       <title>${xml(b.title)}</title>
       <link>${xml(link)}</link>
       <guid isPermaLink="${isOnSite(b)}">${xml(isOnSite(b) ? link : `${SITE}/blog/#${b.id}`)}</guid>
-      <pubDate>${date}</pubDate>
+      <pubDate>${date.toUTCString()}</pubDate>
       <dc:creator>Erkan Turgut</dc:creator>
       <description>${xml(b.summary || oneLine(b.content, 300))}</description>
+      <category>Blog</category>
 ${tags.map((t) => `      <category>${xml(t)}</category>`).join('\n')}${full}
     </item>`;
-  }).join('\n');
+    return { date, item };
+  });
+  const projectItems = projects.map((p) => {
+    const link = `${SITE}${projectPath(p)}`;
+    const date = new Date(p.project_date || p.created_at || 0);
+    const tech = Array.isArray(p.technologies) ? p.technologies : [];
+    const item = `    <item>
+      <title>${xml(`Proje: ${p.title}`)}</title>
+      <link>${xml(link)}</link>
+      <guid isPermaLink="true">${xml(link)}</guid>
+      <pubDate>${date.toUTCString()}</pubDate>
+      <dc:creator>Erkan Turgut</dc:creator>
+      <description>${xml(oneLine(p.description, 300))}</description>
+      <category>Proje</category>
+${tech.map((t) => `      <category>${xml(t)}</category>`).join('\n')}
+    </item>`;
+    return { date, item };
+  });
+  const items = [...blogItems, ...projectItems]
+    .sort((x, y) => y.date - x.date)
+    .map((x) => x.item)
+    .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
-    <title>Erkan Turgut — Blog</title>
-    <link>${SITE}/blog/</link>
+    <title>Erkan Turgut — Blog ve Projeler</title>
+    <link>${SITE}/</link>
     <atom:link href="${SITE}/rss.xml" rel="self" type="application/rss+xml" />
-    <description>Yazılım geliştirme ve yapay zekâ üzerine yazılar: RAG, LLM, makine öğrenmesi, web geliştirme.</description>
+    <description>Yazılım geliştirme ve yapay zekâ üzerine yazılar ve projeler: RAG, LLM, makine öğrenmesi, web geliştirme.</description>
     <language>tr</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <image>
       <url>${SITE}/logo512.png</url>
-      <title>Erkan Turgut — Blog</title>
-      <link>${SITE}/blog/</link>
+      <title>Erkan Turgut — Blog ve Projeler</title>
+      <link>${SITE}/</link>
     </image>
 ${items}
   </channel>
@@ -232,7 +308,8 @@ const write = (rel, content) => {
   }
 
   write('public/sitemap.xml', buildSitemap(blogs, projects, today));
-  write('public/rss.xml', buildRss(blogs));
+  write('public/site-haritasi/index.html', buildSitemapHtml(blogs, projects));
+  write('public/rss.xml', buildRss(blogs, projects));
   write('public/llms.txt', buildLlms(blogs, projects, experiences));
   write('public/llms-full.txt', buildLlmsFull(blogs));
   write('public/data/blogs.json', JSON.stringify(blogs));

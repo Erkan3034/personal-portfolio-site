@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
 const inputCls = "w-full px-4 py-3 bg-surface-2 border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 font-body text-sm focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all duration-200 outline-none";
@@ -119,8 +120,9 @@ const ContactForm = () => {
         </motion.button>
       </form>
 
-      <p className="mt-5 text-xs text-zinc-700 font-body text-center">
-        {t('form.secure')}
+      <p className="mt-5 text-xs text-zinc-500 font-body text-center leading-relaxed">
+        {t('form.privacyNote')}{' '}
+        <Link to="/gizlilik" className="text-zinc-400 underline underline-offset-2 hover:text-white transition-colors">{t('form.privacyLink')}</Link>
       </p>
     </div>
   );

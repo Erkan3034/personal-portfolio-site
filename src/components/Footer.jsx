@@ -132,6 +132,9 @@ const Footer = () => {
         <div className="border-t border-white/[0.06] mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-zinc-500 text-xs font-body">
             © {year} Erkan Turgut. {t('footer.rights')}
+            {/* Statik sayfa (scripts/generate-seo.js üretir); router dışında, tam yükleme ile açılır */}
+            <a href="/site-haritasi/" className="ml-3 hover:text-zinc-300 transition-colors">{t('footer.sitemap')}</a>
+            <Link to="/gizlilik" className="ml-3 hover:text-zinc-300 transition-colors">{t('footer.privacy')}</Link>
           </p>
           <p className="text-zinc-500 text-xs font-body italic text-center">
             Simplicity is prerequisite for reliability — Edsger W. Dijkstra

@@ -11,6 +11,7 @@ import BlogDetail from './pages/BlogDetail';
 import Certificates from './pages/certificates';
 import Contact from './pages/contact';
 import ProjectDetail from './pages/ProjectDetail';
+import Privacy from './pages/privacy';
 import { LanguageProvider } from './context/LanguageContext';
 import './App.css';
 
@@ -34,6 +35,7 @@ function AppContent() {
           <Route path="/blog/:idOrSlug" element={<BlogDetail />} />
           <Route path="/certificates" element={<Certificates />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/gizlilik" element={<Privacy />} />
           <Route path="/admin" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-canvas"><div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" /></div>}><Admin /></Suspense>} />
         </Routes>
       </main>

@@ -161,6 +161,8 @@ const translations = {
       successMsg: 'Mesajınız gönderildi! En kısa sürede dönüş yapacağım.',
       errorMsg: 'Mesaj gönderilemedi. Lütfen tekrar deneyin.',
       secure: 'Mesajınız güvenli bir şekilde iletilecektir.',
+      privacyNote: 'Gönderdiğin bilgiler yalnızca sana yanıt vermek için kullanılır.',
+      privacyLink: 'Gizlilik',
     },
     footer: {
       description:
@@ -170,6 +172,8 @@ const translations = {
       locationValue: 'İstanbul, Türkiye',
       openToWork: 'Projeye Açık',
       rights: 'Tüm hakları saklıdır.',
+      sitemap: 'Site haritası',
+      privacy: 'Gizlilik',
     },
     home: {
       seoTitle: 'Yazılım Geliştirici & Full Stack Developer',
@@ -353,6 +357,8 @@ const translations = {
       successMsg: 'Message sent! I will get back to you as soon as possible.',
       errorMsg: 'Failed to send message. Please try again.',
       secure: 'Your message will be delivered securely.',
+      privacyNote: 'Your details are only used to reply to you.',
+      privacyLink: 'Privacy',
     },
     footer: {
       description:
@@ -362,6 +368,8 @@ const translations = {
       locationValue: 'Istanbul, Turkey',
       openToWork: 'Open to Work',
       rights: 'All rights reserved.',
+      sitemap: 'Sitemap',
+      privacy: 'Privacy',
     },
     home: {
       seoTitle: 'Software Developer & Full Stack Developer',

@@ -31,3 +31,4 @@ yarn-error.log*
 /public/llms.txt
 /public/llms-full.txt
 /public/data/
+/public/site-haritasi/

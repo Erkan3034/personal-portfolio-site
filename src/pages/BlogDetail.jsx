@@ -273,6 +273,10 @@ const BlogDetail = () => {
               [&_figure]:my-8 [&_figure]:block
               [&_img]:rounded-xl [&_img]:border [&_img]:border-white/[0.07] [&_img]:inline-block [&_img]:max-w-full [&_img]:h-auto
               [&_hr]:border-white/[0.07] [&_hr]:my-10
+              [&_code]:font-mono [&_code]:text-[0.85em] [&_code]:text-emerald-300 [&_code]:bg-white/[0.06] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded
+              [&_pre]:bg-surface [&_pre]:border [&_pre]:border-white/[0.07] [&_pre]:rounded-xl [&_pre]:p-4 [&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:text-sm [&_pre]:leading-6
+              [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-zinc-200 [&_pre_code]:text-[0.85rem]
+              [&_table]:block [&_table]:overflow-x-auto sm:[&_table]:table
               [&_table]:w-full [&_table]:my-6 [&_table]:border-collapse
               [&_th]:border [&_th]:border-white/10 [&_th]:bg-surface [&_th]:px-4 [&_th]:py-2 [&_th]:text-white [&_th]:text-left [&_th]:text-sm [&_th]:font-semibold
               [&_td]:border [&_td]:border-white/[0.07] [&_td]:px-4 [&_td]:py-2 [&_td]:text-zinc-300 [&_td]:text-sm"

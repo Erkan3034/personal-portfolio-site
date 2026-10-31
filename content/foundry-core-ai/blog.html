@@ -1,0 +1,379 @@
+<p>Bu yaz, Microsoft Summer School staj programında bir yapay zekâ projesi geliştirdim: <strong>Foundry Core AI</strong>. Şirketlerin iç belgelerine (izin politikası, masraf kuralları, VPN kurulumu gibi) soru sorabildiğiniz ve <strong>tamamen bilgisayarınızda, internete hiç çıkmadan</strong> çalışan bir asistan.</p>
+
+<p>Program online yürüdü ama arada Microsoft Türkiye ofisine ziyaretlerimiz oldu. Her hafta da Microsoft Türkiye'nin üst düzey yöneticileriyle online toplantılar yaptık. Projeyi bu toplantılarda adım adım anlattım. Bu yazıda o süreçte öğrendiklerimi topladım: <em>RAG</em> nedir, <em>embedding</em> ve <em>vektör veritabanı</em> gerçekte ne işe yarar, Türkçe neden işleri zorlaştırır. En önemlisi de bütün testler geçerken asistanın nasıl hâlâ uydurabildiği.</p>
+
+<p>Akademik bir makale yazmadım. "AI engineer olmak istiyorum, nereden başlasam?" diye araştıran birinin okurken sıkılmayacağı, ama okuduktan sonra elinde gerçek bilgi kalacak bir yazı olmasını istedim. Her iddianın arkasında projede yaptığım bir ölçüm var.</p>
+
+<figure><img src="/img/foundry/foundry-core-ai-arayuz.webp" alt="Foundry Core AI web arayüzü" loading="lazy" /></figure>
+
+<hr />
+
+<h2>1. Problem: ChatGPT sizin şirketinizi tanımaz</h2>
+
+<p>Büyük dil modelleri (LLM) internetteki devasa metinlerle eğitilir. Fotosentezi anlatabilirler, Python kodu yazabilirler. Ama sizin şirketinizde yıllık iznin kaç gün olduğunu <strong>bilemezler</strong>, çünkü o bilgi hiçbir zaman eğitim verilerinde yer almadı.</p>
+
+<p>Akla gelen ilk çözüm, belgeyi kopyalayıp sohbet penceresine yapıştırmak. Bu iki yerde tıkanıyor:</p>
+
+<ul>
+  <li><strong>Gizlilik:</strong> Kurumsal belgeleri bulut tabanlı bir yapay zekâya göndermek çoğu şirkette yasak. İçinde kişisel veri varsa KVKK açısından da sorun.</li>
+  <li><strong>Ölçek:</strong> Yüzlerce sayfa belgeyi her soruda modele vermek hem pahalı hem yavaş. Modelin bir seferde okuyabileceği metin miktarı (bağlam penceresi) da sınırlı.</li>
+</ul>
+
+<p>Benim projem bu iki sorunu birlikte çözmeye çalışıyor: Model de belgeler de aynı bilgisayarda duruyor. Her soruda da belgelerin tamamı değil, yalnızca soruyla ilgili birkaç paragraf modele veriliyor. İkinci kısmın adı <strong>RAG</strong>.</p>
+
+<h2>2. RAG nedir? Bir kütüphaneci benzetmesi</h2>
+
+<p><strong>RAG</strong> (Retrieval-Augmented Generation, Türkçesiyle "bilgi getirmeyle güçlendirilmiş üretim") fikir olarak çok basit:</p>
+
+<blockquote>Modelden ezberinden cevap vermesini istemek yerine, önce ilgili belgeleri bulup önüne koyar, sonra "bu metne bakarak cevap ver" dersiniz.</blockquote>
+
+<p>Bunu iyi bir kütüphaneciye benzetebilirsiniz. Ona bir soru sorduğunuzda bütün kütüphaneyi ezbere bilmesi gerekmez. Doğru rafa gider, ilgili üç kitabı alır, sayfaları açar ve cevabı oradan okur. RAG'in iki aşaması da tam olarak bu:</p>
+
+<ol>
+  <li><strong>Getirme (Retrieval):</strong> Soruyla en ilgili belge parçalarını bul.</li>
+  <li><strong>Üretme (Generation):</strong> Bu parçaları soruyla birlikte dil modeline ver ve cevabı yazdır.</li>
+</ol>
+
+<p>Kâğıt üzerinde iki adım. Pratikte asıl zorluk ilk adımda: "ilgili parçayı bulmak" sandığınızdan çok daha zor bir problem. Yazının geri kalanının çoğu bu problemle ilgili.</p>
+
+<figure><img src="/img/foundry/foundry-core-ai-kapak.webp" alt="Foundry Core AI mimarisi: belgeler, SQLite, hibrit arama, yerel LLM, yanıt" loading="lazy" /></figure>
+
+<h2>3. Embedding: Kelimeleri sayılara çevirmek</h2>
+
+<p>Bilgisayar "izin" ile "tatil" kelimelerinin anlamca yakın olduğunu doğrudan bilemez. Bunu ona öğretmenin yolu metni <strong>embedding</strong> denen bir sayı listesine (vektöre) çevirmek. Benim projemde her metin parçası <strong>1024 sayıdan</strong> oluşan bir vektöre dönüşüyor.</p>
+
+<p>Bu sayıların tek tek bir anlamı yok. Önemli olan şu: <strong>anlamca benzer metinler, birbirine yakın vektörler üretir.</strong> Basitleştirilmiş bir örnekle:</p>
+
+<table>
+  <thead><tr><th>Metin</th><th>Vektör (temsili, 3 boyut)</th></tr></thead>
+  <tbody>
+    <tr><td>"Yıllık izin kaç gün?"</td><td>[0.82, 0.10, 0.31]</td></tr>
+    <tr><td>"Kaç gün tatil hakkım var?"</td><td>[0.79, 0.14, 0.28]</td></tr>
+    <tr><td>"VPN nasıl kurulur?"</td><td>[0.05, 0.91, 0.12]</td></tr>
+  </tbody>
+</table>
+
+<p>İlk iki cümlede hiç ortak kelime yok, ama vektörleri neredeyse aynı. Üçüncüsü ise bambaşka bir yönde. İki vektörün ne kadar "aynı yöne baktığını" ölçmek için <strong>kosinüs benzerliği</strong> kullanılır. Değeri 1'e yaklaştıkça iki metin anlamca daha yakın demektir:</p>
+
+<pre><code>import numpy as np
+
+def kosinus_benzerligi(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+izin  = np.array([0.82, 0.10, 0.31])
+tatil = np.array([0.79, 0.14, 0.28])
+vpn   = np.array([0.05, 0.91, 0.12])
+
+print(kosinus_benzerligi(izin, tatil))  # ~0.99 → çok yakın
+print(kosinus_benzerligi(izin, vpn))    # ~0.21 → alakasız</code></pre>
+
+<p>Buna <strong>dense (yoğun) arama</strong> ya da <strong>anlamsal arama</strong> deniyor: Sorunun vektörünü çıkarırsınız, belge parçalarının vektörleriyle karşılaştırırsınız, en yakın K tanesini alırsınız. Projede embedding için <code>qwen3-embedding-0.6b</code> modelini kullandım.</p>
+
+<h2>4. Parçalama (chunking): Belgeyi nereden keseceksiniz?</h2>
+
+<p>20 sayfalık bir politika belgesini tek bir vektöre çevirirseniz, o vektör "her şeyin biraz ortalaması" olur ve hiçbir soruya tam uymaz. Bu yüzden belgeler önce küçük parçalara (<em>chunk</em>) bölünür. Benim ayarım: <strong>1000 karakterlik parçalar, 200 karakter örtüşmeli.</strong></p>
+
+<p>Örtüşme neden gerekli? Şu cümlenin tam ortasından kestiğinizi düşünün:</p>
+
+<pre><code>Parça 1: "...Şehir içi iş yemeklerinde kişi başı üst"
+Parça 2: "limit 750 TL'dir. Müşteri ağırlama yemeklerinde..."</code></pre>
+
+<p>Artık iki parçanın hiçbiri tek başına soruyu cevaplayamıyor. Örtüşme sayesinde her parçanın sonundaki 200 karakter bir sonrakinin başında tekrar ediyor ve sınırda kalan cümle bütün hâliyle en az bir parçaya giriyor.</p>
+
+<p>Projenin son aşamasında <strong>parent-child retrieval</strong> denen bir yöntemi de denedim. Arama küçük ve isabetli "çocuk" parçalar üzerinde yapılıyor, modele ise onları kapsayan daha büyük "ebeveyn" parça veriliyor. Küçük parça doğru yeri bulmakta iyi, büyük parça modele yeterli bağlamı vermekte. İkisini birleştirmek mantıklı geliyor. Ama bu da (yazının ilerisinde göreceğiniz gibi) <em>ölçülmeden</em> iyi ya da kötü denemeyecek bir değişiklik.</p>
+
+<h2>5. Vektör veritabanı: Gerçekten gerekli mi?</h2>
+
+<p>RAG öğreticilerinin neredeyse hepsi şöyle başlar: "Önce bir vektör veritabanı kurun: Chroma, FAISS, Pinecone..." Ben de öyle başlayacaktım. Önce ölçmeye karar verdim.</p>
+
+<p>Vektör veritabanının temel işi, milyonlarca vektör arasından en yakınları hızlıca bulmak. Peki benim ölçeğimde arama ne kadar sürüyor? Python'daki NumPy kütüphanesiyle "kaba kuvvet" denemesi yaptım, yani soruyu her vektörle tek tek karşılaştırdım:</p>
+
+<table>
+  <thead><tr><th>Parça sayısı</th><th>Arama süresi</th></tr></thead>
+  <tbody>
+    <tr><td>44 (projenin o anki hâli)</td><td>0.01 ms</td></tr>
+    <tr><td>10.000</td><td>1.58 ms</td></tr>
+    <tr><td>100.000</td><td>21.65 ms</td></tr>
+    <tr><td>500.000</td><td>103 ms</td></tr>
+  </tbody>
+</table>
+
+<p>Yaklaşık 25.000 belgelik bir şirkette bile arama <strong>22 milisaniye</strong> sürüyor. Bir de karşılaştırma için: Yanıtın tamamı, yani dil modelinin cevabı yazması, 12–17 saniye sürüyor. Arama kısmını hızlandırmak için ayrı bir veritabanı kurmak, toplam sürenin binde birini kurtarmak demek.</p>
+
+<p>Bu yüzden harici vektör veritabanı kullanmadım. Vektörleri doğrudan <strong>SQLite</strong> içinde ikili veri (BLOB) olarak sakladım ve aramada hepsini tek bir matris çarpımıyla karşılaştırdım:</p>
+
+<pre><code># Vektörü kaydederken: 1024 float → 4 KB ikili veri
+blob = np.asarray(vektor, dtype=np.float32).tobytes()
+
+# Okurken: ayrıştırma maliyeti sıfır
+vektor = np.frombuffer(blob, dtype=np.float32)
+
+# Arama: tüm parçalar tek matriste, benzerlik tek çarpımla
+skorlar = matris @ sorgu_vektoru      # (N, 1024) @ (1024,) → (N,)
+en_iyi  = np.argsort(skorlar)[::-1][:3]</code></pre>
+
+<p>Küçük ama önemli bir detay: Başta vektörleri JSON metni olarak saklıyordum. 1024 sayılık bir vektör JSON olarak <strong>~20 KB</strong>, ikili veri olarak <strong>4 KB</strong> yer kaplıyor. Bu geçişle veritabanı dosyası 1304 KB'tan 296 KB'a indi.</p>
+
+<blockquote>Vektör veritabanları kötü değil. Yüz binlerce parçanın üstüne çıkınca, özellikle RAM'e sığmayan veriler için çok değerliler. Ama "herkes kullanıyor" iyi bir sebep değil. Bu projede harici veritabanı eklemek ürünün asıl vaadini bozardı: tek dosya, sunucusuz, kurulumsuz.</blockquote>
+
+<h2>6. Türkçe, anlamsal aramayı kırıyor</h2>
+
+<p>İngilizce öğreticilerde anlatılmayan ve beni en çok uğraştıran kısım burasıydı.</p>
+
+<p>Türkçe <strong>sondan eklemeli</strong> bir dil. "izin", "izinler", "izinlerin", "izne", "iznimi" aynı kelimenin farklı biçimleri. Küçük bir embedding modelinde bu biçimler arasındaki benzerlik bazen konusu alakasız ama yüzeyi yakın bir parçanın benzerliğinden düşük kalıyor. Kullanıcının tam olarak yazdığı kelimeyi içeren parça ilk 3'e giremiyor.</p>
+
+<h3>Çözüm: Hibrit arama</h3>
+
+<p>Aramayı iki ayaklı yaptım:</p>
+
+<ul>
+  <li><strong>Dense arama:</strong> Anlamı yakalar. "Tatil hakkı" sorusunda "yıllık izin" geçen parçayı bulur.</li>
+  <li><strong>BM25 (kelime araması):</strong> Kullanıcının yazdığı kelimenin birebir geçtiği yeri bulur. Bunu ek bir bağımlılık kurmadan SQLite'ın kendi tam metin arama modülü <strong>FTS5</strong> ile yaptım.</li>
+</ul>
+
+<p>Sorun şu: İki yöntemin skorları farklı ölçeklerde. Kosinüs benzerliği 0 ile 1 arasında, BM25 skorunun ise bir üst sınırı yok ve belge koleksiyonuna göre değişiyor. İkisini toplayamazsınız. Bunun yerine <strong>Reciprocal Rank Fusion (RRF)</strong> kullandım. RRF skorlara bakmaz, yalnızca <strong>sıralamalara</strong> bakar:</p>
+
+<pre><code>RRF_skoru(parça) = Σ  1 / (k + sıra)      # k = 60, literatürdeki standart değer
+
+Örnek: Bir parça dense aramada 1., BM25'te 3. sırada:
+  1/(60+1) + 1/(60+3) = 0.0164 + 0.0159 = 0.0323
+
+Başka bir parça yalnızca dense aramada 2. sırada:
+  1/(60+2) = 0.0161</code></pre>
+
+<p>İki listede birden üst sıralarda çıkan parça doğal olarak öne geçiyor ve hiçbir ölçek kalibrasyonu gerekmiyor.</p>
+
+<h3>Türkçeye özgü iki küçük hile</h3>
+
+<p><strong>1. Ucuz bir kök bulucu olarak ön-ek eşleşmesi.</strong> Türkçede ekler kelimenin sonuna geldiği için arama terimini 5 karaktere kırpıp <code>parol*</code> şeklinde aramak "parola", "parolalar", "parolamız" biçimlerinin hepsini tek seferde yakalıyor. Tam bir morfolojik çözümleyici kurmadan sorunun büyük kısmı çözülüyor.</p>
+
+<p><strong>2. "ı" bir aksan değildir.</strong> Bu beni bir süre uğraştırdı. SQLite'ın aksan temizleme seçeneği "ü→u", "ö→o" dönüşümünü yapıyor ama "ı" harfini ayrı bir harf kabul ediyor. Python'un <code>lower()</code> fonksiyonu ise "I" harfini "i" yapıyor, oysa Türkçede doğrusu "ı". Kurumsal belgeler de çoğu zaman Türkçe karaktersiz yazıldığı için ("BILGI GUVENLIGI"), kullanıcı "güvenliği" yazınca kelime araması hiçbir şey bulamıyordu. Çözüm, normalizasyonu elle yazmak ve sırayı doğru kurmaktı:</p>
+
+<pre><code>_TR_MAP = str.maketrans("çğıöşüÇĞİÖŞÜ", "cgiosuCGIOSU")
+
+def normalize_tr(metin: str) -&gt; str:
+    # Önce katla, SONRA küçült. Ters sırada "I" yanlış harfe dönüşür.
+    return metin.translate(_TR_MAP).lower()
+
+normalize_tr("GÜVENLİĞİ")    # → "guvenligi"
+normalize_tr("Yıllık İzin")  # → "yillik izin"</code></pre>
+
+<p>Buradan çıkardığım ders: İngilizce üzerine kurulmuş RAG tarifleri Türkçeye olduğu gibi taşınamıyor. Dilin yapısı, arama mimarisini baştan belirleyen bir tasarım kısıtı.</p>
+
+<h2>7. Modeli kendi bilgisayarınızda çalıştırmak</h2>
+
+<p>Projenin temelinde <strong>Microsoft Foundry Local</strong> var. Dil modellerini bilgisayarınıza indirip çalıştıran, OpenAI uyumlu bir API sunan bir araç. Model bir kez indirildikten sonra internete ihtiyaç kalmıyor ve Azure aboneliği gerekmiyor.</p>
+
+<p>Benim dizüstü bilgisayarımda yalnızca <strong>2 GB ekran kartı belleği</strong> (VRAM) var. Bu kısıt, bir dizi yanlış tahminimi ortaya çıkardı.</p>
+
+<h3>"Daha akıllı" model her zaman daha iyi değil</h3>
+
+<p>İlk denediğim model düşünme yeteneği olan (<em>reasoning</em>) küçük bir modeldi. Bu modeller cevap vermeden önce <code>&lt;think&gt;</code> bloğu içinde uzun uzun "düşünüyor". Sorun şu: O düşünme metni de token bütçesinden harcanıyor. Bütçe düşünme bloğunun ortasında bitince kullanıcıya <strong>boş bir yanıt</strong> dönüyordu. Yani daha çok düşünen model, küçük bütçede hiç cevap veremiyordu. Düşünme bloğu üretmeyen <code>qwen2.5-1.5b</code> modeline geçtim.</p>
+
+<h3>İki model aynı anda sığmıyor</h3>
+
+<p>Embedding modelini ve sohbet modelini aynı anda ekran kartına yüklediğimde belirtiler tuhaftı: Yanıtlar 80 saniye sürüyordu ve metin bozuktu, aynı heceler tekrar tekrar geliyordu. Sebep VRAM taşmasıydı. Çözüm, embedding modelini işlemciye (CPU) almaktı:</p>
+
+<ul>
+  <li>Embedding'in çoğu <strong>bir kez</strong> yapılıyor. Belge parçası bir kez vektöre çevriliyor ve veritabanında duruyor. Sorgu anında yalnızca tek bir kısa cümle işleniyor.</li>
+  <li>Sohbet modeli ise <strong>her soruda</strong> token token çalışıyor ve kullanıcının beklediği sürenin tamamını oluşturuyor.</li>
+</ul>
+
+<p>Sonuç: Yanıt süresi <strong>80 saniyeden 12–17 saniyeye</strong> indi ve çıktı düzeldi. Hangi modelin GPU'da kalacağına iş yükünün şekline bakarak karar vermek gerekiyor.</p>
+
+<h2>8. Projenin en önemli dersi: Testler yeşildi, asistan uyduruyordu</h2>
+
+<p>Bu bölüm, staj boyunca öğrendiğim her şeyin özeti sayılır.</p>
+
+<p>Projede 155 birim testi vardı ve hepsi geçiyordu. Arama çalışıyor, embedding üretiliyor, API doğru yanıt dönüyor, veritabanı tutarlı. Proje "bitmiş" görünüyordu.</p>
+
+<p>Sonra kodu değil, asistanın <strong>cevaplarını</strong> ölçen ayrı bir set yazdım. 23 soruyu üç gruba ayırdım:</p>
+
+<ul>
+  <li><strong>Cevaplanabilir:</strong> Cevabı belgelerde olan sorular.</li>
+  <li><strong>Cevaplanamaz:</strong> Cevabı belgelerde olmayan sorular. Doğru davranış "bilmiyorum" demek.</li>
+  <li><strong>Tuzak:</strong> Belgelerde anahtar kelimesi geçen ama cevabı olmayan sorular.</li>
+</ul>
+
+<p>İlk sonuç:</p>
+
+<table>
+  <thead><tr><th>Kategori</th><th>Sonuç</th></tr></thead>
+  <tbody>
+    <tr><td>Cevaplanabilir</td><td>11 / 12</td></tr>
+    <tr><td>Cevaplanamaz</td><td><strong>1 / 4</strong></td></tr>
+    <tr><td>Tuzak</td><td><strong>0 / 3</strong></td></tr>
+  </tbody>
+</table>
+
+<p>Asistan, bilmediği şeylerin dörtte üçünde bilgi <strong>uyduruyordu</strong>. Gerçek ölçümden iki örnek:</p>
+
+<blockquote><strong>Soru:</strong> Ofisteki toplantı salonunun aylık kirası ne kadar?<br /><strong>Yanıt:</strong> "Aylık toplantı salonunun kirası, 2026 yılı için 240 TL'dir."</blockquote>
+
+<p>Belgelerde "kira" kelimesi yalnızca "araç kiralama" olarak geçiyor. Rakam da yıl da tamamen uydurma ve çok inandırıcı.</p>
+
+<blockquote><strong>Soru:</strong> Şirketin 2025 yılı cirosu ne kadardır?<br /><strong>Yanıt:</strong> "2025 yılı cirosu 14 işgünlüğü yıllık izne hak kazandırmaktadır."</blockquote>
+
+<p>İzin politikasındaki bir sayıyı ciro sorusuna yapıştırmış.</p>
+
+<p><strong>Ders:</strong> Klasik yazılımda "testler geçiyor" ile "sistem doğru çalışıyor" büyük ölçüde aynı şeydir. Yapay zekâ sistemlerinde değildir. Birim testi kodun doğru çalıştığını kontrol eder, modelin doğru davrandığını kontrol etmez. Model davranışı ancak <strong>ölçülerek</strong> bilinir. Bir RAG projesinde değerlendirme seti opsiyonel bir ekstra değil, testlerle eşit ağırlıkta ikinci bir disiplin.</p>
+
+<h3>Kök neden: Kuralların sırası</h3>
+
+<p>Uydurmanın sebebi beklediğimden çok daha basit çıktı. Sistem promptunun ilk hâli şöyleydi:</p>
+
+<pre><code>Sen kurumsal bir bilgi asistanısın. BAĞLAM bilgilerini kullanarak
+kullanıcının sorusuna doğrudan ve net bir yanıt ver.
+
+Kurallar:
+1. Sadece BAĞLAM içindeki gerçekleri kullan.
+2. Kullanıcının dilinde yaz.
+3. [Kaynak: dosya_adı] ekle.
+4. BAĞLAM'da bilgi yoksa "bilgi bulunmuyor" de.</code></pre>
+
+<p>Prompt "yanıt ver" emriyle başlıyor, yani modele varsayılan davranış olarak cevap vermesini söylüyor. Reddetme kuralı da en sonda, dördüncü sırada. Yalnızca bu kuralı en başa, ilk kontrol olarak taşıdım ve "bağlamda geçmeyen sayı, tutar veya tarih üretme" ifadesini ekledim:</p>
+
+<table>
+  <thead><tr><th>Kategori</th><th>Önce</th><th>Sonra</th></tr></thead>
+  <tbody>
+    <tr><td>Cevaplanabilir</td><td>11 / 12</td><td>11 / 12</td></tr>
+    <tr><td>Cevaplanamaz</td><td>1 / 4</td><td><strong>3 / 4</strong></td></tr>
+    <tr><td>Genel</td><td>%60</td><td><strong>%74</strong></td></tr>
+  </tbody>
+</table>
+
+<p>1.5 milyar parametreli küçük bir model, talimatları eşit ağırlıkta değerlendirmiyor. Listenin sonundaki kısıt baştaki emrin altında eziliyor. Büyük modeller buna daha dayanıklı. Küçük modelde ise promptun <em>yapısı</em> bir detay değil, sistemin davranışını belirleyen asıl etken.</p>
+
+<h3>Prompt sınırlı bir dikkat bütçesidir</h3>
+
+<p>Aynı 23 soruyla, her seferinde tek bir şeyi değiştirerek birkaç deney daha yaptım:</p>
+
+<table>
+  <thead><tr><th>Deney</th><th>Genel başarı</th></tr></thead>
+  <tbody>
+    <tr><td>Reddetme kuralı başta, kaynak gösterme kuralı var</td><td>%74</td></tr>
+    <tr><td>Gözlenen hatalar için iki yeni kural eklendi</td><td><strong>%58</strong> ↓</td></tr>
+    <tr><td>Modelin zaten uymadığı kaynak kuralı silindi</td><td><strong>%79</strong> ↑</td></tr>
+    <tr><td>Prompt İngilizceye çevrildi</td><td>%63 ↓</td></tr>
+  </tbody>
+</table>
+
+<p>İki sonuç sezgime tamamen ters geldi:</p>
+
+<ul>
+  <li><strong>Kural eklemek, o kuralın getirdiği davranışı kazandırmıyor.</strong> Hatayı hedefleyen iki kural mantıklı görünüyordu ama başarı %74'ten %58'e düştü. Yeni kurallar, en önemli kural olan reddetme talimatını zayıflattı.</li>
+  <li><strong>Modelin uymadığı bir kural bedava değil.</strong> Model <code>[Kaynak: ...]</code> kuralına zaten uymuyordu (kaynakları arayüz kendisi gösteriyor). Bu işe yaramayan kuralı silmek başarıyı %79'a çıkardı.</li>
+</ul>
+
+<p>İngilizce prompt denemesi de ilginçti. Model talimatlara daha iyi uydu ama Türkçe belgelerin içinden yanlış cümleyi seçmeye başladı. Bundan çıkan sonuç "İngilizce prompt kötüdür" değil. Asıl bulgu şu: <strong>talimat dili ile belge dili farklı olduğunda bunun bir bedeli var.</strong></p>
+
+<h2>9. Benzerlik skoru, cevabın orada olduğunu göstermez</h2>
+
+<p>Bu, projenin bence en öğretici bulgusu. Ölçülen benzerlik skorlarına bakın:</p>
+
+<ul>
+  <li><strong>Doğru cevaplanan sorular:</strong> 0.335, 0.418, 0.429, 0.445, 0.485 ... 0.655</li>
+  <li><strong>Uydurulan sorular:</strong> 0.281, 0.304, 0.322, 0.329, 0.349, <strong>0.482</strong></li>
+</ul>
+
+<p>"Toplantı salonunun kirası" sorusu <strong>0.482</strong> benzerlikle bir parça getirdi. Bu, doğru cevaplanan soruların çoğundan daha yüksek bir skor. Getirilen parça gerçekten konuyla ilgiliydi: İçinde toplantı salonu geçiyordu ama kira geçmiyordu.</p>
+
+<p>Buradan iki ayrı hata türü olduğu ortaya çıktı:</p>
+
+<table>
+  <thead><tr><th>Hata türü</th><th>Belirti</th><th>Eşik değeri çözer mi?</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A:</strong> Alakasız parça geçiyor</td><td>Düşük benzerlik (0.28–0.33)</td><td>Evet</td></tr>
+    <tr><td><strong>B:</strong> İlgili ama cevabı içermeyen parça</td><td><strong>Yüksek</strong> benzerlik (0.48)</td><td><strong>Hayır</strong></td></tr>
+  </tbody>
+</table>
+
+<p>"Bu parça soruyla <em>ilgili</em> mi?" ile "Bu parça sorunun <em>cevabını içeriyor</em> mu?" iki ayrı soru. Kosinüs benzerliği yalnızca birincisini ölçüyor. Eşiği 0.48'in üstüne çıkarsaydım B tipi hatayı çözerdim, ama doğru cevapların yarısını da kaybederdim. Bu ayrımı görmeden bir RAG sistemini ayarlamaya çalışmak, eşik değerini sonsuza kadar ileri geri oynatmak demek.</p>
+
+<h3>Kendi test setinize ezberletmeyin</h3>
+
+<p>Ölçümler, eşiği 0.35'ten 0.40'a çıkarmanın birkaç hatayı daha düzelteceğini açıkça gösteriyordu. Bunu <strong>bilerek yapmadım</strong>. Elimde 23 soru vardı. Eşiği bu 23 soruya göre ayarlasaydım, eşik bu sorulara "ezberlenmiş" olurdu ve "sistem iyileşti" iddiası anlamsızlaşırdı. Makine öğrenmesindeki eğitim/doğrulama ayrımı, model eğitmediğiniz ve yalnızca birkaç ayar seçtiğiniz durumda bile geçerli.</p>
+
+<h2>10. Yavaşlığın asıl sebebi tahmin ettiğim yer değildi</h2>
+
+<p>Sezgi şunu söyler: Model yavaşsa kelime üretimi yavaştır, o yüzden <em>streaming</em> (cevabı token token göstermek) işi çözer. Ölçüm bunu çürüttü:</p>
+
+<pre><code>Vektör arama            :   0.047 ms
+Sorgu embedding + arama :  ~1.6 sn
+İlk token'a kadar       :  15.4 sn   ← darboğaz burada
+Cevabın üretilmesi      :  ~1.3 sn   (19 token/sn)</code></pre>
+
+<p>Zamanın neredeyse tamamı ilk kelime gelmeden <strong>önce</strong> geçiyor. Model önce verdiğiniz bütün bağlamı okuyup işliyor (<em>prefill</em>). Bağlam uzunluğunu değiştirerek ölçtüm:</p>
+
+<table>
+  <thead><tr><th>Modele verilen bağlam</th><th>İlk token süresi</th></tr></thead>
+  <tbody>
+    <tr><td>0 karakter</td><td>4.08 sn</td></tr>
+    <tr><td>500 karakter</td><td>6.85 sn</td></tr>
+    <tr><td>1000 karakter</td><td>7.66 sn</td></tr>
+    <tr><td>2144 karakter</td><td>16.80 sn</td></tr>
+  </tbody>
+</table>
+
+<p>Benim sistemimde cevabın üretimi 16 saniyenin yalnızca 1 saniyesi. Yani streaming algılanan hıza neredeyse hiçbir şey katmıyor, kullanıcı ilk kelimeyi görmek için yine 15 saniye bekliyor. Mimari sonuç: Yerel RAG'de <strong>bağlam uzunluğu yalnızca bir kalite ayarı değil, gecikmeyi belirleyen birinci ayar.</strong> Modele daha çok parça göndermek "biraz daha yavaş" değil, katlanarak daha yavaş demek.</p>
+
+<h2>11. En iyi optimizasyon: Modeli hiç çağırmamak</h2>
+
+<p>Benzerlik eşiğini başta yalnızca alakasız parçaları elemek için koymuştum. Sonra ikinci bir faydası ortaya çıktı: <strong>Eşiği geçen hiçbir parça yoksa dil modeli hiç çalıştırılmıyor</strong> ve doğrudan "belgelerde bu bilgi yok" yanıtı dönüyor.</p>
+
+<ul>
+  <li><strong>Doğruluk:</strong> Model devrede olmadığı için uydurma ihtimali sıfır.</li>
+  <li><strong>Hız:</strong> Bu yolla reddedilen bir soru 6.7 saniyede yanıtlandı, modele giden sorular ise ~15 saniye sürdü.</li>
+</ul>
+
+<p>RAG sistemlerinde "modeli çağırmamaya karar vermek" başlı başına bir tasarım kararı ve çoğu öğreticide atlanıyor.</p>
+
+<h2>12. En sinsi hata: Yakın ama yanlış</h2>
+
+<blockquote><strong>Soru:</strong> Şehir içi iş yemeklerinde kişi başı üst limit nedir?<br /><strong>Belge:</strong> "Şehir içi iş yemeklerinde kişi başı üst limit 750 TL'dir. Müşteri ağırlama yemeklerinde limit kişi başı 1.500 TL'dir..."<br /><strong>Yanıt:</strong> 1.500 TL</blockquote>
+
+<p>Doğru belge, doğru parça getirildi ve cevap parçanın içindeydi. Model aynı paragraftaki iki sayıdan yanlışını seçti. Bu hata ne aramayla ne parçalama stratejisiyle çözülebiliyor, çünkü iki bilgi yan yana duruyor. Saf bir model kavrama sınırı.</p>
+
+<p>Bence en tehlikeli hata türü bu: Sistem kendinden emin, kaynak doğru, sayı belgede gerçekten geçiyor. Kullanıcının yanlış olduğunu anlamasının hiçbir yolu yok. Hukuk, sağlık, finans gibi kritik alanlarda küçük modellerle çalışmamanın asıl sebebi bu.</p>
+
+<h2>13. Staj sürecinin bana kattıkları</h2>
+
+<p>Teknik kısmın dışında, programın kendisi de öğreticiydi. Haftalık toplantılarda projeyi Microsoft Türkiye yöneticilerine anlatmak bir alışkanlık kazandırdı: "Ne yaptım" yerine "neyi neden yaptım, nasıl ölçtüm" diye anlatmak. "Hızlandırdım" demek yetmiyor, "80 saniyeden 15 saniyeye indi, çünkü..." diyebilmek gerekiyor. Projedeki her teknik kararı ayrı bir <strong>mimari karar kaydında (ADR)</strong> belgelemem de buradan geldi: Hangi alternatifleri düşündüm, neden reddettim, bedeli ne.</p>
+
+<p>Ofis ziyaretleri ise büyük bir teknoloji şirketinin bir ürüne nasıl baktığını yakından görme fırsatıydı. Çalışan bir demo ile bir firmaya kurulabilecek ürün arasında büyük bir fark var. Projeyi "ödev" olmaktan çıkarıp kimlik doğrulama, kurulum betiği ve güvenlik katmanı eklememin sebebi biraz da bu.</p>
+
+<h2>14. AI engineer olmak isteyenlere: Bu projeden çıkardığım yol haritası</h2>
+
+<ol>
+  <li><strong>Önce temeli öğrenin:</strong> Embedding, kosinüs benzerliği ve parçalama. Bunları bir kütüphane kullanmadan, NumPy ile 50 satırda kendiniz yazın. Neyin neden çalıştığını o zaman anlıyorsunuz.</li>
+  <li><strong>Hazır vektör veritabanına hemen atlamayın:</strong> Önce kaba kuvvet aramayı ölçün. Çoğu proje sandığınızdan küçük.</li>
+  <li><strong>Kendi dilinizi ciddiye alın:</strong> Türkçe bir sistem kuruyorsanız hibrit arama ve normalizasyon neredeyse zorunlu.</li>
+  <li><strong>İlk günden bir değerlendirme seti yazın:</strong> Cevaplanabilir, cevaplanamaz ve tuzak sorular. 20 soru bile yeter. Bu set olmadan yaptığınız her iyileştirme bir tahmin.</li>
+  <li><strong>Her seferinde tek bir şeyi değiştirin ve ölçün:</strong> Prompt, eşik, model. "Sanırım daha iyi oldu" ile "reddetme oranı 1/4'ten 3/4'e çıktı" arasındaki fark, mühendislikle deneme-yanılma arasındaki fark.</li>
+  <li><strong>Gecikmeyi parçalarına ayırın:</strong> Arama, prefill, üretim. Darboğaz çoğu zaman sandığınız yerde değil.</li>
+</ol>
+
+<h2>Son söz</h2>
+
+<p>Bu projeden aklımda kalan en önemli cümle şu: <strong>Yapay zekâ sistemlerinde çalışan kod ile doğru davranan sistem aynı şey değil.</strong> Aradaki boşluğu yalnızca ölçüm gösteriyor ve ölçmediğiniz bir sistem tam en çok güvendiğiniz anda uydurabiliyor.</p>
+
+<p>Projenin kaynak kodu, mimari karar kayıtları ve değerlendirme sonuçları GitHub'da: <a href="https://github.com/Erkan3034/foundry-core-ai" target="_blank" rel="noopener noreferrer">github.com/Erkan3034/foundry-core-ai</a>. Sorularınız ya da önerileriniz varsa iletişim sayfasından bana yazabilirsiniz.</p>
+
+<hr />
+
+<h3>Kısa sözlük</h3>
+
+<table>
+  <thead><tr><th>Terim</th><th>Anlamı</th></tr></thead>
+  <tbody>
+    <tr><td>LLM</td><td>Büyük dil modeli. Metin üreten yapay zekâ modeli.</td></tr>
+    <tr><td>RAG</td><td>Önce ilgili belgeleri bulup sonra modele bunlara bakarak cevap yazdırma yöntemi.</td></tr>
+    <tr><td>Embedding</td><td>Metnin anlamını temsil eden sayı listesi (vektör).</td></tr>
+    <tr><td>Kosinüs benzerliği</td><td>İki vektörün ne kadar aynı yöne baktığını ölçen değer (0–1).</td></tr>
+    <tr><td>Chunk</td><td>Belgenin aranabilir küçük parçası.</td></tr>
+    <tr><td>BM25</td><td>Kelime eşleşmesine dayalı klasik arama algoritması.</td></tr>
+    <tr><td>RRF</td><td>Farklı arama sonuçlarını sıralamalarına göre birleştirme yöntemi.</td></tr>
+    <tr><td>Prefill</td><td>Modelin cevap yazmadan önce verilen metnin tamamını işlediği aşama.</td></tr>
+    <tr><td>Token</td><td>Modelin metni işlediği en küçük birim (kelime veya kelime parçası).</td></tr>
+  </tbody>
+</table>
